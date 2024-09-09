@@ -1,6 +1,24 @@
+"""
+This module provides functionality to add static conditional edges based on given
+conditions and evaluation functions.
+It includes a handler class `StaticConditionalHandler` to manage the conditions and evaluate them.
+"""
+
 from typing import List, Dict, Union
 
 def add_static_conditional_edge(metadata,settings,evaluate_functions):
+    """
+    Adds a static conditional edge based on the provided settings and evaluation functions.
+
+    Args:
+        metadata: Metadata information (not used in the current implementation).
+        settings (dict): A dictionary containing the conditions for the static conditional edge.
+        evaluate_functions (dict): A dictionary of functions used to evaluate conditions.
+
+    Returns:
+        function: A function that evaluates the conditions and returns
+        the result based on the state and config.
+    """
     # edgesの抽出
     conditions = settings['conditions']
 
@@ -13,17 +31,52 @@ def add_static_conditional_edge(metadata,settings,evaluate_functions):
     return conditional_edge.call_edge
 
 class StaticConditionalHandler:
+    """
+    A handler class to manage and evaluate static conditional edges based on given
+    conditions and evaluation functions.
+
+    Attributes:
+        conditions (list): A list of conditions to evaluate.
+        evaluate_functions (dict): A dictionary of functions used to evaluate conditions.
+        end_points (list): A list of possible end points extracted from the conditions.
+    """
     def __init__(self,conditions,evaluate_functions):
+        """
+        Initializes the StaticConditionalHandler with conditions and evaluation functions.
+
+        Args:
+            conditions (list): A list of conditions to evaluate.
+            evaluate_functions (dict): A dictionary of functions used to evaluate conditions.
+        """
         self.conditions = conditions
         self.evaluate_functions = evaluate_functions
         self.end_points = self._extract_literals(self.conditions)
 
     def call_edge(self, state,config):
+        """
+        Evaluates the conditions based on the given state and config, and returns the result.
+
+        Args:
+            state (dict): The current state to evaluate.
+            config (dict): The configuration to use during evaluation.
+
+        Returns:
+            str: The result of the evaluated condition.
+        """
         result = self.evaluate_conditions(state, self.conditions, config)
 
         return result
 
     def _extract_literals(self, conditions: List[Dict[str, Union[Dict, str]]]) -> str:
+        """
+        Extracts literal values from the conditions.
+
+        Args:
+            conditions (list): A list of conditions to extract literals from.
+
+        Returns:
+            list: A list of literal values extracted from the conditions.
+        """
         results = []
         for condition in conditions:
             if 'result' in condition:
@@ -33,10 +86,31 @@ class StaticConditionalHandler:
         return results
 
     def get_call_edge_return_type(self):
+        """
+        Constructs and returns the return type for the call_edge method based on
+        the extracted literals.
+
+        Returns:
+            type: The return type for the call_edge method.
+        """
         literal_type_str = f"Literal[{', '.join([f'\"{result}\"' for result in self.end_points])}]"
         return eval(literal_type_str)
 
     def evaluate_conditions(self, state, conditions, config):
+        """
+        Evaluates the conditions based on the given state and config, and returns the result.
+
+        Args:
+            state (dict): The current state to evaluate.
+            conditions (list): A list of conditions to evaluate.
+            config (dict): The configuration to use during evaluation.
+
+        Returns:
+            str: The result of the evaluated condition.
+
+        Raises:
+            ValueError: If no matching condition is found and no default function is provided.
+        """
         for condition in conditions:
             if "expression" in condition and self.evaluate_expr(
                 state, condition["expression"], config
@@ -49,6 +123,21 @@ class StaticConditionalHandler:
         raise ValueError("一致する条件が見つからず、デフォルト関数が提供されていません")
 
     def evaluate_expr(self,state, expr, config):
+        """
+        Evaluates a single expression based on the given state and config.
+
+        Args:
+            state (dict): The current state to evaluate.
+            expr (dict): The expression to evaluate.
+            config (dict): The configuration to use during evaluation.
+
+        Returns:
+            bool: The result of the evaluated expression.
+
+        Raises:
+            ValueError: If the expression is not a dictionary or
+            contains unsupported types or operations.
+        """
         if not isinstance(expr, dict):
             raise ValueError("式は辞書である必要があります")
 
