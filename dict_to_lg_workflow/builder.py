@@ -1,3 +1,8 @@
+"""
+This module provides functionality to build workflows using a state graph.
+It includes the `WorkFlowBuilder` class which allows adding node generators,
+evaluation functions, and constructing workflows based on given settings.
+"""
 import types
 from typing import Annotated,  Any, List
 
@@ -10,7 +15,26 @@ from langgraph.graph import  StateGraph, add_messages
 from dict_to_lg_workflow.edges import add_static_conditional_edge
 
 class WorkFlowBuilder():
+    """
+    A builder class to construct workflows using a state graph 
+    based on provided settings and configuration schema.
+
+    Attributes:
+        graph_settings (dict): The settings for the graph.
+        config_schema (Any): The schema for the configuration.
+        node_generators (dict): A dictionary to store node generator functions.
+        evaluate_functions (dict): A dictionary to store evaluation functions.
+        workflow (dict): The constructed workflow.
+        custom_state (Any): The custom state for the workflow.
+    """
     def __init__(self,graph_settings,config_schema):
+        """
+        Initializes the WorkFlowBuilder with graph settings and configuration schema.
+
+        Args:
+            graph_settings (dict): The settings for the graph.
+            config_schema (Any): The schema for the configuration.
+        """
         self.graph_settings = graph_settings
         self.config_schema = config_schema
         self.node_generators = {}
@@ -19,17 +43,46 @@ class WorkFlowBuilder():
         self.custom_state = None
 
     def getworkflow(self):
+        """
+        Constructs and returns the workflow based on the graph settings.
+
+        Returns:
+            Any: The constructed workflow.
+        """
         workflow = self.graph_settings.get("workflows")
         self.workflow = self._add_workflow(workflow)
         return self.workflow
 
     def add_node_generator(self,name:str,function):
+        """
+        Adds a node generator function to the builder.
+
+        Args:
+            name (str): The name of the node generator.
+            function (Callable): The function to generate nodes.
+        """
         self.node_generators[name] = function
 
     def add_evaluete_function(self,name:str,function):
+        """
+        Adds an evaluation function to the builder.
+
+        Args:
+            name (str): The name of the evaluation function.
+            function (Callable): The function to evaluate conditions.
+        """
         self.evaluete_functions[name] = function
 
     def _add_workflow(self,workflow_settings):
+        """
+        Recursively constructs a workflow based on the provided workflow settings.
+
+        Args:
+            workflow_settings (dict): The settings for the workflow.
+
+        Returns:
+            StateGraph: The constructed state graph for the workflow.
+        """
         self.custom_state = create_custom_state(workflow_settings.get("state",[]))
         workflow = StateGraph(self.custom_state,config_schema=self.config_schema)
 
@@ -71,6 +124,17 @@ class WorkFlowBuilder():
         return workflow
 
     def _gen_node(self,generator,metadata,settings):
+        """
+        Generates a node function using the specified generator, metadata, and settings.
+
+        Args:
+            generator (str): The name of the generator function.
+            metadata (Any): The metadata for the node.
+            settings (Any): The settings for the node.
+
+        Returns:
+            Callable: The generated node function.
+        """
         add_agent_function = self.node_generators[generator]
 
         return add_agent_function(
@@ -79,6 +143,16 @@ class WorkFlowBuilder():
             )
 
     def _add_conditional_edge(self,metadata,settings):
+        """
+        Adds a conditional edge to the workflow based on the provided metadata and settings.
+
+        Args:
+            metadata (Any): The metadata for the conditional edge.
+            settings (Any): The settings for the conditional edge.
+
+        Returns:
+            Callable: The function to evaluate the conditional edge.
+        """
         return add_static_conditional_edge(
             metadata = metadata,
             settings = settings,
@@ -86,21 +160,66 @@ class WorkFlowBuilder():
             )
 
 def get_metadata(settings):
+    """
+    Retrieves the metadata from the provided settings.
+
+    Args:
+        settings (dict): The settings to retrieve metadata from.
+
+    Returns:
+        Any: The retrieved metadata.
+    """
     return settings.get('metadata')
 
 def get_workflow_type(settings):
+    """
+    Retrieves the workflow type from the provided settings.
+
+    Args:
+        settings (dict): The settings to retrieve the workflow type from.
+
+    Returns:
+        str: The retrieved workflow type.
+    """
     metadata = get_metadata(settings)
     return metadata.get('workflow_type',"")
 
 def get_flow_name(settings):
+    """
+    Retrieves the flow name from the provided settings.
+
+    Args:
+        settings (dict): The settings to retrieve the flow name from.
+
+    Returns:
+        str: The retrieved flow name.
+    """
     metadata = get_metadata(settings)
     return metadata.get('name',"")
 
 def get_flow_parameter(settings):
+    """
+    Retrieves the flow parameters from the provided settings.
+
+    Args:
+        settings (dict): The settings to retrieve the flow parameters from.
+
+    Returns:
+        dict: The retrieved flow parameters.
+    """
     metadata = get_metadata(settings)
     return metadata.get('flow_parameter',{})
 
 def check_edge(point:str):
+    """
+    Checks and returns the appropriate edge constant for the given point.
+
+    Args:
+        point (str): The point to check.
+
+    Returns:
+        str: The corresponding edge constant.
+    """
     if point == 'START':
         return START
     if point == 'END':
@@ -108,7 +227,15 @@ def check_edge(point:str):
     return point
 
 def create_custom_state(params):
-    """カスタムデフォルトと説明を持つ CustomState クラスを作成するファクトリ関数です。"""
+    """
+    Factory function to create a CustomState class with custom defaults and descriptions.
+
+    Args:
+        params (List[Dict[str, Any]]): A list of dictionaries containing settings for each field.
+
+    Returns:
+        Type[BaseModel]: The created custom state class.
+    """
     # アノテーション用の辞書を作成
     annotations = {
         param['field_name']: str if param['type'] == 'str' else int
