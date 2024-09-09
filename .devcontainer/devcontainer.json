@@ -5,9 +5,6 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
 	"features": {
-		"ghcr.io/devcontainers/features/aws-cli:1": {
-			"version": "latest"
-		},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"version": "latest",
 			"dockerDashComposeVersion": "latest"
@@ -18,9 +15,6 @@
 		"ghcr.io/hspaans/devcontainer-features/pytest:1": {
 			"version": "latest",
 			"plugins": "pytest-testinfra"
-		},
-		"ghcr.io/devcontainers-contrib/features/mongosh-homebrew:1": {
-			"version": "latest"
 		}
 	}
 
