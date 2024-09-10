@@ -11,6 +11,11 @@ python = "^3.12"
 langchain-core = "^0.2.38"
 langgraph = "^0.2.19"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+langchain-openai = "^0.1.23"
+ipython = "^8.27.0"
+grandalf = "^0.8"
 
 [build-system]
 requires = ["poetry-core"]
