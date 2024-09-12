@@ -4,15 +4,15 @@ It includes the `WorkFlowBuilder` class which allows adding node generators,
 evaluation functions, and constructing workflows based on given settings.
 """
 import types
-from typing import Annotated,  Any, List
+from typing import Annotated, Any, List, Dict, Union
 
 from langchain_core.messages import AnyMessage
 from langchain_core.pydantic_v1 import BaseModel, Field
 
-from langgraph.graph import START,END
 from langgraph.graph import  StateGraph, add_messages
 
 from dict_to_lg_workflow.edges import add_static_conditional_edge
+from dict_to_lg_workflow.common import convert_key
 
 class WorkFlowBuilder():
     """
@@ -105,16 +105,22 @@ class WorkFlowBuilder():
 
             elif flow_workflow_type == "conditional_edge":
                 start_key = flow_parameter['start_key']
+
                 edge_function = self._add_conditional_edge(metadata,settings)
+                conditions = metadata['flow_parameter']['conditions']
+                
+                return_types = extract_literals(conditions)
+                path_map = [convert_key(type_str) for type_str in return_types]
 
                 workflow.add_conditional_edges(
                     source = start_key,
                     path = edge_function,
+                    path_map = path_map
                 )
 
             elif flow_workflow_type == "edge":
-                start_key = check_edge(flow_parameter['start_key'])
-                end_key = check_edge(flow_parameter['end_key'])
+                start_key = convert_key(flow_parameter['start_key'])
+                end_key = convert_key(flow_parameter['end_key'])
 
                 workflow.add_edge(
                     start_key = start_key,
@@ -158,6 +164,24 @@ class WorkFlowBuilder():
             settings = settings,
             evaluate_functions = self.evaluete_functions
             )
+
+
+def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
+    """
+    Extracts literal values from the conditions.
+    Args:
+        conditions (list): A list of conditions to extract literals from.
+    Returns:
+        list: A list of literal values extracted from the conditions.
+    """
+    results = []
+    for condition in conditions:
+        if 'result' in condition:
+            results.append(condition['result'])
+        elif 'default' in condition:
+            results.append(condition['default'])
+    return results
+
 
 def get_metadata(settings):
     """
@@ -210,21 +234,7 @@ def get_flow_parameter(settings):
     metadata = get_metadata(settings)
     return metadata.get('flow_parameter',{})
 
-def check_edge(point:str):
-    """
-    Checks and returns the appropriate edge constant for the given point.
 
-    Args:
-        point (str): The point to check.
-
-    Returns:
-        str: The corresponding edge constant.
-    """
-    if point == 'START':
-        return START
-    if point == 'END':
-        return END
-    return point
 
 def create_custom_state(params):
     """

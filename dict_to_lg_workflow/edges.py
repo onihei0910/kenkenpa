@@ -4,8 +4,8 @@ conditions and evaluation functions.
 It includes a handler class `StaticConditionalHandler` to manage the conditions and evaluate them.
 """
 
-from typing import List, Dict, Union, Literal
-from langgraph.graph import START,END
+from typing import List, Dict, Union
+from dict_to_lg_workflow.common import convert_key
 
 def add_static_conditional_edge(metadata,settings,evaluate_functions):
     """
@@ -20,14 +20,9 @@ def add_static_conditional_edge(metadata,settings,evaluate_functions):
         function: A function that evaluates the conditions and returns
         the result based on the state and config.
     """
-    # edgesの抽出
-    conditions = settings['conditions']
+    conditions = metadata['flow_parameter']['conditions']
 
     conditional_edge = StaticConditionalHandler(conditions,evaluate_functions)
-
-    # call_edgeの戻り値の型を設定
-    call_edge_return_type = conditional_edge.get_call_edge_return_type()
-    conditional_edge.call_edge.__annotations__['return'] = call_edge_return_type
 
     return conditional_edge.call_edge
 
@@ -51,7 +46,6 @@ class StaticConditionalHandler:
         """
         self.conditions = conditions
         self.evaluate_functions = evaluate_functions
-        self.end_points = self._extract_literals(self.conditions)
 
     def call_edge(self, state,config):
         """
@@ -66,12 +60,7 @@ class StaticConditionalHandler:
         """
         result = self.evaluate_conditions(state, self.conditions, config)
 
-        # TODO リファクタリング "END"をENDに変換する処理を最適化
-        print(f"result:{result}")
-        if result == "END":
-            return END
-
-        return result
+        return convert_key(result)
 
     def _extract_literals(self, conditions: List[Dict[str, Union[Dict, str]]]) -> str:
         """
@@ -90,21 +79,6 @@ class StaticConditionalHandler:
             elif 'default' in condition:
                 results.append(condition['default'])
         return results
-
-    def get_call_edge_return_type(self):
-        """
-        Constructs and returns the return type for the call_edge method based on
-        the extracted literals.
-
-        Returns:
-            type: The return type for the call_edge method.
-        """
-        # TODO リファクタリング "END"をENDに変換する処理を最適化
-        literal_type_str_oridinal = f"Literal[{', '.join([f'\"{result}\"' for result in self.end_points])}]"
-        print(f"literal_type_str_oridinal:{literal_type_str_oridinal}")
-        literal_type_str = literal_type_str_oridinal.replace('\"END\"', 'END')
-        print(f"literal_type_str:{literal_type_str}")
-        return eval(literal_type_str)
 
     def evaluate_conditions(self, state, conditions, config):
         """
@@ -173,21 +147,41 @@ class StaticConditionalHandler:
                 return any(self.evaluate_expr(state, sub_expr,  config) for sub_expr in args)
             elif op == "not":
                 return not self.evaluate_expr(state, args,  config)
-            elif op in {"==", "!=", ">", ">=", "<", "<="}:
+            elif op in {"==", "!=", ">", ">=", "<", "<=",
+                        "equals","not_equals","greater_than","greater_than_or_equals",
+                        "less_than","less_than_or_equals",
+                        "eq","neq","gt","gte","lt","lte",
+                        }:
                 left_item, right_item = args
                 left_value = get_value(left_item)
                 right_value = get_value(right_item)
-                if op == "==":
-                    return left_value == right_value
-                elif op == "!=":
-                    return left_value != right_value
-                elif op == ">":
-                    return left_value > right_value
-                elif op == ">=":
-                    return left_value >= right_value
-                elif op == "<":
-                    return left_value < right_value
-                elif op == "<=":
-                    return left_value <= right_value
+                compare_values(op,left_value,right_value)
+
             else:
                 raise ValueError(f"サポートされていない演算: {op}")
+
+def compare_values(op,left_value,right_value):
+    comparison_operations = {
+        "==": lambda x, y: x == y,
+        "equals": lambda x, y: x == y,
+        "eq": lambda x, y: x == y,
+        "!=": lambda x, y: x != y,
+        "not_equals": lambda x, y: x != y,
+        "neq": lambda x, y: x != y,
+        ">": lambda x, y: x > y,
+        "greater_than": lambda x, y: x > y,
+        "gt": lambda x, y: x > y,
+        ">=": lambda x, y: x >= y,
+        "greater_than_or_equals": lambda x, y: x >= y,
+        "gte": lambda x, y: x >= y,
+        "<": lambda x, y: x < y,
+        "less_than": lambda x, y: x < y,
+        "lt": lambda x, y: x < y,
+        "<=": lambda x, y: x <= y,
+        "less_than_or_equals": lambda x, y: x <= y,
+        "lte": lambda x, y: x <= y
+    }
+    if op in comparison_operations:
+        return comparison_operations[op](left_value,right_value)
+    else:
+        raise ValueError(f"サポートされていない比較演算子: {op}")

@@ -29,7 +29,7 @@ def search_un(query: str):
     return "I'm sorry, I don't understand."
 
 
-# 今回はNORDと同様に、キーマッピングの仕組みを使って説明します。
+# 今回はnodeと同様に、キーマッピングの仕組みを使って説明します。
 tools = {
     "search_function":search,
     "search_unknown":search_un
@@ -129,19 +129,22 @@ graph_settings = {
                     "workflow_type":"conditional_edge",
                     "flow_parameter":{
                         "start_key":"agent",
+                        "conditions":[
+                            {
+                                # ルーティングはここに記述します。
+                                # この例では、定義した評価関数がTrueを返した場合に"tools"を返し、
+                                # Falseを返した場合は"END"を返します。
+                                # get_graph()メソッドを呼び出したときのエッジ描画の調整は自動で行います。
+                                # 評価式の構造や利用可能な演算子はドキュメントを参照してください。# TODO ドキュメント化
+                                "expression": {
+                                    "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
+                                },
+                                "result": "tools" 
+                            },
+                            {"default": "END"} 
+                        ]
                     }
                 },
-                "settings":{
-                    "conditions":[
-                        {
-                            "expression": {
-                                "==": [{"type": "function", "name": "is_tool_message_function"}, True],
-                            },
-                            "result": "tools" # tool_callの場合
-                        },
-                        {"default": "END"} # tool_call終了後のノード,START,ENDノードへの解決が
-                    ]
-                }
             },
             {# ノーマルノード
                 "metadata" :{
@@ -164,7 +167,6 @@ def test_sample_react_agent():
     workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
 
     # workflow_builderにノードジェネレーターを登録しておきます。
-    # ここでは、gen_chatbot_agent関数をchatbot_generatorにマッピングしています。
     workflow_builder.add_node_generator("agent_node_generator",gen_agent)
     workflow_builder.add_node_generator("tool_node_generator",gen_tool_node)
 
@@ -176,21 +178,12 @@ def test_sample_react_agent():
 
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()
-
     app =  workflow.compile(checkpointer=memory,debug=False)
-
-    print("graph")
     app.get_graph(xray=10).print_ascii()
 
-    # Use the Runnable
     final_state = app.invoke(
         {"messages": [HumanMessage(content="what is the weather in sf")]},
         config={"configurable": {"thread_id": 42}}
     )
     print(final_state["messages"][-1].content)
 
-    print('-------------------------')
-    print(final_state)
-    print('-------------------------')    
-
-    assert 2==2
