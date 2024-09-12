@@ -4,7 +4,8 @@ conditions and evaluation functions.
 It includes a handler class `StaticConditionalHandler` to manage the conditions and evaluate them.
 """
 
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Literal
+from langgraph.graph import START,END
 
 def add_static_conditional_edge(metadata,settings,evaluate_functions):
     """
@@ -65,6 +66,11 @@ class StaticConditionalHandler:
         """
         result = self.evaluate_conditions(state, self.conditions, config)
 
+        # TODO リファクタリング "END"をENDに変換する処理を最適化
+        print(f"result:{result}")
+        if result == "END":
+            return END
+
         return result
 
     def _extract_literals(self, conditions: List[Dict[str, Union[Dict, str]]]) -> str:
@@ -93,7 +99,11 @@ class StaticConditionalHandler:
         Returns:
             type: The return type for the call_edge method.
         """
-        literal_type_str = f"Literal[{', '.join([f'\"{result}\"' for result in self.end_points])}]"
+        # TODO リファクタリング "END"をENDに変換する処理を最適化
+        literal_type_str_oridinal = f"Literal[{', '.join([f'\"{result}\"' for result in self.end_points])}]"
+        print(f"literal_type_str_oridinal:{literal_type_str_oridinal}")
+        literal_type_str = literal_type_str_oridinal.replace('\"END\"', 'END')
+        print(f"literal_type_str:{literal_type_str}")
         return eval(literal_type_str)
 
     def evaluate_conditions(self, state, conditions, config):
