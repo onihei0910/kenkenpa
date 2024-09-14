@@ -72,7 +72,7 @@ jobs:
 workflows:
   build:
     jobs:
-      - production-build-and-test:
+      - production-build-and-test
       #- pause_workflow:
       #    requires:
       #      - production-build-and-test
