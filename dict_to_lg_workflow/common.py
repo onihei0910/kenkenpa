@@ -1,8 +1,8 @@
 from langgraph.graph import START,END
 
-def convert_key(point:str):
-    if point == 'START':
+def convert_key(key: str):
+    if key == 'START':
         return START
-    if point == 'END':
+    if key == 'END':
         return END
-    return point
+    return key

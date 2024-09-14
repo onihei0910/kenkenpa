@@ -1,6 +1,6 @@
 """
-このテストは、LangGraphのReact-Agentを例にdict_to_lg_workflowの使用方法を説明します。
-https://langchain-ai.github.io/langgraph/
+このテストでは、サブグラフの設定方法を説明します。
+react_agent_test.pyで説明したreact-agentをサブグラフとして設定します。
 """
 from langchain_core.messages import HumanMessage
 from langchain_core.pydantic_v1 import BaseModel
@@ -11,7 +11,6 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
 
 from dict_to_lg_workflow.builder import WorkFlowBuilder
-
 
 # Toolノードは通常通り定義します。
 @tool
@@ -46,7 +45,6 @@ def gen_tool_node(metadata,settings):
     tool_node = ToolNode(tool_functions)
     return tool_node
 
-# agentノードのジェネレーター関数を定義します。
 def gen_agent(metadata,settings):
     functions = settings['functions']
 
@@ -79,11 +77,13 @@ def is_tool_message(state, config, **kwargs):
         return True
     return False
 
-graph_settings = {
+# サブグラフの設定を定義します。
+# この定義はreact_agent_test.pyと全く同じものです。
+react_agent_subgraph = {
     "metadata": {
         "workflow_type":"workflow",
         "flow_parameter":{
-            "name":"React-Agent",
+            "name":"React-Agent-Subgraph",
         }
     },
     "flows":[
@@ -131,11 +131,6 @@ graph_settings = {
                     "start_key":"agent",
                     "conditions":[
                         {
-                            # ルーティングはここに記述します。
-                            # この例では、定義した評価関数がTrueを返した場合に"tools"を返し、
-                            # Falseを返した場合は"END"を返します。
-                            # get_graph()メソッドを呼び出したときのエッジ描画の調整は自動で行います。
-                            # 評価式の構造や利用可能な演算子はドキュメントを参照してください。# TODO ドキュメント化
                             "expression": {
                                 "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
                             },
@@ -158,10 +153,42 @@ graph_settings = {
     ]
 }
 
+# 親グラフの設定を定義します。
+graph_settings = {
+    "metadata": {
+        "workflow_type":"workflow",
+        "flow_parameter":{
+            "name":"React-Agent",
+        }
+    },
+    "flows":[
+        react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
+        {# ノーマルエッジ
+            "metadata" :{
+                "workflow_type":"edge",
+                "flow_parameter":{
+                    "start_key":"START",
+                    "end_key":"React-Agent-Subgraph"
+                }
+            },
+        },
+        {# ノーマルエッジ
+            "metadata" :{
+                "workflow_type":"edge",
+                "flow_parameter":{
+                    "start_key":"React-Agent-Subgraph",
+                    "end_key":"END"
+                }
+            },
+        },
+    ]
+}
+
 class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
     dummy : str = "dummy config"
 
 def test_sample_react_agent():
+
     # graph_settingsからWorkFlowBuilderを生成します。
     workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
 
@@ -178,9 +205,11 @@ def test_sample_react_agent():
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()
     app =  workflow.compile(checkpointer=memory,debug=False)
+    print(f"\ngraph(xray=0)")
+    app.get_graph(xray=0).print_ascii()
 
-    print(f"\ngraph")
-    app.get_graph(xray=10).print_ascii()
+    print(f"\ngraph(xray=1)")
+    app.get_graph(xray=1).print_ascii()
 
     final_state = app.invoke(
         {"messages": [HumanMessage(content="what is the weather in sf")]},
