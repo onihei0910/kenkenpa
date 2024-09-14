@@ -1,0 +1,107 @@
+version: 2.1
+orbs:
+  python: circleci/python@2.1.1
+  codecov: codecov/codecov@1.0.2
+_test-body: &test-body
+    resource_class: small
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: build
+          command: poetry build
+      - run:
+          name: Run tests
+          command: poetry run pytest --cov=dict_to_lg_workflow --cov-report=xml
+      - run:
+          name: install potery audit 
+          command: poetry self add poetry-audit-plugin
+      - run:
+          name: Run potery audit
+          command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
+jobs:
+  test-3-10: 
+    <<: *test-body
+    docker:
+      - image: cimg/python:3.10
+  test-3-11: 
+    <<: *test-body
+    docker:
+      - image: cimg/python:3.11
+  test-3-12: 
+    <<: *test-body
+    docker:
+      - image: cimg/python:3.12
+  production-build-and-test:
+    resource_class: small
+    docker:
+      - image: cimg/python:3.12.4
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: build
+          command: poetry build
+      - run:
+          name: Run tests
+          command: poetry run pytest --cov=dict_to_lg_workflow --cov-report=xml
+      - codecov/upload:
+          file: ./coverage.xml
+      - run:
+          name: install potery audit 
+          command: poetry self add poetry-audit-plugin
+      - run:
+          name: Run potery audit
+          command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
+  #deploy:
+  #  resource_class: small
+  #  docker:
+  #    - image: cimg/python:3.12.4
+  #  steps:
+  #    - checkout
+  #    - python/install-packages:
+  #        pkg-manager: poetry
+  #    - run:
+  #        name: build
+  #        command: poetry build
+  #    - run:
+  #        name: deploy
+  #        command: poetry publish --repository dict_to_lg_workflow 
+workflows:
+  build:
+    jobs:
+      - production-build-and-test
+      #- pause_workflow:
+      #    requires:
+      #      - production-build-and-test
+      #    type: approval
+      #    filters:
+      #      branches:
+      #        only:
+      #          - main
+      #- deploy:
+      #    requires:
+      #      - pause_workflow
+      #    filters:
+      #      branches:
+      #        only:
+      #          - main
+  multi-version-test:
+    jobs:
+      - test-3-10:
+          filters:
+            branches:
+              ignore:
+                - main
+      - test-3-11:
+          filters:
+            branches:
+              ignore:
+                - main
+      - test-3-12:
+          filters:
+            branches:
+              ignore:
+                - main
