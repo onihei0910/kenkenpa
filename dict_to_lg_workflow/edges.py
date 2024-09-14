@@ -62,24 +62,6 @@ class StaticConditionalHandler:
 
         return convert_key(result)
 
-    def _extract_literals(self, conditions: List[Dict[str, Union[Dict, str]]]) -> str:
-        """
-        Extracts literal values from the conditions.
-
-        Args:
-            conditions (list): A list of conditions to extract literals from.
-
-        Returns:
-            list: A list of literal values extracted from the conditions.
-        """
-        results = []
-        for condition in conditions:
-            if 'result' in condition:
-                results.append(condition['result'])
-            elif 'default' in condition:
-                results.append(condition['default'])
-        return results
-
     def evaluate_conditions(self, state, conditions, config):
         """
         Evaluates the conditions based on the given state and config, and returns the result.
@@ -155,10 +137,10 @@ class StaticConditionalHandler:
                 left_item, right_item = args
                 left_value = get_value(left_item)
                 right_value = get_value(right_item)
-                compare_values(op,left_value,right_value)
-
+                return compare_values(op,left_value,right_value)
             else:
                 raise ValueError(f"サポートされていない演算: {op}")
+            
 
 def compare_values(op,left_value,right_value):
     comparison_operations = {

@@ -32,7 +32,7 @@ graph_settings = {
     "workflows":
     {
         "metadata":{
-            "node_type":"workflow",
+            "workflow_type":"workflow",
             "flow_parameter":{
                 "name":"React-Agent",
             }
