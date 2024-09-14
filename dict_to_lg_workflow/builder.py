@@ -49,8 +49,7 @@ class WorkFlowBuilder():
         Returns:
             Any: The constructed workflow.
         """
-        workflow = self.graph_settings.get("workflows")
-        self.workflow = self._add_workflow(workflow)
+        self.workflow = self._add_workflow(self.graph_settings)
         return self.workflow
 
     def add_node_generator(self,name:str,function):

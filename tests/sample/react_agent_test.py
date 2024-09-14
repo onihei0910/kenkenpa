@@ -46,6 +46,7 @@ def gen_tool_node(metadata,settings):
     tool_node = ToolNode(tool_functions)
     return tool_node
 
+# agentノードのジェネレーター関数を定義します。
 def gen_agent(metadata,settings):
     functions = settings['functions']
 
@@ -79,84 +80,82 @@ def is_tool_message(state, config, **kwargs):
     return False
 
 graph_settings = {
-    "workflows": {
-        "metadata": {
-            "workflow_type":"workflow",
-            "flow_parameter":{
-                "name":"React-Agent",
-            }
+    "metadata": {
+        "workflow_type":"workflow",
+        "flow_parameter":{
+            "name":"React-Agent",
+        }
+    },
+    "flows":[
+        {
+            "metadata" : {
+                "workflow_type":"node",
+                "flow_parameter":{
+                    "name":"agent",
+                    "generator":"agent_node_generator",
+                }
+            },
+            "settings" : {
+                "functions":[
+                    "search_function",
+                ],
+            },
         },
-        "flows":[
-            {
-                "metadata" : {
-                    "workflow_type":"node",
-                    "flow_parameter":{
-                        "name":"agent",
-                        "generator":"agent_node_generator",
-                    }
-                },
-                "settings" : {
-                    "functions":[
-                        "search_function",
-                    ],
-                },
+        {
+            "metadata" : {
+                "workflow_type":"node",
+                "flow_parameter":{
+                    "name":"tools",
+                    "generator":"tool_node_generator",
+                }
             },
-            {
-                "metadata" : {
-                    "workflow_type":"node",
-                    "flow_parameter":{
-                        "name":"tools",
-                        "generator":"tool_node_generator",
-                    }
-                },
-                "settings":{
-                    "functions":[
-                        "search_function",
-                    ],
-                },
+            "settings":{
+                "functions":[
+                    "search_function",
+                ],
             },
-            {# ノーマルエッジ
-                "metadata" :{
-                    "workflow_type":"edge",
-                    "flow_parameter":{
-                        "start_key":"START",
-                        "end_key":"agent"
-                    }
-                },
+        },
+        {# ノーマルエッジ
+            "metadata" :{
+                "workflow_type":"edge",
+                "flow_parameter":{
+                    "start_key":"START",
+                    "end_key":"agent"
+                }
             },
-            {# 静的条件付きエッジ
-                "metadata" :{
-                    "workflow_type":"conditional_edge",
-                    "flow_parameter":{
-                        "start_key":"agent",
-                        "conditions":[
-                            {
-                                # ルーティングはここに記述します。
-                                # この例では、定義した評価関数がTrueを返した場合に"tools"を返し、
-                                # Falseを返した場合は"END"を返します。
-                                # get_graph()メソッドを呼び出したときのエッジ描画の調整は自動で行います。
-                                # 評価式の構造や利用可能な演算子はドキュメントを参照してください。# TODO ドキュメント化
-                                "expression": {
-                                    "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
-                                },
-                                "result": "tools" 
+        },
+        {# 静的条件付きエッジ
+            "metadata" :{
+                "workflow_type":"conditional_edge",
+                "flow_parameter":{
+                    "start_key":"agent",
+                    "conditions":[
+                        {
+                            # ルーティングはここに記述します。
+                            # この例では、定義した評価関数がTrueを返した場合に"tools"を返し、
+                            # Falseを返した場合は"END"を返します。
+                            # get_graph()メソッドを呼び出したときのエッジ描画の調整は自動で行います。
+                            # 評価式の構造や利用可能な演算子はドキュメントを参照してください。# TODO ドキュメント化
+                            "expression": {
+                                "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
                             },
-                            {"default": "END"} 
-                        ]
-                    }
-                },
+                            "result": "tools" 
+                        },
+                        {"default": "END"} 
+                    ]
+                }
             },
-            {# ノーマルノード
-                "metadata" :{
-                    "workflow_type":"edge",
-                    "flow_parameter":{
-                        "start_key":"tools",
-                        "end_key":"agent"
-                    }
-                },
+        },
+        {# ノーマルノード
+            "metadata" :{
+                "workflow_type":"edge",
+                "flow_parameter":{
+                    "start_key":"tools",
+                    "end_key":"agent"
+                }
             },
-        ]
-    }
+        },
+    ]
 }
 
 class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
@@ -179,6 +178,8 @@ def test_sample_react_agent():
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()
     app =  workflow.compile(checkpointer=memory,debug=False)
+
+    print(f"\ngraph")
     app.get_graph(xray=10).print_ascii()
 
     final_state = app.invoke(

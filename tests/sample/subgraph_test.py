@@ -153,37 +153,35 @@ react_agent_subgraph = {
     ]
 }
 
-
+# 親グラフの設定を定義します。
 graph_settings = {
-    "workflows": {
-        "metadata": {
-            "node_type":"workflow",
-            "flow_parameter":{
-                "name":"React-Agent",
-            }
+    "metadata": {
+        "workflow_type":"workflow",
+        "flow_parameter":{
+            "name":"React-Agent",
+        }
+    },
+    "flows":[
+        react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
+        {# ノーマルエッジ
+            "metadata" :{
+                "workflow_type":"edge",
+                "flow_parameter":{
+                    "start_key":"START",
+                    "end_key":"React-Agent-Subgraph"
+                }
+            },
         },
-        "flows":[
-            react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
-            {# ノーマルエッジ
-                "metadata" :{
-                    "workflow_type":"edge",
-                    "flow_parameter":{
-                        "start_key":"START",
-                        "end_key":"React-Agent-Subgraph"
-                    }
-                },
+        {# ノーマルエッジ
+            "metadata" :{
+                "workflow_type":"edge",
+                "flow_parameter":{
+                    "start_key":"React-Agent-Subgraph",
+                    "end_key":"END"
+                }
             },
-            {# ノーマルエッジ
-                "metadata" :{
-                    "workflow_type":"edge",
-                    "flow_parameter":{
-                        "start_key":"React-Agent-Subgraph",
-                        "end_key":"END"
-                    }
-                },
-            },
-        ]
-    }
+        },
+    ]
 }
 
 class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
@@ -207,7 +205,11 @@ def test_sample_react_agent():
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()
     app =  workflow.compile(checkpointer=memory,debug=False)
+    print(f"\ngraph(xray=0)")
     app.get_graph(xray=0).print_ascii()
+
+    print(f"\ngraph(xray=1)")
+    app.get_graph(xray=1).print_ascii()
 
     final_state = app.invoke(
         {"messages": [HumanMessage(content="what is the weather in sf")]},
