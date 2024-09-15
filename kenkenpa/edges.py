@@ -5,7 +5,7 @@ It includes a handler class `StaticConditionalHandler` to manage the conditions 
 """
 
 from typing import List, Dict, Union
-from dict_to_lg_workflow.common import convert_key
+from kenkenpa.common import convert_key
 
 def add_static_conditional_edge(metadata,settings,evaluate_functions):
     """
