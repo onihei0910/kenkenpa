@@ -108,38 +108,20 @@ graph_settings = {
             },
             "settings" : {"node_secret":"I'm D"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
-        { # normal_edge a -> b
+        { # normal_edge a -> b,c
             "metadata" :{
                 "workflow_type":"edge",
                 "flow_parameter": {
                     "start_key":"a",
-                    "end_key":"b"
+                    "end_key":["b","c"],
                 }
             },
         },
-        { # normal_edge a -> c
+        { # normal_edge b,c -> d
             "metadata" :{
                 "workflow_type":"edge",
                 "flow_parameter": {
-                    "start_key":"a",
-                    "end_key":"c"
-                }
-            },
-        },
-        { # normal_edge b -> d
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":"b",
-                    "end_key":"d"
-                }
-            },
-        },
-        { # normal_edge c -> d
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":"c",
+                    "start_key":["b","c"],
                     "end_key":"d"
                 }
             },
@@ -159,7 +141,6 @@ graph_settings = {
 class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
     dummy : str = "dummy config"
 
-
 def test_parallel_node():
 
     # graph_settingsからWorkFlowBuilderを生成します。
@@ -178,6 +159,8 @@ def test_parallel_node():
     workflow = workflow_builder.getworkflow()
 
     graph = workflow.compile() 
+
+    print(f"\ngraph")
     graph.get_graph().print_ascii()
 
     graph.invoke({"aggregate": []}, {"configurable": {"thread_id": "foo"}})

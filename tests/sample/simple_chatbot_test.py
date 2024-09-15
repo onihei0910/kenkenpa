@@ -99,7 +99,7 @@ def test_sample_simple_chatbot():
 
     app =  workflow.compile(checkpointer=memory,debug=False)
 
-    print("graph")
+    print(f"\ngraph")
     app.get_graph(xray=10).print_ascii()
 
     config = {"configurable": {"thread_id": "1"}}
