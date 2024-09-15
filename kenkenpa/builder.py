@@ -9,7 +9,7 @@ from langgraph.graph import  StateGraph
 
 from kenkenpa.state import StateBuilder
 from kenkenpa.edges import add_static_conditional_edge
-from kenkenpa.common import convert_key
+from kenkenpa.common import convert_key,to_list_key
 
 class WorkFlowBuilder():
     """
@@ -126,12 +126,11 @@ class WorkFlowBuilder():
                 conditions = metadata['flow_parameter']['conditions']
                 
                 return_types = extract_literals(conditions)
-                path_map = [convert_key(type_str) for type_str in return_types]
 
                 workflow.add_conditional_edges(
                     source = start_key,
                     path = edge_function,
-                    path_map = path_map
+                    path_map = return_types
                 )
 
         return workflow
@@ -183,9 +182,9 @@ def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
     results = []
     for condition in conditions:
         if 'result' in condition:
-            results.append(condition['result'])
+            results.extend(to_list_key(condition['result']))
         elif 'default' in condition:
-            results.append(condition['default'])
+            results.extend(to_list_key(condition['default']))
     return results
 
 def get_metadata(settings):
@@ -238,17 +237,6 @@ def get_flow_parameter(settings):
     """
     metadata = get_metadata(settings)
     return metadata.get('flow_parameter',{})
-
-def to_list_key(keys:Dict[str, Union[str, List[str]]]):
-    key_list = []
-    if isinstance(keys, str):
-        key_list.append(convert_key(keys))
-        return key_list
-    
-    for key in keys:
-        key_list.append(convert_key(key))
-
-    return key_list
 
 def validate_keys(
         start_key: Dict[str, Union[str, List[str]]],

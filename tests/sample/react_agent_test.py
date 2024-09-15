@@ -148,7 +148,7 @@ graph_settings = {
                             "expression": {
                                 "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
                             },
-                            "result": "tools" 
+                            "result": "tools"
                         },
                         {"default": "END"} 
                     ]
