@@ -3,9 +3,7 @@ This module provides functionality to add static conditional edges based on give
 conditions and evaluation functions.
 It includes a handler class `StaticConditionalHandler` to manage the conditions and evaluate them.
 """
-
-from typing import List, Dict, Union
-from kenkenpa.common import convert_key
+from kenkenpa.common import convert_key,to_list_key
 
 def add_static_conditional_edge(metadata,settings,evaluate_functions):
     """
@@ -58,9 +56,8 @@ class StaticConditionalHandler:
         Returns:
             str: The result of the evaluated condition.
         """
-        result = self.evaluate_conditions(state, self.conditions, config)
-
-        return convert_key(result)
+        results = self.evaluate_conditions(state, self.conditions, config)
+        return results
 
     def evaluate_conditions(self, state, conditions, config):
         """
@@ -77,15 +74,24 @@ class StaticConditionalHandler:
         Raises:
             ValueError: If no matching condition is found and no default function is provided.
         """
+        results = []
         for condition in conditions:
             if "expression" in condition and self.evaluate_expr(
                 state, condition["expression"], config
                 ):
-                return condition["result"]
+                
+                results.extend(to_list_key(condition["result"]))
+        if results:
+            return results
+
         # どの条件も一致しない場合、デフォルトの関数を返す
         for condition in conditions:
             if "default" in condition:
-                return condition["default"]
+                results.extend(to_list_key(condition["default"]))
+        
+        if results:
+            return results
+            
         raise ValueError("一致する条件が見つからず、デフォルト関数が提供されていません")
 
     def evaluate_expr(self,state, expr, config):
@@ -120,7 +126,7 @@ class StaticConditionalHandler:
                 else:
                     raise ValueError(f"サポートされていないタイプ: {item['type']}")
             else:
-                return item  # スカラー値
+                return item
 
         for op, args in expr.items():
             if op == "and":

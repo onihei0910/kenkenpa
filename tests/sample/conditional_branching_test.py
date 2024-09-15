@@ -1,6 +1,6 @@
 """
-このテストは、LangGraphの"Conditional Branching"を例にkenkenpaの使用方法を説明します。
-https://langchain-ai.github.io/langgraph/how-tos/branching/#conditional-branching
+このテストは、LangGraphの"Parallel node fan-out and fan-in"を例にkenkenpaの使用方法を説明します。
+https://langchain-ai.github.io/langgraph/how-tos/branching/
 """
 
 import operator
@@ -10,9 +10,16 @@ from langchain_core.pydantic_v1 import BaseModel
 from kenkenpa.builder import WorkFlowBuilder
 
 # Stateは定義しません。graph_settingsの中で定義します。
-# class State(TypedDict):
+#class State(TypedDict):
     # The operator.add reducer fn makes this append-only
     # aggregate: Annotated[list, operator.add]
+    # which: str
+
+# stateを参照するconditional edgeはgraph_settingsの中で定義するため、これも定義しません。
+#def route_bc_or_cd(state: State) -> Sequence[str]:
+    #if state["which"] == "cd":
+    #    return ["c", "d"]
+    #return ["b", "c"]
 
 # ReturnNodeValueを返すジェネレーター関数を定義します。
 def gen_return_node_value(metadata,settings):
@@ -26,20 +33,6 @@ def gen_return_node_value(metadata,settings):
             return {"aggregate": [self._value]}
     
     object = ReturnNodeValue(settings['node_secret'])
-    
-    # graph_settingsの中で、以下のようにジェネレーター関数に渡すデータを定義できます。
-    #{ 
-    #    "metadata" : {
-    #        "workflow_type":"node",
-    #        "flow_parameter": {
-    #            "name":"a",
-    #            "generator":"gen_return_node_value", 
-    #        }
-    #    },
-    #    "settings" : {"node_secret":"I'm A"},  
-    # ,
-
-    #return object.__call__ # TODO オブジェクトごと返すパターン。
     return object
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
@@ -50,16 +43,19 @@ graph_settings = {
             "name":"Parallel-node",
         }
     },
-    # state"aggregate"はここで設定します。
     "state" : [ 
         {
             "field_name": "aggregate", #フィールド名
             "type": "list", # 型
             "reducer":"add" # reducerと紐づけるキー
         },
+        {
+            "field_name": "which", #フィールド名
+            "type": "str", # 型
+        },
     ],
     "flows": [
-        { # node A
+        { # node a
             "metadata" : {
                 "workflow_type":"node",
                 "flow_parameter": {
@@ -108,29 +104,47 @@ graph_settings = {
             },
             "settings" : {"node_secret":"I'm D"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
-        { # normal_edge a -> b,c
-            "metadata" :{
-                "workflow_type":"edge",
+        { # node e
+            "metadata" : {
+                "workflow_type":"node",
                 "flow_parameter": {
+                    "name":"e",
+                    "generator":"gen_return_node_value", 
+                }
+            },
+            "settings" : {"node_secret":"I'm E"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+        },
+         {# 静的条件付きエッジ a -> b,c or c,d
+            "metadata" :{
+                "workflow_type":"conditional_edge",
+                "flow_parameter":{
                     "start_key":"a",
-                    "end_key":["b","c"],
+                    "conditions":[
+                        {
+                            "expression": {
+                                "eq": [{"type": "state_value", "name": "which"}, "cd"],
+                            },
+                            "result": ["c","d"]
+                        },
+                        {"default": ["b","c"]} 
+                    ]
                 }
             },
         },
-        { # normal_edge b,c -> d
+        { # normal_edge b,c,d -> e
             "metadata" :{
                 "workflow_type":"edge",
                 "flow_parameter": {
-                    "start_key":["b","c"],
-                    "end_key":"d"
+                    "start_key":["b","c","d"],
+                    "end_key":"e"
                 }
             },
         },
-        { # normal_edge d -> END
+        { # normal_edge e -> END
             "metadata" :{
                 "workflow_type":"edge",
                 "flow_parameter": {
-                    "start_key":"d",
+                    "start_key":"e",
                     "end_key":"END"
                 }
             },
@@ -141,7 +155,7 @@ graph_settings = {
 class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
     dummy : str = "dummy config"
 
-def test_parallel_node():
+def test_conditional_branching():
 
     # graph_settingsからWorkFlowBuilderを生成します。
     workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
@@ -163,8 +177,11 @@ def test_parallel_node():
     print(f"\ngraph")
     graph.get_graph().print_ascii()
 
-    graph.invoke({"aggregate": []}, {"configurable": {"thread_id": "foo"}})
+    print('graph.invoke({"aggregate": [],"which":"bc"}, {"configurable": {"thread_id": "foo"}})')
+    graph.invoke({"aggregate": [],"which":"bc"}, {"configurable": {"thread_id": "foo"}})
 
+    print('graph.invoke({"aggregate": [],"which":"cd"}, {"configurable": {"thread_id": "foo"}})')
+    graph.invoke({"aggregate": [],"which":"cd"}, {"configurable": {"thread_id": "foo"}})
     # WorkFlowBuilderでは以下の型が基本型として事前に登録されています。
     # "int":int,
     # "float":float,
