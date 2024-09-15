@@ -3,14 +3,11 @@ This module provides functionality to build workflows using a state graph.
 It includes the `WorkFlowBuilder` class which allows adding node generators,
 evaluation functions, and constructing workflows based on given settings.
 """
-import types
-from typing import Annotated, Any, List, Dict, Union
+from typing import List, Dict, Union
 
-from langchain_core.messages import AnyMessage
-from langchain_core.pydantic_v1 import BaseModel, Field
+from langgraph.graph import  StateGraph
 
-from langgraph.graph import  StateGraph, add_messages
-
+from dict_to_lg_workflow.state import StateBuilder
 from dict_to_lg_workflow.edges import add_static_conditional_edge
 from dict_to_lg_workflow.common import convert_key
 
@@ -41,6 +38,7 @@ class WorkFlowBuilder():
         self.evaluete_functions = {}
         self.workflow = {}
         self.custom_state = None
+        self.statebuilder = StateBuilder()
 
     def getworkflow(self):
         """
@@ -72,6 +70,12 @@ class WorkFlowBuilder():
         """
         self.evaluete_functions[name] = function
 
+    def add_reducer(self,name:str,function):
+        self.statebuilder.add_reducer(name,function)
+
+    def add_type(self,name:str,type):
+        self.statebuilder.add_type(name,type)
+
     def _add_workflow(self,workflow_settings):
         """
         Recursively constructs a workflow based on the provided workflow settings.
@@ -82,7 +86,7 @@ class WorkFlowBuilder():
         Returns:
             StateGraph: The constructed state graph for the workflow.
         """
-        self.custom_state = create_custom_state(workflow_settings.get("state",[]))
+        self.custom_state = self.statebuilder.gen_state(workflow_settings.get("state",[]))
         workflow = StateGraph(self.custom_state,config_schema=self.config_schema)
 
         for flow in workflow_settings.get("flows",[]):
@@ -163,6 +167,7 @@ class WorkFlowBuilder():
             settings = settings,
             evaluate_functions = self.evaluete_functions
             )
+    
 
 
 def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
@@ -235,53 +240,3 @@ def get_flow_parameter(settings):
 
 
 
-def create_custom_state(params):
-    """
-    Factory function to create a CustomState class with custom defaults and descriptions.
-
-    Args:
-        params (List[Dict[str, Any]]): A list of dictionaries containing settings for each field.
-
-    Returns:
-        Type[BaseModel]: The created custom state class.
-    """
-    # アノテーション用の辞書を作成
-    annotations = {
-        param['field_name']: str if param['type'] == 'str' else int
-        for param in params
-    }
-    annotations['messages'] = Annotated[list[AnyMessage], add_messages]
-
-    fields = {
-        param['field_name']: Field(default=param['default'], description=param['description'])
-        for param in params
-    }
-
-    # 各フィールドのデフォルト値と説明を保存
-    field_info = {
-        param['field_name']: {'default': param['default'], 'description': param['description']}
-        for param in params
-    }
-
-    # コンストラクタでデフォルト値を初期化
-    def __init__(self, **kwargs):
-        for field in self.__annotations__:
-            kwargs[field] = kwargs.get(field) or field_info[field]['default']
-
-        super(self.__class__, self).__init__(**kwargs)
-
-    # クラスの追加メソッドを定義
-    def get(self, key: str, default: List[Any] = None) -> Any:
-        return getattr(self, key, default)
-
-    new_class = types.new_class(
-        'CustomState',
-        (BaseModel,),
-        exec_body=lambda ns: ns.update({
-            '__annotations__': annotations,
-            **fields,
-            'get': get,
-            '__init__': __init__
-        })
-    )
-    return new_class
