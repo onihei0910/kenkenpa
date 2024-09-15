@@ -5,8 +5,10 @@ react_agent_test.pyで説明したreact-agentをサブグラフとして設定�
 from langchain_core.messages import HumanMessage
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
+from langchain_core.messages import AnyMessage
 
+from langchain_openai import ChatOpenAI
+from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
 
@@ -61,7 +63,7 @@ def gen_agent(metadata,settings):
 
     # Define the function that calls the model
     def call_model(state):
-        messages = state.messages
+        messages = state['messages']
         response = model.invoke(messages)
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
@@ -71,7 +73,7 @@ def gen_agent(metadata,settings):
 # should_continueの代わりに最終メッセージがtool_callsかを評価する関数を定義します。
 def is_tool_message(state, config, **kwargs):
     """最後のメッセージがtool_callsかを評価します。"""
-    messages = state.messages
+    messages = state['messages']
     last_message = messages[-1]
     if last_message.tool_calls:
         return True
@@ -86,6 +88,13 @@ react_agent_subgraph = {
             "name":"React-Agent-Subgraph",
         }
     },
+    "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+        {
+            "field_name": "messages",
+            "type": "AnyMessage",
+            "reducer":"add_messages"
+        },
+    ],
     "flows":[
         {
             "metadata" : {
@@ -161,6 +170,13 @@ graph_settings = {
             "name":"React-Agent",
         }
     },
+    "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+        {
+            "field_name": "messages",
+            "type": "AnyMessage",
+            "reducer":"add_messages"
+        },
+    ],
     "flows":[
         react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
         {# ノーマルエッジ
@@ -187,10 +203,15 @@ graph_settings = {
 class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
     dummy : str = "dummy config"
 
-def test_sample_react_agent():
+def test_sample_subgraph():
 
     # graph_settingsからWorkFlowBuilderを生成します。
     workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
+
+    # 使用する型を登録します。
+    workflow_builder.add_type("AnyMessage",AnyMessage)
+    # 使用するreducerを登録します。
+    workflow_builder.add_reducer("add_messages",add_messages)
 
     # workflow_builderにノードジェネレーターを登録しておきます。
     workflow_builder.add_node_generator("agent_node_generator",gen_agent)

@@ -3,8 +3,10 @@
 https://langchain-ai.github.io/langgraph/tutorials/introduction/
 """
 from langchain_core.pydantic_v1 import BaseModel
+from langchain_core.messages import AnyMessage
 from langchain_openai import ChatOpenAI
 
+from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
 from dict_to_lg_workflow.builder import WorkFlowBuilder
@@ -19,8 +21,7 @@ llm = ChatOpenAI(
 
 # Nodeとなるchatbot関数を定義します。ここはQuickStart通りです。
 def chatbot(state,config):
-    # TODO 制約:stateのプロパティの取得はgetメソッドを利用しなければならない。(langchain_core.pydantic_v1を使用しているため。)
-    return {"messages":[llm.invoke(state.get("messages"))]}
+    return {"messages":[llm.invoke(state["messages"])]}
 
 # chatbotとは別に、定義したchatbotを返すジェネレーター関数を定義します。
 def gen_chatbot_agent(metadata,settings):
@@ -35,14 +36,13 @@ graph_settings = {
             "name":"React-Agent",
         }
     },
-    #"state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
-    #    {
-    #        "field_name": "test",
-    #        "default": "default_value",
-    #        "description": "state_test",
-    #        "type": "str"
-    #    },
-    #],
+    "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+        {
+            "field_name": "messages",
+            "type": "AnyMessage",
+            "reducer":"add_messages"
+        },
+    ],
     "flows": [
         { # node chatbotの定義です。
             "metadata" : {
@@ -81,6 +81,11 @@ def test_sample_simple_chatbot():
     # graph_settingsからWorkFlowBuilderを生成します。
     workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
 
+    # 使用する型を登録します。
+    workflow_builder.add_type("AnyMessage",AnyMessage)
+    # 使用するreducerを登録します。
+    workflow_builder.add_reducer("add_messages",add_messages)
+
     # workflow_builderにノードジェネレーターを登録しておきます。
     # ここでは、gen_chatbot_agent関数をchatbot_generatorにマッピングしています。
     # graph_settingsに記載したキー値と一致しているか確認してください。
@@ -107,17 +112,7 @@ def test_sample_simple_chatbot():
     )
     for event in events:
         number_of_events = number_of_events + 1
-        event["messages"][-1].pretty_print()
-
-    # 注意
-    # state内で使用しているmessagesはdict_to_lg_workflowの中で自動生成されます。
-    # messagesの定義は以下に相当します。
-    # TODO messages: Annotated[Sequence[BaseMessage], operator.add]への変更を検討
-    # ``` python
-    # from langchain_core.pydantic_v1 import BaseModel
-    # 
-    # def CustomState(BaseModel):
-    #     messages: Annotated[list[AnyMessage], add_messages]
-    # ````
+        #event["messages"][-1].pretty_print()
+        print(event["messages"][-1])
 
     assert number_of_events == 2
