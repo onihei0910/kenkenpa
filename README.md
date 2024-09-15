@@ -1,2 +1,3 @@
-# dict_to_lg_workflow
+# kenkenpa
+
 Generate a StateGraph of LangGraph that can be compiled from dictionary data.

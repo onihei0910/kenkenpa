@@ -1,5 +1,5 @@
 """
-このテストは、LangGraphのsimple chatbotを例にdict_to_lg_workflowの使用方法を説明します。
+このテストは、LangGraphのsimple chatbotを例にkenkenpaの使用方法を説明します。
 https://langchain-ai.github.io/langgraph/tutorials/introduction/
 """
 from langchain_core.pydantic_v1 import BaseModel
@@ -9,7 +9,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
-from dict_to_lg_workflow.builder import WorkFlowBuilder
+from kenkenpa.builder import WorkFlowBuilder
 
 class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
     dummy : str = "dummy config"

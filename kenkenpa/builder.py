@@ -7,9 +7,9 @@ from typing import List, Dict, Union
 
 from langgraph.graph import  StateGraph
 
-from dict_to_lg_workflow.state import StateBuilder
-from dict_to_lg_workflow.edges import add_static_conditional_edge
-from dict_to_lg_workflow.common import convert_key
+from kenkenpa.state import StateBuilder
+from kenkenpa.edges import add_static_conditional_edge
+from kenkenpa.common import convert_key
 
 class WorkFlowBuilder():
     """

@@ -1,6 +1,5 @@
 """
-このテストは、LangGraphの"Parallel node fan-out and fan-in"を例に
-dict_to_lg_workflowの使用方法を説明します。
+このテストは、LangGraphの"Parallel node fan-out and fan-in"を例にkenkenpaの使用方法を説明します。
 https://langchain-ai.github.io/langgraph/how-tos/branching/
 """
 
@@ -8,7 +7,7 @@ import operator
 from typing import Any
 from langchain_core.pydantic_v1 import BaseModel
 
-from dict_to_lg_workflow.builder import WorkFlowBuilder
+from kenkenpa.builder import WorkFlowBuilder
 
 # Stateは定義しません。graph_settingsの中で定義します。
 # class State(TypedDict):

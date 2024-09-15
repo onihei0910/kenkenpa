@@ -12,7 +12,7 @@ from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
 
-from dict_to_lg_workflow.builder import WorkFlowBuilder
+from kenkenpa.builder import WorkFlowBuilder
 
 # Toolノードは通常通り定義します。
 @tool

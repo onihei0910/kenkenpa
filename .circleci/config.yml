@@ -13,7 +13,7 @@ _test-body: &test-body
           command: poetry build
       - run:
           name: Run tests
-          command: poetry run pytest --cov=dict_to_lg_workflow --cov-report=xml
+          command: poetry run pytest --cov=kenkenpa --cov-report=xml
       - run:
           name: install potery audit 
           command: poetry self add poetry-audit-plugin
@@ -46,7 +46,7 @@ jobs:
           command: poetry build
       - run:
           name: Run tests
-          command: poetry run pytest --cov=dict_to_lg_workflow --cov-report=xml
+          command: poetry run pytest --cov=kenkenpa --cov-report=xml
       - codecov/upload:
           file: ./coverage.xml
       - run:
@@ -68,7 +68,7 @@ jobs:
   #        command: poetry build
   #    - run:
   #        name: deploy
-  #        command: poetry publish --repository dict_to_lg_workflow 
+  #        command: poetry publish
 workflows:
   build:
     jobs:
