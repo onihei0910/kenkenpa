@@ -59,16 +59,16 @@ class StateGraphBuilder():
         stategraph = StateGraph(self.custom_state,config_schema=self.config_schema)
 
         for flow in stategraph_settings.get("flows",[]):
-            flow_graph_type = flow.get('graph_type')
+            graph_type = flow.get('graph_type')
             flow_parameter = flow.get('flow_parameter',{})
             generator_parameter = flow.get('generator_parameter',{})
 
-            if flow_graph_type == "stategraph":
+            if graph_type == "stategraph":
                 node_name = flow_parameter['name']
                 substategraph = self._gen_stategraph(flow)
                 stategraph.add_node(node_name,substategraph.compile())
 
-            elif flow_graph_type == "node":
+            elif graph_type == "node":
                 node_name = flow_parameter['name']
                 generator = flow_parameter['generator']
 
@@ -81,7 +81,7 @@ class StateGraphBuilder():
 
                 stategraph.add_node(node_name,node_func)
 
-            elif flow_graph_type == "edge":
+            elif graph_type == "edge":
                 validate_keys(flow_parameter['start_key'],flow_parameter['end_key'])
                 
                 start_key_list = to_list_key(flow_parameter['start_key'])
@@ -94,7 +94,7 @@ class StateGraphBuilder():
                             end_key = end_key
                         )
 
-            elif flow_graph_type == "static_conditional_edge":
+            elif graph_type == "static_conditional_edge":
                 start_key = flow_parameter['start_key']
                 conditions = flow_parameter['conditions']
 
@@ -111,7 +111,7 @@ class StateGraphBuilder():
                     path_map = return_types
                 )
 
-            elif flow_graph_type == "static_conditional_entry_point":
+            elif graph_type == "static_conditional_entry_point":
                 conditions = flow_parameter['conditions']
 
                 edge_function = gen_static_conditional_edge(
