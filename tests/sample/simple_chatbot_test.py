@@ -11,9 +11,6 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from kenkenpa.builder import WorkFlowBuilder
 
-class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
-    dummy : str = "dummy config"
-
 # LLMの設定
 llm = ChatOpenAI(
     model="gpt-4o-mini"
@@ -70,7 +67,7 @@ graph_settings = {
 
 def test_sample_simple_chatbot():
     # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema)
+    workflow_builder = WorkFlowBuilder(graph_settings)
 
     # 使用する型を登録します。
     workflow_builder.add_type("AnyMessage",AnyMessage)

@@ -155,12 +155,9 @@ graph_settings = {
     ]
 }
 
-class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
-    dummy : str = "dummy config"
-
 def test_sample_react_agent():
     # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
+    workflow_builder = WorkFlowBuilder(graph_settings)
 
     # 使用する型を登録します。
     workflow_builder.add_type("AnyMessage",AnyMessage)

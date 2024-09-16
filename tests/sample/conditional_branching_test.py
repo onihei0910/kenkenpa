@@ -132,13 +132,10 @@ graph_settings = {
     ]
 }
 
-class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
-    dummy : str = "dummy config"
-
 def test_conditional_branching():
 
     # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
+    workflow_builder = WorkFlowBuilder(graph_settings)
 
     #listは基本型として予約されてます。(*1)
     #workflow_builder.add_type("list",list)  # Error
