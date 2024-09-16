@@ -81,7 +81,7 @@ def is_tool_message(state, config, **kwargs):
 # サブグラフの設定を定義します。
 # この定義はreact_agent_test.pyと全く同じものです。
 react_agent_subgraph = {
-    "workflow_type":"workflow",
+    "graph_type":"stategraph",
     "flow_parameter":{
         "name":"React-Agent-Subgraph",
         "state" : [
@@ -94,7 +94,7 @@ react_agent_subgraph = {
     },
     "flows":[
         {
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter":{
                 "name":"agent",
                 "generator":"agent_node_generator",
@@ -106,7 +106,7 @@ react_agent_subgraph = {
             },
         },
         {
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter":{
                 "name":"tools",
                 "generator":"tool_node_generator",
@@ -118,14 +118,14 @@ react_agent_subgraph = {
             },
         },
         {# ノーマルエッジ
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"START",
                 "end_key":"agent"
             },
         },
         {# 静的条件付きエッジ
-            "workflow_type":"static_conditional_edge",
+            "graph_type":"static_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
                 "conditions":[
@@ -140,7 +140,7 @@ react_agent_subgraph = {
             },
         },
         {# ノーマルノード
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"tools",
                 "end_key":"agent"
@@ -151,7 +151,7 @@ react_agent_subgraph = {
 
 # 親グラフの設定を定義します。
 graph_settings = {
-    "workflow_type":"workflow",
+    "graph_type":"stategraph",
     "flow_parameter":{
         "name":"React-Agent",
         "state" : [ 
@@ -165,14 +165,14 @@ graph_settings = {
     "flows":[
         react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
         {# ノーマルエッジ
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"START",
                 "end_key":"React-Agent-Subgraph"
             },
         },
         {# ノーマルエッジ
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"React-Agent-Subgraph",
                 "end_key":"END"
@@ -184,26 +184,26 @@ graph_settings = {
 def test_sample_subgraph():
 
     # graph_settingsからStateGraphBuilderを生成します。
-    workflow_builder = StateGraphBuilder(graph_settings)
+    stategraph_builder = StateGraphBuilder(graph_settings)
 
     # 使用する型を登録します。
-    workflow_builder.add_type("AnyMessage",AnyMessage)
+    stategraph_builder.add_type("AnyMessage",AnyMessage)
     # 使用するreducerを登録します。
-    workflow_builder.add_reducer("add_messages",add_messages)
+    stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # workflow_builderにノードジェネレーターを登録しておきます。
-    workflow_builder.add_node_generator("agent_node_generator",gen_agent)
-    workflow_builder.add_node_generator("tool_node_generator",gen_tool_node)
+    # stategraph_builderにノードジェネレーターを登録しておきます。
+    stategraph_builder.add_node_generator("agent_node_generator",gen_agent)
+    stategraph_builder.add_node_generator("tool_node_generator",gen_tool_node)
 
     # 同様に、評価関数も登録します。
-    workflow_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
+    stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
     # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.gen_stategraph()
+    stategraph = stategraph_builder.gen_stategraph()
 
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()
-    app =  workflow.compile(checkpointer=memory,debug=False)
+    app =  stategraph.compile(checkpointer=memory,debug=False)
     print(f"\ngraph(xray=0)")
     app.get_graph(xray=0).print_ascii()
 
