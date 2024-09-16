@@ -15,7 +15,7 @@ from kenkenpa.builder import WorkFlowBuilder
     # aggregate: Annotated[list, operator.add]
 
 # ReturnNodeValueを返すジェネレーター関数を定義します。
-def gen_return_node_value(metadata,settings):
+def gen_return_node_value(generator_parameter,flow_parameter):
 
     class ReturnNodeValue:
         def __init__(self, node_secret: str):
@@ -25,114 +25,83 @@ def gen_return_node_value(metadata,settings):
             print(f"Adding {self._value} to {state['aggregate']}")
             return {"aggregate": [self._value]}
     
-    object = ReturnNodeValue(settings['node_secret'])
+    object = ReturnNodeValue(generator_parameter['node_secret'])
     
-    # graph_settingsの中で、以下のようにジェネレーター関数に渡すデータを定義できます。
-    #{ 
-    #    "metadata" : {
-    #        "workflow_type":"node",
-    #        "flow_parameter": {
-    #            "name":"a",
-    #            "generator":"gen_return_node_value", 
-    #        }
-    #    },
-    #    "settings" : {"node_secret":"I'm A"},  
-    # ,
-
-    #return object.__call__ # TODO オブジェクトごと返すパターン。
     return object
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
-    "metadata":{
-        "workflow_type":"workflow",
-        "flow_parameter":{
-            "name":"Parallel-node",
-        }
+    "workflow_type":"workflow",
+    "flow_parameter":{
+        "name":"Parallel-node",
+        # state"aggregate"はここで設定します。
+        "state" : [ 
+            {
+                "field_name": "aggregate", #フィールド名
+                "type": "list", # 型
+                "reducer":"add" # reducerと紐づけるキー
+            },
+        ],
     },
-    # state"aggregate"はここで設定します。
-    "state" : [ 
-        {
-            "field_name": "aggregate", #フィールド名
-            "type": "list", # 型
-            "reducer":"add" # reducerと紐づけるキー
-        },
-    ],
     "flows": [
         { # node A
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"a",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"a",
+                "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm A"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm A"},
         },
         { # normal_edge START-> a
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"START",
-                    "end_key":"a"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"START",
+                "end_key":"a"
             },
         },
         { # node b
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"b",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"b",
+                "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm B"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm B"},
         },
         { # node c
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"c",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"c",
+                "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm C"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm C"},
         },
         { # node d
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"d",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"d",
+                "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm D"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm D"},
         },
         { # normal_edge a -> b,c
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":"a",
-                    "end_key":["b","c"],
-                }
+            "workflow_type":"edge",
+            "flow_parameter": {
+                "start_key":"a",
+                "end_key":["b","c"],
             },
         },
         { # normal_edge b,c -> d
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":["b","c"],
-                    "end_key":"d"
-                }
+            "workflow_type":"edge",
+            "flow_parameter": {
+                "start_key":["b","c"],
+                "end_key":"d"
             },
         },
         { # normal_edge d -> END
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":"d",
-                    "end_key":"END"
-                }
+            "workflow_type":"edge",
+            "flow_parameter": {
+                "start_key":"d",
+                "end_key":"END"
             },
         },
     ]

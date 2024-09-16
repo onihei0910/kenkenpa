@@ -24,54 +24,45 @@ def chatbot(state,config):
     return {"messages":[llm.invoke(state["messages"])]}
 
 # chatbotとは別に、定義したchatbotを返すジェネレーター関数を定義します。
-def gen_chatbot_agent(metadata,settings):
+def gen_chatbot_agent(generator_parameter,flow_parameter):
     """chatbot node generator"""
     return chatbot
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
-    "metadata":{
-        "workflow_type":"workflow",
-        "flow_parameter":{
-            "name":"React-Agent",
-        }
+    "workflow_type":"workflow",
+    "flow_parameter":{
+        "name":"React-Agent",
+        "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+            {
+                "field_name": "messages",
+                "type": "AnyMessage",
+                "reducer":"add_messages"
+            },
+        ],
     },
-    "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
-        {
-            "field_name": "messages",
-            "type": "AnyMessage",
-            "reducer":"add_messages"
-        },
-    ],
     "flows": [
         { # node chatbotの定義です。
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"chatbot_agent",
-                    # generatorに定義したジェネレーター関数gen_chatbot_agentとマッピングする文字列を指定します。
-                    # マッピングはコード実行時に指定します。
-                    "generator":"chatbot_generator", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"chatbot_agent",
+                # generatorに定義したジェネレーター関数gen_chatbot_agentとマッピングする文字列を指定します。
+                # マッピングはコード実行時に指定します。
+                "generator":"chatbot_generator", 
             },
-            "settings" : {}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
         { # normal_edge START-> chatbot_agent
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"START",
-                    "end_key":"chatbot_agent"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"START",
+                "end_key":"chatbot_agent"
             },
         },
         { # normal_edge chatbot_agent-> END
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":"chatbot_agent",
-                    "end_key":"END"
-                }
+            "workflow_type":"edge",
+            "flow_parameter": {
+                "start_key":"chatbot_agent",
+                "end_key":"END"
             },
         },
     ]
@@ -79,7 +70,7 @@ graph_settings = {
 
 def test_sample_simple_chatbot():
     # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
+    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema)
 
     # 使用する型を登録します。
     workflow_builder.add_type("AnyMessage",AnyMessage)
