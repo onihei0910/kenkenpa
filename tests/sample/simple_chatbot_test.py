@@ -2,8 +2,6 @@
 このテストは、LangGraphのsimple chatbotを例にkenkenpaの使用方法を説明します。
 https://langchain-ai.github.io/langgraph/tutorials/introduction/
 """
-from langchain_core.pydantic_v1 import BaseModel
-from langchain_core.messages import AnyMessage
 from langchain_openai import ChatOpenAI
 
 from langgraph.graph import  add_messages
