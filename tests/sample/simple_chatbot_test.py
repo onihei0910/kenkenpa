@@ -33,14 +33,14 @@ graph_settings = {
     "workflow_type":"workflow",
     "flow_parameter":{
         "name":"React-Agent",
+        "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+            {
+                "field_name": "messages",
+                "type": "AnyMessage",
+                "reducer":"add_messages"
+            },
+        ],
     },
-    "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
-        {
-            "field_name": "messages",
-            "type": "AnyMessage",
-            "reducer":"add_messages"
-        },
-    ],
     "flows": [
         { # node chatbotの定義です。
             "workflow_type":"node",

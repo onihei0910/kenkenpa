@@ -86,7 +86,11 @@ class WorkFlowBuilder():
         Returns:
             StateGraph: The constructed state graph for the workflow.
         """
-        self.custom_state = self.statebuilder.gen_state(workflow_settings.get("state",[]))
+        workflow_flow_parameter = workflow_settings.get("flow_parameter")
+        print(workflow_flow_parameter)
+        state = workflow_flow_parameter.get("state",[])
+
+        self.custom_state = self.statebuilder.gen_state(state)
         workflow = StateGraph(self.custom_state,config_schema=self.config_schema)
 
         for flow in workflow_settings.get("flows",[]):
@@ -142,16 +146,6 @@ class WorkFlowBuilder():
             )
 
     def _add_conditional_edge(self,conditions,settings):
-        """
-        Adds a conditional edge to the workflow based on the provided metadata and settings.
-
-        Args:
-            metadata (Any): The metadata for the conditional edge.
-            settings (Any): The settings for the conditional edge.
-
-        Returns:
-            Callable: The function to evaluate the conditional edge.
-        """
         return add_static_conditional_edge(
             conditions = conditions,
             evaluate_functions = self.evaluete_functions

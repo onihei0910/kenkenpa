@@ -85,14 +85,14 @@ react_agent_subgraph = {
     "workflow_type":"workflow",
     "flow_parameter":{
         "name":"React-Agent-Subgraph",
+        "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+            {
+                "field_name": "messages",
+                "type": "AnyMessage",
+                "reducer":"add_messages"
+            },
+        ],
     },
-    "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
-        {
-            "field_name": "messages",
-            "type": "AnyMessage",
-            "reducer":"add_messages"
-        },
-    ],
     "flows":[
         {
             "workflow_type":"node",
@@ -155,14 +155,15 @@ graph_settings = {
     "workflow_type":"workflow",
     "flow_parameter":{
         "name":"React-Agent",
+        "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+            {
+                "field_name": "messages",
+                "type": "AnyMessage",
+                "reducer":"add_messages"
+            },
+        ],
     },
-    "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
-        {
-            "field_name": "messages",
-            "type": "AnyMessage",
-            "reducer":"add_messages"
-        },
-    ],
+    
     "flows":[
         react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
         {# ノーマルエッジ

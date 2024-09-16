@@ -40,18 +40,18 @@ graph_settings = {
     "workflow_type":"workflow",
     "flow_parameter":{
         "name":"Parallel-node",
+        "state" : [ 
+            {
+                "field_name": "aggregate", #フィールド名
+                "type": "list", # 型
+                "reducer":"add" # reducerと紐づけるキー
+            },
+            {
+                "field_name": "which", #フィールド名
+                "type": "str", # 型
+            },
+        ],
     },
-    "state" : [ 
-        {
-            "field_name": "aggregate", #フィールド名
-            "type": "list", # 型
-            "reducer":"add" # reducerと紐づけるキー
-        },
-        {
-            "field_name": "which", #フィールド名
-            "type": "str", # 型
-        },
-    ],
     "flows": [
         { # node a
             "workflow_type":"node",
