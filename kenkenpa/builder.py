@@ -111,6 +111,20 @@ class StateGraphBuilder():
                     path_map = return_types
                 )
 
+            elif flow_workflow_type == "static_conditional_entry_point":
+                conditions = flow_parameter['conditions']
+
+                edge_function = gen_static_conditional_edge(
+                    conditions = conditions,
+                    evaluate_functions = self.evaluete_functions
+                    )
+                
+                return_types = extract_literals(conditions)
+
+                workflow.set_conditional_entry_point(
+                    path = edge_function,
+                    path_map = return_types
+                )
         return workflow
 
 def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
