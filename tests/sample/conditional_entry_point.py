@@ -36,7 +36,7 @@ def gen_return_node_value(generator_parameter,flow_parameter):
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
-    "workflow_type":"workflow",
+    "graph_type":"stategraph",
     "flow_parameter":{
         "name":"Parallel-node",
         "state" : [ 
@@ -53,7 +53,7 @@ graph_settings = {
     },
     "flows": [
         { # node a
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter": {
                 "name":"a",
                 "generator":"gen_return_node_value", 
@@ -61,14 +61,14 @@ graph_settings = {
             "generator_parameter" : {"node_secret":"I'm A"},
         },
         { # normal_edge START-> a
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"START",
                 "end_key":"a"
             },
         },
         { # node b
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter": {
                 "name":"b",
                 "generator":"gen_return_node_value", 
@@ -76,7 +76,7 @@ graph_settings = {
             "generator_parameter" : {"node_secret":"I'm B"},
         },
         { # node c
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter": {
                 "name":"c",
                 "generator":"gen_return_node_value", 
@@ -84,7 +84,7 @@ graph_settings = {
             "generator_parameter" : {"node_secret":"I'm C"},
         },
         { # node d
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter": {
                 "name":"d",
                 "generator":"gen_return_node_value", 
@@ -92,7 +92,7 @@ graph_settings = {
             "generator_parameter" : {"node_secret":"I'm D"},
         },
         { # node e
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter": {
                 "name":"e",
                 "generator":"gen_return_node_value", 
@@ -100,7 +100,7 @@ graph_settings = {
             "generator_parameter" : {"node_secret":"I'm E"},
         },
         { # 静的条件付きエッジ a -> b,c or c,d
-            "workflow_type":"static_conditional_edge",
+            "graph_type":"static_conditional_edge",
             "flow_parameter":{
                 "start_key":"a",
                 "conditions":[
@@ -115,14 +115,14 @@ graph_settings = {
             },
         },
         { # normal_edge b,c,d -> e
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter": {
                 "start_key":["b","c","d"],
                 "end_key":"e"
             },
         },
         { # normal_edge e -> END
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter": {
                 "start_key":"e",
                 "end_key":"END"
@@ -134,21 +134,21 @@ graph_settings = {
 def test_conditional_branching():
 
     # graph_settingsからStateGraphBuilderを生成します。
-    workflow_builder = StateGraphBuilder(graph_settings)
+    stategraph_builder = StateGraphBuilder(graph_settings)
 
     #listは基本型として予約されてます。(*1)
-    #workflow_builder.add_type("list",list)  # Error
+    #stategraph_builder.add_type("list",list)  # Error
 
     # Stateで使用するreducerをマッピングします。
-    workflow_builder.add_reducer("add",operator.add)
+    stategraph_builder.add_reducer("add",operator.add)
 
-    # workflow_builderにノードジェネレーターを登録しておきます。
-    workflow_builder.add_node_generator("gen_return_node_value",gen_return_node_value)
+    # stategraph_builderにノードジェネレーターを登録しておきます。
+    stategraph_builder.add_node_generator("gen_return_node_value",gen_return_node_value)
 
     # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.gen_stategraph()
+    stategraph = stategraph_builder.gen_stategraph()
 
-    graph = workflow.compile() 
+    graph = stategraph.compile() 
 
     print(f"\ngraph")
     graph.get_graph().print_ascii()

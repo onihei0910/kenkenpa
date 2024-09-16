@@ -30,13 +30,13 @@ class StateGraphBuilder():
         
         self.statebuilder = StateBuilder(types,reducers)
 
-        self.workflow = {}
+        self.stategraph = {}
         self.custom_state = None
         
 
     def gen_stategraph(self):
-        self.workflow = self._gen_workflow(self.graph_settings)
-        return self.workflow
+        self.stategraph = self._gen_stategraph(self.graph_settings)
+        return self.stategraph
 
     def add_node_generator(self,name:str,function):
         self.node_generators[name] = function
@@ -50,25 +50,25 @@ class StateGraphBuilder():
     def add_type(self,name:str,type):
         self.statebuilder.add_type(name,type)
 
-    def _gen_workflow(self,workflow_settings):
-        workflow_flow_parameter = workflow_settings.get("flow_parameter")
-        print(workflow_flow_parameter)
-        state = workflow_flow_parameter.get("state",[])
+    def _gen_stategraph(self,stategraph_settings):
+        stategraph_flow_parameter = stategraph_settings.get("flow_parameter")
+        print(stategraph_flow_parameter)
+        state = stategraph_flow_parameter.get("state",[])
 
         self.custom_state = self.statebuilder.gen_state(state)
-        workflow = StateGraph(self.custom_state,config_schema=self.config_schema)
+        stategraph = StateGraph(self.custom_state,config_schema=self.config_schema)
 
-        for flow in workflow_settings.get("flows",[]):
-            flow_workflow_type = flow.get('workflow_type')
+        for flow in stategraph_settings.get("flows",[]):
+            flow_graph_type = flow.get('graph_type')
             flow_parameter = flow.get('flow_parameter',{})
             generator_parameter = flow.get('generator_parameter',{})
 
-            if flow_workflow_type == "workflow":
+            if flow_graph_type == "stategraph":
                 node_name = flow_parameter['name']
-                subworkflow = self._gen_workflow(flow)
-                workflow.add_node(node_name,subworkflow.compile())
+                substategraph = self._gen_stategraph(flow)
+                stategraph.add_node(node_name,substategraph.compile())
 
-            elif flow_workflow_type == "node":
+            elif flow_graph_type == "node":
                 node_name = flow_parameter['name']
                 generator = flow_parameter['generator']
 
@@ -79,9 +79,9 @@ class StateGraphBuilder():
                     flow_parameter = flow_parameter,
                     )
 
-                workflow.add_node(node_name,node_func)
+                stategraph.add_node(node_name,node_func)
 
-            elif flow_workflow_type == "edge":
+            elif flow_graph_type == "edge":
                 validate_keys(flow_parameter['start_key'],flow_parameter['end_key'])
                 
                 start_key_list = to_list_key(flow_parameter['start_key'])
@@ -89,12 +89,12 @@ class StateGraphBuilder():
                 
                 for end_key in end_key_list:
                     for start_key in start_key_list:
-                        workflow.add_edge(
+                        stategraph.add_edge(
                             start_key = start_key,
                             end_key = end_key
                         )
 
-            elif flow_workflow_type == "static_conditional_edge":
+            elif flow_graph_type == "static_conditional_edge":
                 start_key = flow_parameter['start_key']
                 conditions = flow_parameter['conditions']
 
@@ -105,13 +105,13 @@ class StateGraphBuilder():
                 
                 return_types = extract_literals(conditions)
 
-                workflow.add_conditional_edges(
+                stategraph.add_conditional_edges(
                     source = start_key,
                     path = edge_function,
                     path_map = return_types
                 )
 
-            elif flow_workflow_type == "static_conditional_entry_point":
+            elif flow_graph_type == "static_conditional_entry_point":
                 conditions = flow_parameter['conditions']
 
                 edge_function = gen_static_conditional_edge(
@@ -121,11 +121,11 @@ class StateGraphBuilder():
                 
                 return_types = extract_literals(conditions)
 
-                workflow.set_conditional_entry_point(
+                stategraph.set_conditional_entry_point(
                     path = edge_function,
                     path_map = return_types
                 )
-        return workflow
+        return stategraph
 
 def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
     results = []

@@ -25,7 +25,7 @@ def gen_chatbot_agent(generator_parameter,flow_parameter):
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
-    "workflow_type":"workflow",
+    "graph_type":"stategraph",
     "flow_parameter":{
         "name":"React-Agent",
         "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
@@ -38,7 +38,7 @@ graph_settings = {
     },
     "flows": [
         { # node chatbotの定義です。
-            "workflow_type":"node",
+            "graph_type":"node",
             "flow_parameter": {
                 "name":"chatbot_agent",
                 # generatorに定義したジェネレーター関数gen_chatbot_agentとマッピングする文字列を指定します。
@@ -47,14 +47,14 @@ graph_settings = {
             },
         },
         { # normal_edge START-> chatbot_agent
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"START",
                 "end_key":"chatbot_agent"
             },
         },
         { # normal_edge chatbot_agent-> END
-            "workflow_type":"edge",
+            "graph_type":"edge",
             "flow_parameter": {
                 "start_key":"chatbot_agent",
                 "end_key":"END"
@@ -65,25 +65,25 @@ graph_settings = {
 
 def test_sample_simple_chatbot():
     # graph_settingsからStateGraphBuilderを生成します。
-    workflow_builder = StateGraphBuilder(graph_settings)
+    stategraph_builder = StateGraphBuilder(graph_settings)
 
     # 使用する型を登録します。
-    #workflow_builder.add_type("AnyMessage",AnyMessage)
+    #stategraph_builder.add_type("AnyMessage",AnyMessage)
     # 使用するreducerを登録します。
-    workflow_builder.add_reducer("add_messages",add_messages)
+    stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # workflow_builderにノードジェネレーターを登録しておきます。
+    # stategraph_builderにノードジェネレーターを登録しておきます。
     # ここでは、gen_chatbot_agent関数をchatbot_generatorにマッピングしています。
     # graph_settingsに記載したキー値と一致しているか確認してください。
-    workflow_builder.add_node_generator("chatbot_generator",gen_chatbot_agent)
+    stategraph_builder.add_node_generator("chatbot_generator",gen_chatbot_agent)
 
     # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.gen_stategraph()
+    stategraph = stategraph_builder.gen_stategraph()
 
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()
 
-    app =  workflow.compile(checkpointer=memory,debug=False)
+    app =  stategraph.compile(checkpointer=memory,debug=False)
 
     print(f"\ngraph")
     app.get_graph(xray=10).print_ascii()
