@@ -3,7 +3,6 @@
 react_agent_test.pyで説明したreact-agentをサブグラフとして設定します。
 """
 from langchain_core.messages import HumanMessage
-from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.tools import tool
 from langchain_core.messages import AnyMessage
 
@@ -88,7 +87,7 @@ react_agent_subgraph = {
         "state" : [
             {
                 "field_name": "messages",
-                "type": "AnyMessage",
+                "type": "list",
                 "reducer":"add_messages"
             },
         ],
@@ -158,7 +157,7 @@ graph_settings = {
         "state" : [ 
             {
                 "field_name": "messages",
-                "type": "AnyMessage",
+                "type": "list",
                 "reducer":"add_messages"
             },
         ],

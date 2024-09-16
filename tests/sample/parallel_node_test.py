@@ -5,7 +5,6 @@ https://langchain-ai.github.io/langgraph/how-tos/branching/#conditional-branchin
 
 import operator
 from typing import Any
-from langchain_core.pydantic_v1 import BaseModel
 
 from kenkenpa.builder import StateGraphBuilder
 

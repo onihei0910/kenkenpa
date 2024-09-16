@@ -3,7 +3,6 @@
 https://langchain-ai.github.io/langgraph/
 """
 from langchain_core.messages import HumanMessage
-from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.tools import tool
 from langchain_core.messages import AnyMessage
 from langchain_openai import ChatOpenAI
@@ -88,7 +87,7 @@ graph_settings = {
         "state" : [
             {
                 "field_name": "messages",
-                "type": "AnyMessage",
+                "type": "list",
                 "reducer":"add_messages"
             },
         ],
