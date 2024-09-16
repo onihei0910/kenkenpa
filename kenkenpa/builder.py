@@ -96,7 +96,7 @@ class WorkFlowBuilder():
         for flow in workflow_settings.get("flows",[]):
             flow_workflow_type = flow.get('workflow_type')
             flow_parameter = flow.get('flow_parameter',{})
-            settings = flow.get('settings',{})
+            generator_parameter = flow.get('generator_parameter',{}) #ここの名前を変更する
 
             if flow_workflow_type == "workflow":
                 node_name = flow_parameter['name']
@@ -106,7 +106,7 @@ class WorkFlowBuilder():
             elif flow_workflow_type == "node":
                 node_name = flow_parameter['name']
                 generator = flow_parameter['generator']
-                node_func = self._gen_node(generator,settings,flow_parameter)
+                node_func = self._gen_node(generator,generator_parameter,flow_parameter)
                 workflow.add_node(node_name,node_func)
 
             elif flow_workflow_type == "edge":
@@ -125,7 +125,7 @@ class WorkFlowBuilder():
             elif flow_workflow_type == "conditional_edge":
                 start_key = flow_parameter['start_key']
                 conditions = flow_parameter['conditions']
-                edge_function = self._add_conditional_edge(conditions,settings)
+                edge_function = self._add_conditional_edge(conditions,generator_parameter)
                 
                 return_types = extract_literals(conditions)
 
@@ -137,15 +137,15 @@ class WorkFlowBuilder():
 
         return workflow
 
-    def _gen_node(self,generator,settings,flow_parameter):
+    def _gen_node(self,generator,generator_parameter,flow_parameter):
         add_agent_function = self.node_generators[generator]
 
         return add_agent_function(
-            settings = settings,
+            generator_parameter = generator_parameter,
             flow_parameter = flow_parameter,
             )
 
-    def _add_conditional_edge(self,conditions,settings):
+    def _add_conditional_edge(self,conditions,generator_parameter):
         return add_static_conditional_edge(
             conditions = conditions,
             evaluate_functions = self.evaluete_functions

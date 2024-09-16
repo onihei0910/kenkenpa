@@ -38,8 +38,8 @@ tools = {
     }
 
 # Toolノードのジェネレーター関数を定義します。
-def gen_tool_node(settings,flow_parameter):
-    functions = settings['functions']
+def gen_tool_node(generator_parameter,flow_parameter):
+    functions = generator_parameter['functions']
 
     tool_functions = []
     for function in functions:
@@ -49,8 +49,8 @@ def gen_tool_node(settings,flow_parameter):
     return tool_node
 
 # agentノードのジェネレーター関数を定義します。
-def gen_agent(settings,flow_parameter):
-    functions = settings['functions']
+def gen_agent(generator_parameter,flow_parameter):
+    functions = generator_parameter['functions']
 
     tool_functions = []
     for function in functions:
@@ -85,7 +85,7 @@ graph_settings = {
     "workflow_type":"workflow",
     "flow_parameter":{
         "name":"React-Agent",
-        "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+        "state" : [
             {
                 "field_name": "messages",
                 "type": "AnyMessage",
@@ -100,7 +100,7 @@ graph_settings = {
                 "name":"agent",
                 "generator":"agent_node_generator",
             },
-            "settings" : {
+            "generator_parameter" : {
                 "functions":[
                     "search_function",
                 ],
@@ -112,7 +112,7 @@ graph_settings = {
                 "name":"tools",
                 "generator":"tool_node_generator",
             },
-            "settings":{
+            "generator_parameter":{
                 "functions":[
                     "search_function",
                 ],

@@ -15,7 +15,7 @@ from kenkenpa.builder import WorkFlowBuilder
     # aggregate: Annotated[list, operator.add]
 
 # ReturnNodeValueを返すジェネレーター関数を定義します。
-def gen_return_node_value(settings,flow_parameter):
+def gen_return_node_value(generator_parameter,flow_parameter):
 
     class ReturnNodeValue:
         def __init__(self, node_secret: str):
@@ -25,7 +25,7 @@ def gen_return_node_value(settings,flow_parameter):
             print(f"Adding {self._value} to {state['aggregate']}")
             return {"aggregate": [self._value]}
     
-    object = ReturnNodeValue(settings['node_secret'])
+    object = ReturnNodeValue(generator_parameter['node_secret'])
     
     return object
 
@@ -50,7 +50,7 @@ graph_settings = {
                 "name":"a",
                 "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm A"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm A"},
         },
         { # normal_edge START-> a
             "workflow_type":"edge",
@@ -65,7 +65,7 @@ graph_settings = {
                 "name":"b",
                 "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm B"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm B"},
         },
         { # node c
             "workflow_type":"node",
@@ -73,7 +73,7 @@ graph_settings = {
                 "name":"c",
                 "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm C"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm C"},
         },
         { # node d
             "workflow_type":"node",
@@ -81,7 +81,7 @@ graph_settings = {
                 "name":"d",
                 "generator":"gen_return_node_value", 
             },
-            "settings" : {"node_secret":"I'm D"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
+            "generator_parameter" : {"node_secret":"I'm D"},
         },
         { # normal_edge a -> b,c
             "workflow_type":"edge",

@@ -24,7 +24,7 @@ def chatbot(state,config):
     return {"messages":[llm.invoke(state["messages"])]}
 
 # chatbotとは別に、定義したchatbotを返すジェネレーター関数を定義します。
-def gen_chatbot_agent(settings,flow_parameter):
+def gen_chatbot_agent(generator_parameter,flow_parameter):
     """chatbot node generator"""
     return chatbot
 
@@ -70,7 +70,7 @@ graph_settings = {
 
 def test_sample_simple_chatbot():
     # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
+    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema)
 
     # 使用する型を登録します。
     workflow_builder.add_type("AnyMessage",AnyMessage)
