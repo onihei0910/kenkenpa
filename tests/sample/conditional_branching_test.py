@@ -149,8 +149,8 @@ def test_conditional_branching():
     # workflow_builderにノードジェネレーターを登録しておきます。
     workflow_builder.add_node_generator("gen_return_node_value",gen_return_node_value)
 
-    # getworkflowメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.getworkflow()
+    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    workflow = workflow_builder.gen_stategraph()
 
     graph = workflow.compile() 
 

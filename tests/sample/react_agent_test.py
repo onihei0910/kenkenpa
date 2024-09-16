@@ -174,8 +174,8 @@ def test_sample_react_agent():
     # 同様に、評価関数も登録します。
     workflow_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
-    # getworkflowメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.getworkflow()
+    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    workflow = workflow_builder.gen_stategraph()
 
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()

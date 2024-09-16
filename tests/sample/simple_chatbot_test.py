@@ -82,8 +82,8 @@ def test_sample_simple_chatbot():
     # graph_settingsに記載したキー値と一致しているか確認してください。
     workflow_builder.add_node_generator("chatbot_generator",gen_chatbot_agent)
 
-    # getworkflowメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.getworkflow()
+    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    workflow = workflow_builder.gen_stategraph()
 
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()

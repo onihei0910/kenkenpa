@@ -5,7 +5,7 @@ It includes a handler class `StaticConditionalHandler` to manage the conditions 
 """
 from kenkenpa.common import to_list_key
 
-def add_static_conditional_edge(conditions,evaluate_functions):
+def gen_static_conditional_edge(conditions,evaluate_functions):
 
     conditional_edge = StaticConditionalHandler(conditions,evaluate_functions)
 
