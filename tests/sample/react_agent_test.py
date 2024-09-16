@@ -126,7 +126,7 @@ graph_settings = {
             },
         },
         {# 静的条件付きエッジ
-            "workflow_type":"conditional_edge",
+            "workflow_type":"static_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
                 "conditions":[

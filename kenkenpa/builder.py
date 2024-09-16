@@ -122,7 +122,7 @@ class WorkFlowBuilder():
                             end_key = end_key
                         )
 
-            elif flow_workflow_type == "conditional_edge":
+            elif flow_workflow_type == "static_conditional_edge":
                 start_key = flow_parameter['start_key']
                 conditions = flow_parameter['conditions']
                 edge_function = self._add_conditional_edge(conditions,generator_parameter)

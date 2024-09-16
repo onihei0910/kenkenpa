@@ -101,7 +101,7 @@ graph_settings = {
             "generator_parameter" : {"node_secret":"I'm E"},
         },
         { # 静的条件付きエッジ a -> b,c or c,d
-            "workflow_type":"conditional_edge",
+            "workflow_type":"static_conditional_edge",
             "flow_parameter":{
                 "start_key":"a",
                 "conditions":[
