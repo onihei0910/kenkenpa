@@ -12,7 +12,7 @@ from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
 
-from kenkenpa.builder import WorkFlowBuilder
+from kenkenpa.builder import StateGraphBuilder
 
 # Toolノードは通常通り定義します。
 @tool
@@ -163,7 +163,6 @@ graph_settings = {
             },
         ],
     },
-    
     "flows":[
         react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
         {# ノーマルエッジ
@@ -183,13 +182,10 @@ graph_settings = {
     ]
 }
 
-class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
-    dummy : str = "dummy config"
-
 def test_sample_subgraph():
 
-    # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
+    # graph_settingsからStateGraphBuilderを生成します。
+    workflow_builder = StateGraphBuilder(graph_settings)
 
     # 使用する型を登録します。
     workflow_builder.add_type("AnyMessage",AnyMessage)
@@ -203,8 +199,8 @@ def test_sample_subgraph():
     # 同様に、評価関数も登録します。
     workflow_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
-    # getworkflowメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.getworkflow()
+    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    workflow = workflow_builder.gen_stategraph()
 
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()

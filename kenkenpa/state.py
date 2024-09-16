@@ -1,6 +1,5 @@
 import types
-
-from typing import Annotated
+from typing import Annotated, Dict
 from typing_extensions import TypedDict
 
 class StateBuilder():
@@ -16,9 +15,16 @@ class StateBuilder():
         "frozenset":frozenset,
         "bool":bool,
     }
-    def __init__(self):
-        self.type_list = {}
-        self.reducer_list = {}
+    def __init__(self,types:Dict=None,reducers:Dict=None):
+        if types:
+            self.type_list = types
+        else:
+            self.type_list = {}
+        
+        if reducers:
+            self.reducer_list = reducers
+        else:
+            self.reducer_list = {}
 
     def add_reducer(self,name:str,function):
         if name in self.reducer_list:

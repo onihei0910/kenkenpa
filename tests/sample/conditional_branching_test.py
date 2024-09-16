@@ -7,7 +7,7 @@ import operator
 from typing import Any
 from langchain_core.pydantic_v1 import BaseModel
 
-from kenkenpa.builder import WorkFlowBuilder
+from kenkenpa.builder import StateGraphBuilder
 
 # Stateは定義しません。graph_settingsの中で定義します。
 #class State(TypedDict):
@@ -132,13 +132,10 @@ graph_settings = {
     ]
 }
 
-class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
-    dummy : str = "dummy config"
-
 def test_conditional_branching():
 
-    # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema) # TODO Configは任意項目にする
+    # graph_settingsからStateGraphBuilderを生成します。
+    workflow_builder = StateGraphBuilder(graph_settings)
 
     #listは基本型として予約されてます。(*1)
     #workflow_builder.add_type("list",list)  # Error
@@ -149,8 +146,8 @@ def test_conditional_branching():
     # workflow_builderにノードジェネレーターを登録しておきます。
     workflow_builder.add_node_generator("gen_return_node_value",gen_return_node_value)
 
-    # getworkflowメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.getworkflow()
+    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    workflow = workflow_builder.gen_stategraph()
 
     graph = workflow.compile() 
 
@@ -162,7 +159,7 @@ def test_conditional_branching():
 
     print('graph.invoke({"aggregate": [],"which":"cd"}, {"configurable": {"thread_id": "foo"}})')
     graph.invoke({"aggregate": [],"which":"cd"}, {"configurable": {"thread_id": "foo"}})
-    # WorkFlowBuilderでは以下の型が基本型として事前に登録されています。
+    # StateGraphBuilderでは以下の型が基本型として事前に登録されています。
     # "int":int,
     # "float":float,
     # "complex":complex,

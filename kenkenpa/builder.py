@@ -1,73 +1,47 @@
-"""
-This module provides functionality to build workflows using a state graph.
-It includes the `WorkFlowBuilder` class which allows adding node generators,
-evaluation functions, and constructing workflows based on given settings.
-"""
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional, Type, Any
 
 from langgraph.graph import  StateGraph
 
 from kenkenpa.state import StateBuilder
-from kenkenpa.edges import add_static_conditional_edge
+from kenkenpa.edges import gen_static_conditional_edge
 from kenkenpa.common import to_list_key
 
-class WorkFlowBuilder():
-    """
-    A builder class to construct workflows using a state graph 
-    based on provided settings and configuration schema.
-
-    Attributes:
-        graph_settings (dict): The settings for the graph.
-        config_schema (Any): The schema for the configuration.
-        node_generators (dict): A dictionary to store node generator functions.
-        evaluate_functions (dict): A dictionary to store evaluation functions.
-        workflow (dict): The constructed workflow.
-        custom_state (Any): The custom state for the workflow.
-    """
-    def __init__(self,graph_settings,config_schema):
-        """
-        Initializes the WorkFlowBuilder with graph settings and configuration schema.
-
-        Args:
-            graph_settings (dict): The settings for the graph.
-            config_schema (Any): The schema for the configuration.
-        """
+class StateGraphBuilder():
+    def __init__(
+        self,
+        graph_settings:Dict,
+        config_schema:Optional[Type[Any]]=None,
+        node_generators:Dict=None,
+        evaluete_functions:Dict=None,
+        reducers:Dict=None,
+        types:Dict=None,
+        ):
         self.graph_settings = graph_settings
         self.config_schema = config_schema
-        self.node_generators = {}
-        self.evaluete_functions = {}
+        if node_generators:
+            self.node_generators = node_generators
+        else:
+            self.node_generators = {}
+
+        if evaluete_functions:
+            self.evaluete_functions = evaluete_functions
+        else:
+            self.evaluete_functions = {}
+        
+        self.statebuilder = StateBuilder(types,reducers)
+
         self.workflow = {}
         self.custom_state = None
-        self.statebuilder = StateBuilder()
+        
 
-    def getworkflow(self):
-        """
-        Constructs and returns the workflow based on the graph settings.
-
-        Returns:
-            Any: The constructed workflow.
-        """
-        self.workflow = self._add_workflow(self.graph_settings)
+    def gen_stategraph(self):
+        self.workflow = self._gen_workflow(self.graph_settings)
         return self.workflow
 
     def add_node_generator(self,name:str,function):
-        """
-        Adds a node generator function to the builder.
-
-        Args:
-            name (str): The name of the node generator.
-            function (Callable): The function to generate nodes.
-        """
         self.node_generators[name] = function
 
     def add_evaluete_function(self,name:str,function):
-        """
-        Adds an evaluation function to the builder.
-
-        Args:
-            name (str): The name of the evaluation function.
-            function (Callable): The function to evaluate conditions.
-        """
         self.evaluete_functions[name] = function
 
     def add_reducer(self,name:str,function):
@@ -76,16 +50,7 @@ class WorkFlowBuilder():
     def add_type(self,name:str,type):
         self.statebuilder.add_type(name,type)
 
-    def _add_workflow(self,workflow_settings):
-        """
-        Recursively constructs a workflow based on the provided workflow settings.
-
-        Args:
-            workflow_settings (dict): The settings for the workflow.
-
-        Returns:
-            StateGraph: The constructed state graph for the workflow.
-        """
+    def _gen_workflow(self,workflow_settings):
         workflow_flow_parameter = workflow_settings.get("flow_parameter")
         print(workflow_flow_parameter)
         state = workflow_flow_parameter.get("state",[])
@@ -96,17 +61,24 @@ class WorkFlowBuilder():
         for flow in workflow_settings.get("flows",[]):
             flow_workflow_type = flow.get('workflow_type')
             flow_parameter = flow.get('flow_parameter',{})
-            generator_parameter = flow.get('generator_parameter',{}) #ここの名前を変更する
+            generator_parameter = flow.get('generator_parameter',{})
 
             if flow_workflow_type == "workflow":
                 node_name = flow_parameter['name']
-                subworkflow = self._add_workflow(flow)
+                subworkflow = self._gen_workflow(flow)
                 workflow.add_node(node_name,subworkflow.compile())
 
             elif flow_workflow_type == "node":
                 node_name = flow_parameter['name']
                 generator = flow_parameter['generator']
-                node_func = self._gen_node(generator,generator_parameter,flow_parameter)
+
+                add_agent_function = self.node_generators[generator]
+
+                node_func = add_agent_function(
+                    generator_parameter = generator_parameter,
+                    flow_parameter = flow_parameter,
+                    )
+
                 workflow.add_node(node_name,node_func)
 
             elif flow_workflow_type == "edge":
@@ -125,7 +97,11 @@ class WorkFlowBuilder():
             elif flow_workflow_type == "static_conditional_edge":
                 start_key = flow_parameter['start_key']
                 conditions = flow_parameter['conditions']
-                edge_function = self._add_conditional_edge(conditions,generator_parameter)
+
+                edge_function = gen_static_conditional_edge(
+                    conditions = conditions,
+                    evaluate_functions = self.evaluete_functions
+                    )
                 
                 return_types = extract_literals(conditions)
 
@@ -137,28 +113,7 @@ class WorkFlowBuilder():
 
         return workflow
 
-    def _gen_node(self,generator,generator_parameter,flow_parameter):
-        add_agent_function = self.node_generators[generator]
-
-        return add_agent_function(
-            generator_parameter = generator_parameter,
-            flow_parameter = flow_parameter,
-            )
-
-    def _add_conditional_edge(self,conditions,generator_parameter):
-        return add_static_conditional_edge(
-            conditions = conditions,
-            evaluate_functions = self.evaluete_functions
-            )
-
 def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
-    """
-    Extracts literal values from the conditions.
-    Args:
-        conditions (list): A list of conditions to extract literals from.
-    Returns:
-        list: A list of literal values extracted from the conditions.
-    """
     results = []
     for condition in conditions:
         if 'result' in condition:

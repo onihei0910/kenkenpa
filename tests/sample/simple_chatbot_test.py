@@ -9,10 +9,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
-from kenkenpa.builder import WorkFlowBuilder
-
-class ConfigSchema(BaseModel): #pylint:disable=too-few-public-methods
-    dummy : str = "dummy config"
+from kenkenpa.builder import StateGraphBuilder
 
 # LLMの設定
 llm = ChatOpenAI(
@@ -36,7 +33,7 @@ graph_settings = {
         "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
             {
                 "field_name": "messages",
-                "type": "AnyMessage",
+                "type": "list",
                 "reducer":"add_messages"
             },
         ],
@@ -69,11 +66,11 @@ graph_settings = {
 }
 
 def test_sample_simple_chatbot():
-    # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings,ConfigSchema)
+    # graph_settingsからStateGraphBuilderを生成します。
+    workflow_builder = StateGraphBuilder(graph_settings)
 
     # 使用する型を登録します。
-    workflow_builder.add_type("AnyMessage",AnyMessage)
+    #workflow_builder.add_type("AnyMessage",AnyMessage)
     # 使用するreducerを登録します。
     workflow_builder.add_reducer("add_messages",add_messages)
 
@@ -82,8 +79,8 @@ def test_sample_simple_chatbot():
     # graph_settingsに記載したキー値と一致しているか確認してください。
     workflow_builder.add_node_generator("chatbot_generator",gen_chatbot_agent)
 
-    # getworkflowメソッドでコンパイル可能なStateGraphを取得できます。
-    workflow = workflow_builder.getworkflow()
+    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    workflow = workflow_builder.gen_stategraph()
 
     # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
     memory = MemorySaver()
@@ -103,7 +100,6 @@ def test_sample_simple_chatbot():
     )
     for event in events:
         number_of_events = number_of_events + 1
-        #event["messages"][-1].pretty_print()
-        print(event["messages"][-1])
+        event["messages"][-1].pretty_print()
 
     assert number_of_events == 2
