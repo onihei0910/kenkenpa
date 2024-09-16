@@ -9,7 +9,7 @@ from langgraph.graph import  StateGraph
 
 from kenkenpa.state import StateBuilder
 from kenkenpa.edges import add_static_conditional_edge
-from kenkenpa.common import convert_key,to_list_key
+from kenkenpa.common import to_list_key
 
 class WorkFlowBuilder():
     """
@@ -90,9 +90,8 @@ class WorkFlowBuilder():
         workflow = StateGraph(self.custom_state,config_schema=self.config_schema)
 
         for flow in workflow_settings.get("flows",[]):
-            flow_workflow_type = get_workflow_type(flow)
-            flow_parameter = get_flow_parameter(flow)
-            metadata = get_metadata(flow)
+            flow_workflow_type = flow.get('workflow_type')
+            flow_parameter = flow.get('flow_parameter',{})
             settings = flow.get('settings',{})
 
             if flow_workflow_type == "workflow":
@@ -103,7 +102,7 @@ class WorkFlowBuilder():
             elif flow_workflow_type == "node":
                 node_name = flow_parameter['name']
                 generator = flow_parameter['generator']
-                node_func = self._gen_node(generator,metadata,settings)
+                node_func = self._gen_node(generator,settings,flow_parameter)
                 workflow.add_node(node_name,node_func)
 
             elif flow_workflow_type == "edge":
@@ -121,9 +120,8 @@ class WorkFlowBuilder():
 
             elif flow_workflow_type == "conditional_edge":
                 start_key = flow_parameter['start_key']
-
-                edge_function = self._add_conditional_edge(metadata,settings)
-                conditions = metadata['flow_parameter']['conditions']
+                conditions = flow_parameter['conditions']
+                edge_function = self._add_conditional_edge(conditions,settings)
                 
                 return_types = extract_literals(conditions)
 
@@ -135,26 +133,15 @@ class WorkFlowBuilder():
 
         return workflow
 
-    def _gen_node(self,generator,metadata,settings):
-        """
-        Generates a node function using the specified generator, metadata, and settings.
-
-        Args:
-            generator (str): The name of the generator function.
-            metadata (Any): The metadata for the node.
-            settings (Any): The settings for the node.
-
-        Returns:
-            Callable: The generated node function.
-        """
+    def _gen_node(self,generator,settings,flow_parameter):
         add_agent_function = self.node_generators[generator]
 
         return add_agent_function(
-            metadata = metadata,
             settings = settings,
+            flow_parameter = flow_parameter,
             )
 
-    def _add_conditional_edge(self,metadata,settings):
+    def _add_conditional_edge(self,conditions,settings):
         """
         Adds a conditional edge to the workflow based on the provided metadata and settings.
 
@@ -166,8 +153,7 @@ class WorkFlowBuilder():
             Callable: The function to evaluate the conditional edge.
         """
         return add_static_conditional_edge(
-            metadata = metadata,
-            settings = settings,
+            conditions = conditions,
             evaluate_functions = self.evaluete_functions
             )
 
@@ -187,57 +173,6 @@ def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
             results.extend(to_list_key(condition['default']))
     return results
 
-def get_metadata(settings):
-    """
-    Retrieves the metadata from the provided settings.
-
-    Args:
-        settings (dict): The settings to retrieve metadata from.
-
-    Returns:
-        Any: The retrieved metadata.
-    """
-    return settings.get('metadata')
-
-def get_workflow_type(settings):
-    """
-    Retrieves the workflow type from the provided settings.
-
-    Args:
-        settings (dict): The settings to retrieve the workflow type from.
-
-    Returns:
-        str: The retrieved workflow type.
-    """
-    metadata = get_metadata(settings)
-    return metadata.get('workflow_type',"")
-
-def get_flow_name(settings):
-    """
-    Retrieves the flow name from the provided settings.
-
-    Args:
-        settings (dict): The settings to retrieve the flow name from.
-
-    Returns:
-        str: The retrieved flow name.
-    """
-    metadata = get_metadata(settings)
-    return metadata.get('name',"")
-
-def get_flow_parameter(settings):
-    """
-    Retrieves the flow parameters from the provided settings.
-
-    Args:
-        settings (dict): The settings to retrieve the flow parameters from.
-
-    Returns:
-        dict: The retrieved flow parameters.
-    """
-    metadata = get_metadata(settings)
-    return metadata.get('flow_parameter',{})
-
 def validate_keys(
         start_key: Dict[str, Union[str, List[str]]],
         end_key: Dict[str, Union[str, List[str]]]
@@ -252,7 +187,6 @@ def validate_keys(
     start_key_is_list = isinstance(start_key, list) and len(start_key) > 1
     end_key_is_list = isinstance(end_key, list) and len(end_key) > 1
     
-    # start_key または end_key のいずれか一方のみが、要素が複数のリストであることができる
     if start_key_is_list and end_key_is_list:
         raise ValueError(f"start_key または end_key のいずれか一方のみが、要素が複数のリストであることができます。\nstart_key:{start_key}\nend_key:{end_key}")
     

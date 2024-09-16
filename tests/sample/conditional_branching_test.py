@@ -22,7 +22,7 @@ from kenkenpa.builder import WorkFlowBuilder
     #return ["b", "c"]
 
 # ReturnNodeValueを返すジェネレーター関数を定義します。
-def gen_return_node_value(metadata,settings):
+def gen_return_node_value(settings,flow_parameter):
 
     class ReturnNodeValue:
         def __init__(self, node_secret: str):
@@ -37,11 +37,9 @@ def gen_return_node_value(metadata,settings):
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
-    "metadata":{
-        "workflow_type":"workflow",
-        "flow_parameter":{
-            "name":"Parallel-node",
-        }
+    "workflow_type":"workflow",
+    "flow_parameter":{
+        "name":"Parallel-node",
     },
     "state" : [ 
         {
@@ -56,97 +54,79 @@ graph_settings = {
     ],
     "flows": [
         { # node a
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"a",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"a",
+                "generator":"gen_return_node_value", 
             },
             "settings" : {"node_secret":"I'm A"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
         { # normal_edge START-> a
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"START",
-                    "end_key":"a"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"START",
+                "end_key":"a"
             },
         },
         { # node b
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"b",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"b",
+                "generator":"gen_return_node_value", 
             },
             "settings" : {"node_secret":"I'm B"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
         { # node c
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"c",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"c",
+                "generator":"gen_return_node_value", 
             },
             "settings" : {"node_secret":"I'm C"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
         { # node d
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"d",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"d",
+                "generator":"gen_return_node_value", 
             },
             "settings" : {"node_secret":"I'm D"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
         { # node e
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"e",
-                    "generator":"gen_return_node_value", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"e",
+                "generator":"gen_return_node_value", 
             },
             "settings" : {"node_secret":"I'm E"}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
-         {# 静的条件付きエッジ a -> b,c or c,d
-            "metadata" :{
-                "workflow_type":"conditional_edge",
-                "flow_parameter":{
-                    "start_key":"a",
-                    "conditions":[
-                        {
-                            "expression": {
-                                "eq": [{"type": "state_value", "name": "which"}, "cd"],
-                            },
-                            "result": ["c","d"]
+        { # 静的条件付きエッジ a -> b,c or c,d
+            "workflow_type":"conditional_edge",
+            "flow_parameter":{
+                "start_key":"a",
+                "conditions":[
+                    {
+                        "expression": {
+                            "eq": [{"type": "state_value", "name": "which"}, "cd"],
                         },
-                        {"default": ["b","c"]} 
-                    ]
-                }
+                        "result": ["c","d"]
+                    },
+                    {"default": ["b","c"]} 
+                ]
             },
         },
         { # normal_edge b,c,d -> e
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":["b","c","d"],
-                    "end_key":"e"
-                }
+            "workflow_type":"edge",
+            "flow_parameter": {
+                "start_key":["b","c","d"],
+                "end_key":"e"
             },
         },
         { # normal_edge e -> END
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":"e",
-                    "end_key":"END"
-                }
+            "workflow_type":"edge",
+            "flow_parameter": {
+                "start_key":"e",
+                "end_key":"END"
             },
         },
     ]

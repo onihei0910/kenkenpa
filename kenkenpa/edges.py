@@ -3,9 +3,9 @@ This module provides functionality to add static conditional edges based on give
 conditions and evaluation functions.
 It includes a handler class `StaticConditionalHandler` to manage the conditions and evaluate them.
 """
-from kenkenpa.common import convert_key,to_list_key
+from kenkenpa.common import to_list_key
 
-def add_static_conditional_edge(metadata,settings,evaluate_functions):
+def add_static_conditional_edge(conditions,evaluate_functions):
     """
     Adds a static conditional edge based on the provided settings and evaluation functions.
 
@@ -18,7 +18,6 @@ def add_static_conditional_edge(metadata,settings,evaluate_functions):
         function: A function that evaluates the conditions and returns
         the result based on the state and config.
     """
-    conditions = metadata['flow_parameter']['conditions']
 
     conditional_edge = StaticConditionalHandler(conditions,evaluate_functions)
 

@@ -37,7 +37,7 @@ tools = {
     }
 
 # Toolノードのジェネレーター関数を定義します。
-def gen_tool_node(metadata,settings):
+def gen_tool_node(settings,flow_parameter):
     functions = settings['functions']
 
     tool_functions = []
@@ -47,7 +47,7 @@ def gen_tool_node(metadata,settings):
     tool_node = ToolNode(tool_functions)
     return tool_node
 
-def gen_agent(metadata,settings):
+def gen_agent(settings,flow_parameter):
     functions = settings['functions']
 
     tool_functions = []
@@ -82,11 +82,9 @@ def is_tool_message(state, config, **kwargs):
 # サブグラフの設定を定義します。
 # この定義はreact_agent_test.pyと全く同じものです。
 react_agent_subgraph = {
-    "metadata": {
-        "workflow_type":"workflow",
-        "flow_parameter":{
-            "name":"React-Agent-Subgraph",
-        }
+    "workflow_type":"workflow",
+    "flow_parameter":{
+        "name":"React-Agent-Subgraph",
     },
     "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
         {
@@ -97,12 +95,10 @@ react_agent_subgraph = {
     ],
     "flows":[
         {
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter":{
-                    "name":"agent",
-                    "generator":"agent_node_generator",
-                }
+            "workflow_type":"node",
+            "flow_parameter":{
+                "name":"agent",
+                "generator":"agent_node_generator",
             },
             "settings" : {
                 "functions":[
@@ -111,12 +107,10 @@ react_agent_subgraph = {
             },
         },
         {
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter":{
-                    "name":"tools",
-                    "generator":"tool_node_generator",
-                }
+            "workflow_type":"node",
+            "flow_parameter":{
+                "name":"tools",
+                "generator":"tool_node_generator",
             },
             "settings":{
                 "functions":[
@@ -125,38 +119,32 @@ react_agent_subgraph = {
             },
         },
         {# ノーマルエッジ
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"START",
-                    "end_key":"agent"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"START",
+                "end_key":"agent"
             },
         },
         {# 静的条件付きエッジ
-            "metadata" :{
-                "workflow_type":"conditional_edge",
-                "flow_parameter":{
-                    "start_key":"agent",
-                    "conditions":[
-                        {
-                            "expression": {
-                                "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
-                            },
-                            "result": "tools" 
+            "workflow_type":"conditional_edge",
+            "flow_parameter":{
+                "start_key":"agent",
+                "conditions":[
+                    {
+                        "expression": {
+                            "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
                         },
-                        {"default": "END"} 
-                    ]
-                }
+                        "result": "tools" 
+                    },
+                    {"default": "END"} 
+                ]
             },
         },
         {# ノーマルノード
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"tools",
-                    "end_key":"agent"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"tools",
+                "end_key":"agent"
             },
         },
     ]
@@ -164,11 +152,9 @@ react_agent_subgraph = {
 
 # 親グラフの設定を定義します。
 graph_settings = {
-    "metadata": {
-        "workflow_type":"workflow",
-        "flow_parameter":{
-            "name":"React-Agent",
-        }
+    "workflow_type":"workflow",
+    "flow_parameter":{
+        "name":"React-Agent",
     },
     "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
         {
@@ -180,21 +166,17 @@ graph_settings = {
     "flows":[
         react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
         {# ノーマルエッジ
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"START",
-                    "end_key":"React-Agent-Subgraph"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"START",
+                "end_key":"React-Agent-Subgraph"
             },
         },
         {# ノーマルエッジ
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"React-Agent-Subgraph",
-                    "end_key":"END"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"React-Agent-Subgraph",
+                "end_key":"END"
             },
         },
     ]

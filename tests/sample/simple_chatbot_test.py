@@ -24,17 +24,15 @@ def chatbot(state,config):
     return {"messages":[llm.invoke(state["messages"])]}
 
 # chatbotとは別に、定義したchatbotを返すジェネレーター関数を定義します。
-def gen_chatbot_agent(metadata,settings):
+def gen_chatbot_agent(settings,flow_parameter):
     """chatbot node generator"""
     return chatbot
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
-    "metadata":{
-        "workflow_type":"workflow",
-        "flow_parameter":{
-            "name":"React-Agent",
-        }
+    "workflow_type":"workflow",
+    "flow_parameter":{
+        "name":"React-Agent",
     },
     "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
         {
@@ -45,33 +43,26 @@ graph_settings = {
     ],
     "flows": [
         { # node chatbotの定義です。
-            "metadata" : {
-                "workflow_type":"node",
-                "flow_parameter": {
-                    "name":"chatbot_agent",
-                    # generatorに定義したジェネレーター関数gen_chatbot_agentとマッピングする文字列を指定します。
-                    # マッピングはコード実行時に指定します。
-                    "generator":"chatbot_generator", 
-                }
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"chatbot_agent",
+                # generatorに定義したジェネレーター関数gen_chatbot_agentとマッピングする文字列を指定します。
+                # マッピングはコード実行時に指定します。
+                "generator":"chatbot_generator", 
             },
-            "settings" : {}, # TODO settingsが無い場合は設定しなくてもよい。(optional)
         },
         { # normal_edge START-> chatbot_agent
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter":{
-                    "start_key":"START",
-                    "end_key":"chatbot_agent"
-                }
+            "workflow_type":"edge",
+            "flow_parameter":{
+                "start_key":"START",
+                "end_key":"chatbot_agent"
             },
         },
         { # normal_edge chatbot_agent-> END
-            "metadata" :{
-                "workflow_type":"edge",
-                "flow_parameter": {
-                    "start_key":"chatbot_agent",
-                    "end_key":"END"
-                }
+            "workflow_type":"edge",
+            "flow_parameter": {
+                "start_key":"chatbot_agent",
+                "end_key":"END"
             },
         },
     ]
