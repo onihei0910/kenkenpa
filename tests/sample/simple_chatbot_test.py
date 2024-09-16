@@ -9,7 +9,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
-from kenkenpa.builder import WorkFlowBuilder
+from kenkenpa.builder import StateGraphBuilder
 
 # LLMの設定
 llm = ChatOpenAI(
@@ -66,8 +66,8 @@ graph_settings = {
 }
 
 def test_sample_simple_chatbot():
-    # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings)
+    # graph_settingsからStateGraphBuilderを生成します。
+    workflow_builder = StateGraphBuilder(graph_settings)
 
     # 使用する型を登録します。
     workflow_builder.add_type("AnyMessage",AnyMessage)

@@ -6,7 +6,7 @@ from kenkenpa.state import StateBuilder
 from kenkenpa.edges import gen_static_conditional_edge
 from kenkenpa.common import to_list_key
 
-class WorkFlowBuilder():
+class StateGraphBuilder():
     def __init__(self,graph_settings,config_schema=None):
         self.graph_settings = graph_settings
         self.config_schema = config_schema

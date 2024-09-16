@@ -7,7 +7,7 @@ import operator
 from typing import Any
 from langchain_core.pydantic_v1 import BaseModel
 
-from kenkenpa.builder import WorkFlowBuilder
+from kenkenpa.builder import StateGraphBuilder
 
 # Stateは定義しません。graph_settingsの中で定義します。
 # class State(TypedDict):
@@ -109,8 +109,8 @@ graph_settings = {
 
 def test_parallel_node():
 
-    # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings)
+    # graph_settingsからStateGraphBuilderを生成します。
+    workflow_builder = StateGraphBuilder(graph_settings)
 
     #listは基本型として予約されてます。(*1)
     #workflow_builder.add_type("list",list)  # Error
@@ -131,7 +131,7 @@ def test_parallel_node():
 
     graph.invoke({"aggregate": []}, {"configurable": {"thread_id": "foo"}})
 
-    # WorkFlowBuilderでは以下の型が基本型として事前に登録されています。
+    # StateGraphBuilderでは以下の型が基本型として事前に登録されています。
     # "int":int,
     # "float":float,
     # "complex":complex,

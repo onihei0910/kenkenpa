@@ -12,7 +12,7 @@ from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
 
-from kenkenpa.builder import WorkFlowBuilder
+from kenkenpa.builder import StateGraphBuilder
 
 
 # Toolノードは通常通り定義します。
@@ -156,8 +156,8 @@ graph_settings = {
 }
 
 def test_sample_react_agent():
-    # graph_settingsからWorkFlowBuilderを生成します。
-    workflow_builder = WorkFlowBuilder(graph_settings)
+    # graph_settingsからStateGraphBuilderを生成します。
+    workflow_builder = StateGraphBuilder(graph_settings)
 
     # 使用する型を登録します。
     workflow_builder.add_type("AnyMessage",AnyMessage)
