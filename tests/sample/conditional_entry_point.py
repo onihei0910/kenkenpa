@@ -53,18 +53,19 @@ graph_settings = {
         ],
     },
     "flows": [
-        { # 静的条件付きエッジ __start__ -> b,c or c,d
-            "workflow_type":"static_conditional_entry_point",
+        { # node a
+            "workflow_type":"node",
+            "flow_parameter": {
+                "name":"a",
+                "generator":"gen_return_node_value", 
+            },
+            "generator_parameter" : {"node_secret":"I'm A"},
+        },
+        { # normal_edge START-> a
+            "workflow_type":"edge",
             "flow_parameter":{
-                "conditions":[
-                    {
-                        "expression": {
-                            "eq": [{"type": "state_value", "name": "which"}, "cd"],
-                        },
-                        "result": ["c","d"]
-                    },
-                    {"default": ["b","c"]} 
-                ]
+                "start_key":"START",
+                "end_key":"a"
             },
         },
         { # node b
@@ -99,7 +100,21 @@ graph_settings = {
             },
             "generator_parameter" : {"node_secret":"I'm E"},
         },
-
+        { # 静的条件付きエッジ a -> b,c or c,d
+            "workflow_type":"static_conditional_edge",
+            "flow_parameter":{
+                "start_key":"a",
+                "conditions":[
+                    {
+                        "expression": {
+                            "eq": [{"type": "state_value", "name": "which"}, "cd"],
+                        },
+                        "result": ["c","d"]
+                    },
+                    {"default": ["b","c"]} 
+                ]
+            },
+        },
         { # normal_edge b,c,d -> e
             "workflow_type":"edge",
             "flow_parameter": {
