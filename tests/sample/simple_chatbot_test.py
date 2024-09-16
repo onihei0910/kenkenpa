@@ -33,7 +33,7 @@ graph_settings = {
         "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
             {
                 "field_name": "messages",
-                "type": "AnyMessage",
+                "type": "list",
                 "reducer":"add_messages"
             },
         ],
@@ -70,7 +70,7 @@ def test_sample_simple_chatbot():
     workflow_builder = StateGraphBuilder(graph_settings)
 
     # 使用する型を登録します。
-    workflow_builder.add_type("AnyMessage",AnyMessage)
+    #workflow_builder.add_type("AnyMessage",AnyMessage)
     # 使用するreducerを登録します。
     workflow_builder.add_reducer("add_messages",add_messages)
 
@@ -100,7 +100,6 @@ def test_sample_simple_chatbot():
     )
     for event in events:
         number_of_events = number_of_events + 1
-        #event["messages"][-1].pretty_print()
-        print(event["messages"][-1])
+        event["messages"][-1].pretty_print()
 
     assert number_of_events == 2

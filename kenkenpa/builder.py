@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional, Type, Any
 
 from langgraph.graph import  StateGraph
 
@@ -7,14 +7,32 @@ from kenkenpa.edges import gen_static_conditional_edge
 from kenkenpa.common import to_list_key
 
 class StateGraphBuilder():
-    def __init__(self,graph_settings,config_schema=None):
+    def __init__(
+        self,
+        graph_settings:Dict,
+        config_schema:Optional[Type[Any]]=None,
+        node_generators:Dict=None,
+        evaluete_functions:Dict=None,
+        reducers:Dict=None,
+        types:Dict=None,
+        ):
         self.graph_settings = graph_settings
         self.config_schema = config_schema
-        self.node_generators = {}
-        self.evaluete_functions = {}
+        if node_generators:
+            self.node_generators = node_generators
+        else:
+            self.node_generators = {}
+
+        if evaluete_functions:
+            self.evaluete_functions = evaluete_functions
+        else:
+            self.evaluete_functions = {}
+        
+        self.statebuilder = StateBuilder(types,reducers)
+
         self.workflow = {}
         self.custom_state = None
-        self.statebuilder = StateBuilder()
+        
 
     def gen_stategraph(self):
         self.workflow = self._gen_workflow(self.graph_settings)
