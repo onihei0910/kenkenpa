@@ -70,6 +70,9 @@ def test_statebuilder_type():
     with pytest.raises(ValueError, match="登録済みの型: dummy_type"):
         state_builder.add_type("dummy_type", DummyState) # 同じ名前の型を登録しようとする。
 
+    with pytest.raises(ValueError, match="登録されていない型: unresister_type"):
+        state_builder._get_type("unresister_type") 
+
 
 def test_statebuilder_reducer():
     def dummy_func():
