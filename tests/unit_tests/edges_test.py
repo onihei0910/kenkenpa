@@ -427,3 +427,27 @@ def test_static_conditional_handler_evaluate_conditions():
     
     exc_info = pytest.raises(ValueError, handler._evaluate_conditions, conditions, {},{})
     assert str(exc_info.value) == "一致する条件が見つからず、デフォルト関数が提供されていません"
+
+
+def test_static_conditional_handler_call_edge():
+    evaluate_functions = {}
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                        {"eq": ["10", "10"]},
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": "Result_Value"
+            },
+            {"default": "Default_Value"} 
+        ]
+
+    handler = StaticConditionalHandler(
+        conditions,
+        evaluate_functions
+    )
+
+    assert handler.call_edge({},{}) == ["Result_Value"]
