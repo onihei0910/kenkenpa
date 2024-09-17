@@ -82,6 +82,9 @@ def test_statebuilder_reducer():
     
     assert state_builder._get_reducer("test") == dummy_func
 
+    with pytest.raises(ValueError, match="登録されていない関数: unresister"):
+        state_builder._get_reducer("unresister",)  # 同じ名前のリデューサーを追加しようとする    
+
 def test_statebuilder_gen_state():
     def reduce_test(left, right):
         pass
