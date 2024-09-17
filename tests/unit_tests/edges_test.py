@@ -201,3 +201,229 @@ def test_static_conditional_handler_evaluate_expr():
     expr = {"eq": [{"type": "function", "name": "error_function_name"}, "func_return_value_a"]}
     exc_info = pytest.raises(ValueError, handler._evaluate_expr, expr, {},{})
     assert str(exc_info.value) == "関数 error_function_name が evaluate_functions に見つかりません"
+
+    exc_info = pytest.raises(ValueError, handler._evaluate_expr, "NON_DICT_DATA", {},{})
+    assert str(exc_info.value) == "式は辞書である必要があります"
+
+def test_static_conditional_handler_evaluate_conditions():
+    evaluate_functions = {}
+    conditions = []
+
+    handler = StaticConditionalHandler(
+        conditions,
+        evaluate_functions
+    )
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                        {"eq": ["10", "10"]},
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": "Result_Value"
+            },
+            {"default": "Default_Value"} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Result_Value"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "9"]},
+                        {"eq": ["10", "9"]},
+                        {"eq": ["10", "9"]},
+                    ],
+                },
+                "result": "Result_Value"
+            },
+            {"default": "Default_Value"} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Default_Value"]
+
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                        {"eq": ["10", "10"]},
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": ["Result_Value"]
+            },
+            {"default": ["Default_Value"]} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Result_Value"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "9"]},
+                        {"eq": ["10", "9"]},
+                        {"eq": ["10", "9"]},
+                    ],
+                },
+                "result": ["Result_Value"]
+            },
+            {"default": ["Default_Value"]} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Default_Value"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": "Result_Value_A"
+            },
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": "Result_Value_B"
+            },
+            {"default": "Default_Value"} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Result_Value_A","Result_Value_B"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": ["Result_Value_A_1","Result_Value_A_2"]
+            },
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": "Result_Value_B"
+            },
+            {"default": "Default_Value"} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Result_Value_A_1","Result_Value_A_2","Result_Value_B"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": ["Result_Value_A_1","Result_Value_A_2"]
+            },
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": ["Result_Value_B"] # arry
+            },
+            {"default": "Default_Value"} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Result_Value_A_1","Result_Value_A_2","Result_Value_B"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "9"]},
+                    ],
+                },
+                "result": ["Result_Value_A_1","Result_Value_A_2"]
+            },
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "9"]},
+                    ],
+                },
+                "result": ["Result_Value_B"] # arry
+            },
+            {"default": "Default_Value"} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Default_Value"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "9"]},
+                    ],
+                },
+                "result": ["Result_Value_A_1","Result_Value_A_2"]
+            },
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "9"]},
+                    ],
+                },
+                "result": ["Result_Value_B"] # arry
+            },
+            {"default": ["Default_Value_1","Default_Value_2"]} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Default_Value_1","Default_Value_2"]
+
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {
+                            "or":[
+                                {
+                                    "and":[
+                                        {"eq": ["10", "10"]},
+                                        ]
+                                },
+                                {"eq": ["10", "10"]}
+                                ]
+                        },
+                        {"eq": ["10", "10"]},
+                    ],
+                },
+                "result": "Result_Value"
+            },
+            {"default": "Default_Value"} 
+        ]
+    
+    assert handler._evaluate_conditions(conditions,{},{}) == ["Result_Value"]
+
+    conditions = [
+            {
+                "expression": {
+                    "and":[
+                        {"eq": ["10", "9"]},
+                    ],
+                },
+                "result": ["Result_Value"]
+            },
+        ]
+    
+    exc_info = pytest.raises(ValueError, handler._evaluate_conditions, conditions, {},{})
+    assert str(exc_info.value) == "一致する条件が見つからず、デフォルト関数が提供されていません"

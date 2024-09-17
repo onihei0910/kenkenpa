@@ -22,21 +22,14 @@ class StaticConditionalHandler:
         end_points (list): A list of possible end points extracted from the conditions.
     """
     def __init__(self,conditions,evaluate_functions):
-        """
-        Initializes the StaticConditionalHandler with conditions and evaluation functions.
-
-        Args:
-            conditions (list): A list of conditions to evaluate.
-            evaluate_functions (dict): A dictionary of functions used to evaluate conditions.
-        """
         self.conditions = conditions
         self.evaluate_functions = evaluate_functions
 
     def call_edge(self, state,config):
-        results = self.evaluate_conditions(state, self.conditions, config)
+        results = self._evaluate_conditions(self.conditions, state, config)
         return results
 
-    def evaluate_conditions(self, state, conditions, config):
+    def _evaluate_conditions(self, conditions, state, config):
         results = []
         for condition in conditions:
             if "expression" in condition and self._evaluate_expr(
