@@ -73,7 +73,6 @@ def test_statebuilder_type():
     with pytest.raises(ValueError, match="登録されていない型: unresister_type"):
         state_builder._get_type("unresister_type") 
 
-
 def test_statebuilder_reducer():
     def dummy_func():
         pass
@@ -101,8 +100,6 @@ def test_statebuilder_gen_state():
         udf: Annotated[DummyType, reduce_test]
         scalar: str
 
-
-
     test_state = [ 
             {
                 "field_name": "operatoradd", #フィールド名
@@ -124,7 +121,6 @@ def test_statebuilder_gen_state():
     state_builder.add_type("DummyType",DummyType)
     state_builder.add_reducer("add",operator.add)
     state_builder.add_reducer("reduce_test",reduce_test)
-
 
     assert 'operatoradd' in TestState.__annotations__
 
@@ -167,8 +163,6 @@ def test_statebuilder_gen_state_init():
         operatoradd: Annotated[list, operator.add]
         udf: Annotated[DummyType, reduce_test]
         scalar: str
-
-
 
     test_state = [ 
             {
