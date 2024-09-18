@@ -36,7 +36,7 @@ tools = {
     "search_unknown":search_un
     }
 
-# Toolノードのジェネレーター関数を定義します。
+# Toolノードのファクトリー関数を定義します。
 def gen_tool_node(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -47,7 +47,7 @@ def gen_tool_node(factory_parameter,flow_parameter):
     tool_node = ToolNode(tool_functions)
     return tool_node
 
-# agentノードのジェネレーター関数を定義します。
+# agentノードのファクトリー関数を定義します。
 def gen_agent(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -163,7 +163,7 @@ def test_sample_react_agent():
     # 使用するreducerを登録します。
     stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # stategraph_builderにノードジェネレーターを登録しておきます。
+    # stategraph_builderにノードファクトリーを登録しておきます。
     stategraph_builder.add_node_factory("agent_node_factory",gen_agent)
     stategraph_builder.add_node_factory("tool_node_factory",gen_tool_node)
 

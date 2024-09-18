@@ -13,7 +13,7 @@ from kenkenpa.builder import StateGraphBuilder
     # The operator.add reducer fn makes this append-only
     # aggregate: Annotated[list, operator.add]
 
-# ReturnNodeValueを返すジェネレーター関数を定義します。
+# ReturnNodeValueを返すファクトリー関数を定義します。
 def gen_return_node_value(factory_parameter,flow_parameter):
 
     class ReturnNodeValue:
@@ -117,7 +117,7 @@ def test_parallel_node():
     # Stateで使用するreducerをマッピングします。
     stategraph_builder.add_reducer("add",operator.add)
 
-    # stategraph_builderにノードジェネレーターを登録しておきます。
+    # stategraph_builderにノードファクトリーを登録しておきます。
     stategraph_builder.add_node_factory("gen_return_node_value",gen_return_node_value)
 
     # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
