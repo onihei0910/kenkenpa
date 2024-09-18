@@ -1,6 +1,5 @@
 from kenkenpa.builder import extract_literals
 
-
 def test_extract_literals():
     conditions = [
             {
