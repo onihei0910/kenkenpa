@@ -19,8 +19,8 @@ def chatbot(state,config):
     return {"messages":[llm.invoke(state["messages"])]}
 
 # chatbotとは別に、定義したchatbotを返すジェネレーター関数を定義します。
-def gen_chatbot_agent(generator_parameter,flow_parameter):
-    """chatbot node generator"""
+def gen_chatbot_agent(factory_parameter,flow_parameter):
+    """chatbot node factory"""
     return chatbot
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
@@ -41,9 +41,9 @@ graph_settings = {
             "graph_type":"node",
             "flow_parameter": {
                 "name":"chatbot_agent",
-                # generatorに定義したジェネレーター関数gen_chatbot_agentとマッピングする文字列を指定します。
+                # factoryに定義したジェネレーター関数gen_chatbot_agentとマッピングする文字列を指定します。
                 # マッピングはコード実行時に指定します。
-                "generator":"chatbot_generator", 
+                "factory":"chatbot_factory", 
             },
         },
         { # normal_edge START-> chatbot_agent
@@ -73,9 +73,9 @@ def test_sample_simple_chatbot():
     stategraph_builder.add_reducer("add_messages",add_messages)
 
     # stategraph_builderにノードジェネレーターを登録しておきます。
-    # ここでは、gen_chatbot_agent関数をchatbot_generatorにマッピングしています。
+    # ここでは、gen_chatbot_agent関数をchatbot_factoryにマッピングしています。
     # graph_settingsに記載したキー値と一致しているか確認してください。
-    stategraph_builder.add_node_generator("chatbot_generator",gen_chatbot_agent)
+    stategraph_builder.add_node_factory("chatbot_factory",gen_chatbot_agent)
 
     # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
     stategraph = stategraph_builder.gen_stategraph()

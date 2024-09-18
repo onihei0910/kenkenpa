@@ -11,17 +11,17 @@ class StateGraphBuilder():
         self,
         graph_settings:Dict,
         config_schema:Optional[Type[Any]]=None,
-        node_generators:Dict=None,
+        node_factorys:Dict=None,
         evaluete_functions:Dict=None,
         reducers:Dict=None,
         types:Dict=None,
         ):
         self.graph_settings = graph_settings
         self.config_schema = config_schema
-        if node_generators:
-            self.node_generators = node_generators
+        if node_factorys:
+            self.node_factorys = node_factorys
         else:
-            self.node_generators = {}
+            self.node_factorys = {}
 
         if evaluete_functions:
             self.evaluete_functions = evaluete_functions
@@ -38,8 +38,8 @@ class StateGraphBuilder():
         self.stategraph = self._gen_stategraph(self.graph_settings)
         return self.stategraph
 
-    def add_node_generator(self,name:str,function):
-        self.node_generators[name] = function
+    def add_node_factory(self,name:str,function):
+        self.node_factorys[name] = function
 
     def add_evaluete_function(self,name:str,function):
         self.evaluete_functions[name] = function
@@ -61,7 +61,7 @@ class StateGraphBuilder():
         for flow in stategraph_settings.get("flows",[]):
             graph_type = flow.get('graph_type')
             flow_parameter = flow.get('flow_parameter',{})
-            generator_parameter = flow.get('generator_parameter',{})
+            factory_parameter = flow.get('factory_parameter',{})
 
             if graph_type == "stategraph":
                 node_name = flow_parameter['name']
@@ -70,12 +70,12 @@ class StateGraphBuilder():
 
             elif graph_type == "node":
                 node_name = flow_parameter['name']
-                generator = flow_parameter['generator']
+                factory = flow_parameter['factory']
 
-                add_agent_function = self.node_generators[generator]
+                add_agent_function = self.node_factorys[factory]
 
                 node_func = add_agent_function(
-                    generator_parameter = generator_parameter,
+                    factory_parameter = factory_parameter,
                     flow_parameter = flow_parameter,
                     )
 
