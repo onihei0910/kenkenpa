@@ -35,9 +35,9 @@ tools = {
     "search_unknown":search_un
     }
 
-# Toolノードのジェネレーター関数を定義します。
-def gen_tool_node(generator_parameter,flow_parameter):
-    functions = generator_parameter['functions']
+# Toolノードのファクトリー関数を定義します。
+def gen_tool_node(factory_parameter,flow_parameter):
+    functions = factory_parameter['functions']
 
     tool_functions = []
     for function in functions:
@@ -46,8 +46,8 @@ def gen_tool_node(generator_parameter,flow_parameter):
     tool_node = ToolNode(tool_functions)
     return tool_node
 
-def gen_agent(generator_parameter,flow_parameter):
-    functions = generator_parameter['functions']
+def gen_agent(factory_parameter,flow_parameter):
+    functions = factory_parameter['functions']
 
     tool_functions = []
     for function in functions:
@@ -97,9 +97,9 @@ react_agent_subgraph = {
             "graph_type":"node",
             "flow_parameter":{
                 "name":"agent",
-                "generator":"agent_node_generator",
+                "factory":"agent_node_factory",
             },
-            "generator_parameter" : {
+            "factory_parameter" : {
                 "functions":[
                     "search_function",
                 ],
@@ -109,9 +109,9 @@ react_agent_subgraph = {
             "graph_type":"node",
             "flow_parameter":{
                 "name":"tools",
-                "generator":"tool_node_generator",
+                "factory":"tool_node_factory",
             },
-            "generator_parameter":{
+            "factory_parameter":{
                 "functions":[
                     "search_function",
                 ],
@@ -191,9 +191,9 @@ def test_sample_subgraph():
     # 使用するreducerを登録します。
     stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # stategraph_builderにノードジェネレーターを登録しておきます。
-    stategraph_builder.add_node_generator("agent_node_generator",gen_agent)
-    stategraph_builder.add_node_generator("tool_node_generator",gen_tool_node)
+    # stategraph_builderにノードファクトリーを登録しておきます。
+    stategraph_builder.add_node_factory("agent_node_factory",gen_agent)
+    stategraph_builder.add_node_factory("tool_node_factory",gen_tool_node)
 
     # 同様に、評価関数も登録します。
     stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)

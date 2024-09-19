@@ -3,13 +3,14 @@ name = "kenkenpa"
 version = "0.1.0"
 description = "Generate a StateGraph of LangGraph that can be compiled from dictionary data."
 authors = ["ONIHEI0910 <17534339+onihei0910@users.noreply.github.com>"]
-license = "Apache-2.0"
+license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 langchain-core = "^0.3.0"
 langgraph = "^0.2.2"
+pydantic = "^2.9.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

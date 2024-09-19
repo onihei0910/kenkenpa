@@ -22,49 +22,18 @@ class StaticConditionalHandler:
         end_points (list): A list of possible end points extracted from the conditions.
     """
     def __init__(self,conditions,evaluate_functions):
-        """
-        Initializes the StaticConditionalHandler with conditions and evaluation functions.
-
-        Args:
-            conditions (list): A list of conditions to evaluate.
-            evaluate_functions (dict): A dictionary of functions used to evaluate conditions.
-        """
         self.conditions = conditions
         self.evaluate_functions = evaluate_functions
 
     def call_edge(self, state,config):
-        """
-        Evaluates the conditions based on the given state and config, and returns the result.
-
-        Args:
-            state (dict): The current state to evaluate.
-            config (dict): The configuration to use during evaluation.
-
-        Returns:
-            str: The result of the evaluated condition.
-        """
-        results = self.evaluate_conditions(state, self.conditions, config)
+        results = self._evaluate_conditions(self.conditions, state, config)
         return results
 
-    def evaluate_conditions(self, state, conditions, config):
-        """
-        Evaluates the conditions based on the given state and config, and returns the result.
-
-        Args:
-            state (dict): The current state to evaluate.
-            conditions (list): A list of conditions to evaluate.
-            config (dict): The configuration to use during evaluation.
-
-        Returns:
-            str: The result of the evaluated condition.
-
-        Raises:
-            ValueError: If no matching condition is found and no default function is provided.
-        """
+    def _evaluate_conditions(self, conditions, state, config):
         results = []
         for condition in conditions:
-            if "expression" in condition and self.evaluate_expr(
-                state, condition["expression"], config
+            if "expression" in condition and self._evaluate_expr(
+                condition["expression"], state, config
                 ):
                 
                 results.extend(to_list_key(condition["result"]))
@@ -81,22 +50,7 @@ class StaticConditionalHandler:
             
         raise ValueError("一致する条件が見つからず、デフォルト関数が提供されていません")
 
-    def evaluate_expr(self,state, expr, config):
-        """
-        Evaluates a single expression based on the given state and config.
-
-        Args:
-            state (dict): The current state to evaluate.
-            expr (dict): The expression to evaluate.
-            config (dict): The configuration to use during evaluation.
-
-        Returns:
-            bool: The result of the evaluated expression.
-
-        Raises:
-            ValueError: If the expression is not a dictionary or
-            contains unsupported types or operations.
-        """
+    def _evaluate_expr(self,expr, state, config):
         if not isinstance(expr, dict):
             raise ValueError("式は辞書である必要があります")
 
@@ -104,6 +58,8 @@ class StaticConditionalHandler:
             if isinstance(item, dict):
                 if item["type"] == "state_value":
                     return state.get(item["name"])
+                elif item["type"] == "config_value":
+                    return config.get(item["name"])
                 elif item["type"] == "function":
                     func_name = item["name"]
                     if func_name not in self.evaluate_functions:
@@ -117,11 +73,11 @@ class StaticConditionalHandler:
 
         for op, args in expr.items():
             if op == "and":
-                return all(self.evaluate_expr(state, sub_expr,  config) for sub_expr in args)
+                return all(self._evaluate_expr(sub_expr, state, config) for sub_expr in args)
             elif op == "or":
-                return any(self.evaluate_expr(state, sub_expr,  config) for sub_expr in args)
+                return any(self._evaluate_expr(sub_expr, state, config) for sub_expr in args)
             elif op == "not":
-                return not self.evaluate_expr(state, args,  config)
+                return not self._evaluate_expr(args, state, config)
             elif op in {"==", "!=", ">", ">=", "<", "<=",
                         "equals","not_equals","greater_than","greater_than_or_equals",
                         "less_than","less_than_or_equals",
@@ -134,7 +90,6 @@ class StaticConditionalHandler:
             else:
                 raise ValueError(f"サポートされていない演算: {op}")
             
-
 def compare_values(op,left_value,right_value):
     comparison_operations = {
         "==": lambda x, y: x == y,

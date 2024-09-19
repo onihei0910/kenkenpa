@@ -20,8 +20,8 @@ from kenkenpa.builder import StateGraphBuilder
     #    return ["c", "d"]
     #return ["b", "c"]
 
-# ReturnNodeValueを返すジェネレーター関数を定義します。
-def gen_return_node_value(generator_parameter,flow_parameter):
+# ReturnNodeValueを返すファクトリー関数を定義します。
+def gen_return_node_value(factory_parameter,flow_parameter):
 
     class ReturnNodeValue:
         def __init__(self, node_secret: str):
@@ -31,7 +31,7 @@ def gen_return_node_value(generator_parameter,flow_parameter):
             print(f"Adding {self._value} to {state['aggregate']}")
             return {"aggregate": [self._value]}
     
-    object = ReturnNodeValue(generator_parameter['node_secret'])
+    object = ReturnNodeValue(factory_parameter['node_secret'])
     return object
 
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
@@ -52,57 +52,9 @@ graph_settings = {
         ],
     },
     "flows": [
-        { # node a
-            "graph_type":"node",
-            "flow_parameter": {
-                "name":"a",
-                "generator":"gen_return_node_value", 
-            },
-            "generator_parameter" : {"node_secret":"I'm A"},
-        },
-        { # normal_edge START-> a
-            "graph_type":"edge",
+        { # 静的条件付きエッジ __start__ -> b,c or c,d
+            "graph_type":"static_conditional_entry_point",
             "flow_parameter":{
-                "start_key":"START",
-                "end_key":"a"
-            },
-        },
-        { # node b
-            "graph_type":"node",
-            "flow_parameter": {
-                "name":"b",
-                "generator":"gen_return_node_value", 
-            },
-            "generator_parameter" : {"node_secret":"I'm B"},
-        },
-        { # node c
-            "graph_type":"node",
-            "flow_parameter": {
-                "name":"c",
-                "generator":"gen_return_node_value", 
-            },
-            "generator_parameter" : {"node_secret":"I'm C"},
-        },
-        { # node d
-            "graph_type":"node",
-            "flow_parameter": {
-                "name":"d",
-                "generator":"gen_return_node_value", 
-            },
-            "generator_parameter" : {"node_secret":"I'm D"},
-        },
-        { # node e
-            "graph_type":"node",
-            "flow_parameter": {
-                "name":"e",
-                "generator":"gen_return_node_value", 
-            },
-            "generator_parameter" : {"node_secret":"I'm E"},
-        },
-        { # 静的条件付きエッジ a -> b,c or c,d
-            "graph_type":"static_conditional_edge",
-            "flow_parameter":{
-                "start_key":"a",
                 "conditions":[
                     {
                         "expression": {
@@ -114,6 +66,39 @@ graph_settings = {
                 ]
             },
         },
+        { # node b
+            "graph_type":"node",
+            "flow_parameter": {
+                "name":"b",
+                "factory":"gen_return_node_value", 
+            },
+            "factory_parameter" : {"node_secret":"I'm B"},
+        },
+        { # node c
+            "graph_type":"node",
+            "flow_parameter": {
+                "name":"c",
+                "factory":"gen_return_node_value", 
+            },
+            "factory_parameter" : {"node_secret":"I'm C"},
+        },
+        { # node d
+            "graph_type":"node",
+            "flow_parameter": {
+                "name":"d",
+                "factory":"gen_return_node_value", 
+            },
+            "factory_parameter" : {"node_secret":"I'm D"},
+        },
+        { # node e
+            "graph_type":"node",
+            "flow_parameter": {
+                "name":"e",
+                "factory":"gen_return_node_value", 
+            },
+            "factory_parameter" : {"node_secret":"I'm E"},
+        },
+
         { # normal_edge b,c,d -> e
             "graph_type":"edge",
             "flow_parameter": {
@@ -142,8 +127,8 @@ def test_conditional_branching():
     # Stateで使用するreducerをマッピングします。
     stategraph_builder.add_reducer("add",operator.add)
 
-    # stategraph_builderにノードジェネレーターを登録しておきます。
-    stategraph_builder.add_node_generator("gen_return_node_value",gen_return_node_value)
+    # stategraph_builderにノードファクトリーを登録しておきます。
+    stategraph_builder.add_node_factory("gen_return_node_value",gen_return_node_value)
 
     # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
     stategraph = stategraph_builder.gen_stategraph()
