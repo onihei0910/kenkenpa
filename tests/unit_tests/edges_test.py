@@ -1,7 +1,6 @@
 import pytest
-import operator
 
-from typing_extensions import TypedDict, Annotated 
+from typing_extensions import TypedDict
 
 from kenkenpa.edges import StaticConditionalHandler
 from kenkenpa.edges import compare_values
