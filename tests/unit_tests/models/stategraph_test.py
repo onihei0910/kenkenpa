@@ -32,13 +32,13 @@ def test_KStateGraphParam():
         "name":"Parallel-node",
         "state" : [ 
             {
-                "field_name": "aggregate", #フィールド名
-                "type": "list", # 型
-                "reducer":"add" # reducerと紐づけるキー
+                "field_name": "aggregate",
+                "type": "list",
+                "reducer":"add"
             },
             {
-                "field_name": "which", #フィールド名
-                "type": "str", # 型
+                "field_name": "which",
+                "type": "str",
             },
         ],
     }
@@ -60,18 +60,18 @@ def test_KStateGraph():
             "name":"Parallel-node",
             "state" : [ 
                 {
-                    "field_name": "aggregate", #フィールド名
-                    "type": "list", # 型
-                    "reducer":"add" # reducerと紐づけるキー
+                    "field_name": "aggregate",
+                    "type": "list",
+                    "reducer":"add"
                 },
                 {
-                    "field_name": "which", #フィールド名
-                    "type": "str", # 型
+                    "field_name": "which",
+                    "type": "str",
                 },
             ],
         },
         "flows": [
-            { # 静的条件付きエッジ __start__ -> b,c or c,d
+            {
                 "graph_type":"static_conditional_entry_point",
                 "flow_parameter":{
                     "conditions":[
@@ -85,7 +85,7 @@ def test_KStateGraph():
                     ]
                 },
             },
-            { # node b
+            {
                 "graph_type":"node",
                 "flow_parameter": {
                     "name":"b",
@@ -93,7 +93,7 @@ def test_KStateGraph():
                 },
                 "factory_parameter" : {"node_secret":"I'm B"},
             },
-            { # node c
+            {
                 "graph_type":"node",
                 "flow_parameter": {
                     "name":"c",
@@ -101,7 +101,7 @@ def test_KStateGraph():
                 },
                 "factory_parameter" : {"node_secret":"I'm C"},
             },
-            { # node d
+            {
                 "graph_type":"node",
                 "flow_parameter": {
                     "name":"d",
@@ -109,7 +109,7 @@ def test_KStateGraph():
                 },
                 "factory_parameter" : {"node_secret":"I'm D"},
             },
-            { # node e
+            {
                 "graph_type":"node",
                 "flow_parameter": {
                     "name":"e",
@@ -118,20 +118,38 @@ def test_KStateGraph():
                 "factory_parameter" : {"node_secret":"I'm E"},
             },
 
-            { # normal_edge b,c,d -> e
+            {
                 "graph_type":"edge",
                 "flow_parameter": {
                     "start_key":["b","c","d"],
                     "end_key":"e"
                 },
             },
-            { # normal_edge e -> END
+            {
                 "graph_type":"edge",
                 "flow_parameter": {
                     "start_key":"e",
                     "end_key":"END"
                 },
             },
+            {
+                "graph_type":"static_conditional_edge",
+                "flow_parameter":{
+                    "start_key":"agent",
+                    "conditions":[
+                        {
+                            "expression": {
+                                "eq": [
+                                    {"type": "function", "name": "is_tool_message_function"},
+                                    True
+                                    ],
+                            },
+                            "result": "tools"
+                        },
+                        {"default": "END"} 
+                    ]
+                },
+            }
         ]
     }
 

@@ -1,5 +1,5 @@
 from typing import List, Union, Dict, Any, Optional
-from pydantic import BaseModel, Field, root_validator,ConfigDict
+from pydantic import BaseModel, Field, ConfigDict
 
 class KOperandFunction_v1(BaseModel):
     type: str

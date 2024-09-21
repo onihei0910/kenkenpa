@@ -1,5 +1,5 @@
-from pydantic import BaseModel, ValidationError,ConfigDict
-from typing import List, Optional, Union, Dict, Any
+from pydantic import BaseModel, ConfigDict
+from typing import Optional, Union, Dict
 
 ## ノードフローパラメータ定義
 class KNodeParam_v1(BaseModel):
