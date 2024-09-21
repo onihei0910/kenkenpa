@@ -1,3 +1,3 @@
 # kenkenpa
 
-Generate a StateGraph of LangGraph that can be compiled from dictionary data.
+Generate a StateGraph of LangGraph that can be compiled from structured data.
