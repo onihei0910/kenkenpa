@@ -2,8 +2,8 @@ from pydantic import BaseModel, ValidationError,ConfigDict
 from typing import List, Optional, Union, Dict, Any
 
 class KEdgeParam_v1(BaseModel):
-    start_key: str
-    end_key: str
+    start_key: Union[List[str],str]
+    end_key: Union[List[str],str]
 
     model_config = ConfigDict(extra='forbid')
 
