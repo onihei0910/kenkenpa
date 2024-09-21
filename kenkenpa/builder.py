@@ -2,6 +2,12 @@ from typing import List, Dict, Union, Optional, Type, Any
 
 from langgraph.graph import  StateGraph
 
+from kenkenpa.models.stategraph import KStateGraph
+from kenkenpa.models.node import KNode
+from kenkenpa.models.edge import KEdge
+from kenkenpa.models.static_conditional_edge import StaticConditionalEdge
+from kenkenpa.models.static_conditional_entry_point import StaticConditionalEntoryPoint
+
 from kenkenpa.state import StateBuilder
 from kenkenpa.edges import gen_static_conditional_edge
 from kenkenpa.common import to_list_key
@@ -34,7 +40,6 @@ class StateGraphBuilder():
         self.stategraph = {}
         self.custom_state = None
         
-
     def gen_stategraph(self):
         self.stategraph = self._gen_stategraph(self.graph_settings)
         return self.stategraph
@@ -52,6 +57,9 @@ class StateGraphBuilder():
         self.statebuilder.add_type(name,type)
 
     def _gen_stategraph(self,stategraph_settings):
+        # バリデーションチェック
+        validate_state_graph(stategraph_settings)
+
         stategraph_flow_parameter = stategraph_settings.get("flow_parameter")
         state = stategraph_flow_parameter.get("state",[])
 
@@ -78,13 +86,13 @@ class StateGraphBuilder():
 
         return stategraph
 
-    def _add_stategraph(self,stategraph,flow):
+    def _add_stategraph(self,stategraph,flow: KStateGraph):
         flow_parameter = flow.get('flow_parameter',{})
         node_name = flow_parameter['name']
         substategraph = self._gen_stategraph(flow)
         stategraph.add_node(node_name,substategraph.compile())
 
-    def _add_node(self,stategraph,flow):
+    def _add_node(self,stategraph,flow: KNode):
         flow_parameter = flow.get('flow_parameter',{})
         factory_parameter = flow.get('factory_parameter',{})
         node_name = flow_parameter['name']
@@ -99,9 +107,8 @@ class StateGraphBuilder():
 
         stategraph.add_node(node_name,node_func)
     
-    def _add_edge(self,stategraph,flow):
+    def _add_edge(self,stategraph,flow: KEdge):
         flow_parameter = flow.get('flow_parameter',{})
-        validate_keys(flow_parameter['start_key'],flow_parameter['end_key'])
         
         start_key_list = to_list_key(flow_parameter['start_key'])
         end_key_list = to_list_key(flow_parameter['end_key'])
@@ -113,7 +120,7 @@ class StateGraphBuilder():
                     end_key = end_key
                 )
 
-    def _add_static_conditional_edge(self,stategraph,flow):
+    def _add_static_conditional_edge(self,stategraph,flow:StaticConditionalEdge):
         flow_parameter = flow.get('flow_parameter',{})
         start_key = flow_parameter['start_key']
         conditions = flow_parameter['conditions']
@@ -130,7 +137,8 @@ class StateGraphBuilder():
             path = edge_function,
             path_map = return_types
         )
-    def _add_static_conditional_entry_point(self,stategraph,flow):
+
+    def _add_static_conditional_entry_point(self,stategraph,flow: StaticConditionalEntoryPoint):
         flow_parameter = flow.get('flow_parameter',{})
         conditions = flow_parameter['conditions']
 
@@ -155,22 +163,7 @@ def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
             results.extend(to_list_key(condition['default']))
     return results
 
-def validate_keys(
-        start_key: Dict[str, Union[str, List[str]]],
-        end_key: Dict[str, Union[str, List[str]]]
-        ) -> bool:
-    
-    def is_valid_key(key):
-        return isinstance(key, str) or (isinstance(key, list) and all(isinstance(item, str) for item in key))
-    
-    if not is_valid_key(start_key) or not is_valid_key(end_key):
-        raise ValueError(f"start_keyとend_keyはstrかlist[str]である必要があります。\nstart_key:{start_key}\nend_key:{end_key}")
-    
-    start_key_is_list = isinstance(start_key, list) and len(start_key) > 1
-    end_key_is_list = isinstance(end_key, list) and len(end_key) > 1
-    
-    if start_key_is_list and end_key_is_list:
-        raise ValueError(f"start_key または end_key のいずれか一方のみが、要素が複数のリストであることができます。\nstart_key:{start_key}\nend_key:{end_key}")
-    
+def validate_state_graph(values) -> bool :
+    # バリデーションチェック
+    KStateGraph(**values)
     return True
-
