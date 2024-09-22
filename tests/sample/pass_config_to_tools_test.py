@@ -1,5 +1,5 @@
 """
-How to pass config to toolsの実装例
+How to pass config to toolsの実装例とconfig_valueの実験
 https://langchain-ai.github.io/langgraph/how-tos/pass-config-to-tools/
 """
 import operator
@@ -7,10 +7,10 @@ from typing import List
 
 from langchain_core.tools import tool
 from langchain_core.runnables.config import RunnableConfig
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage,ToolMessage
 
 from langgraph.prebuilt import ToolNode
-from langgraph.graph import  MessagesState,add_messages #TODO MessagesStateが使えない。。。
+from langgraph.graph import  MessagesState,add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_openai import ChatOpenAI
@@ -66,6 +66,19 @@ class AgentOpenAI():
         response = self.model_with_tools.invoke(messages)
         return {"messages": [response]}
 
+class Maintenance():
+    def __init__(self,factory_parameter,flow_parameter):
+        pass
+
+    def __call__(self,state: MessagesState):
+        """システムメンテナンス中"""
+        messages = state["messages"]
+        last_message = messages[-1]
+        additional_kwargs = last_message.additional_kwargs
+        call_id = additional_kwargs.get("tool_calls")[0].get("id")
+        response = ToolMessage(content='The system is currently under maintenance.',tool_call_id=call_id)
+        return {"messages": [response]}
+
 def is_tool_message(state:MessagesState,config,**kwargs):
     messages = state["messages"]
     last_message = messages[-1]
@@ -100,6 +113,13 @@ graph_settings = {
                 "factory":"tools_node_factory",
             }
         },
+        { # Maintenance node
+            "graph_type":"node",
+            "flow_parameter":{
+                "name":"Maintenance",
+                "factory":"Maintenance",
+            }
+        },
         {# edge START -> agent
             "graph_type":"edge",
             "flow_parameter":{
@@ -114,9 +134,23 @@ graph_settings = {
                 "conditions":[
                     {
                         "expression": {
-                            "eq": [{"type": "function", "name": "is_tool_message"}, True],
+                            "and":[
+                                {"eq": [{"type": "function", "name": "is_tool_message"}, True]},
+                                {"eq": [{"type": "config_value", "name":"tool_permission"}, True]}
+                                ]
+                            
                         },
                         "result": "tools"
+                    },
+                    {
+                        "expression": {
+                            "and":[
+                                {"eq": [{"type": "function", "name": "is_tool_message"}, True]},
+                                {"eq": [{"type": "config_value", "name":"tool_permission"}, False]}
+                                ]
+                            
+                        },
+                        "result": "Maintenance"
                     },
                     {"default": "END"} 
                 ]
@@ -126,6 +160,13 @@ graph_settings = {
             "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"tools",
+                "end_key":"agent"
+            },
+        },
+        {# edge Maintenance -> agent
+            "graph_type":"edge",
+            "flow_parameter":{
+                "start_key":"Maintenance",
                 "end_key":"agent"
             },
         },
@@ -142,6 +183,7 @@ def test_sample_pass_config_to_tools():
     # stategraph_builderにノードファクトリーを登録しておきます。
     stategraph_builder.add_node_factory("AgentOpenAI",AgentOpenAI)
     stategraph_builder.add_node_factory("tools_node_factory",tools_node_factory)
+    stategraph_builder.add_node_factory("Maintenance",Maintenance)
 
     # 同様に、評価関数も登録します。
     stategraph_builder.add_evaluete_function("is_tool_message", is_tool_message,)
@@ -158,11 +200,19 @@ def test_sample_pass_config_to_tools():
 
     user_to_pets.clear() # Clear the state
 
-    print(F"User information prior to run :{user_to_pets}")
+    print(f"User information prior to run :{user_to_pets}")
+
+    config = {
+        "configurable": {
+            "thread_id":42,
+            "user_id": "123",
+            "tool_permission": True
+        }
+    }
 
     inputs = ({"messages":[HumanMessage(content="my favorite pets are cats and dogs")]})
 
-    for output in app.stream(inputs,{"configurable": {"thread_id":42,"user_id": "123"}}):
+    for output in app.stream(inputs,config):
         # stream() yields dictionaries with output keyed by node name
         for key, value in output.items():
             print(f"Output from node '{key}':")
@@ -173,7 +223,7 @@ def test_sample_pass_config_to_tools():
     print(f"User information after the run: {user_to_pets}")
 
     inputs = {"messages": [HumanMessage(content="what are my favorite pets?")]}
-    for output in app.stream(inputs, {"configurable": {"thread_id":42,"user_id": "123"}}):
+    for output in app.stream(inputs,config):
         # stream() yields dictionaries with output keyed by node name
         for key, value in output.items():
             print(f"Output from node '{key}':")
@@ -189,7 +239,56 @@ def test_sample_pass_config_to_tools():
             HumanMessage(content="please forget what i told you about my favorite animals")
         ]
     }
-    for output in app.stream(inputs, {"configurable": {"thread_id":42,"user_id": "123"}}):
+    for output in app.stream(inputs, config):
+        # stream() yields dictionaries with output keyed by node name
+        for key, value in output.items():
+            print(f"Output from node '{key}':")
+            print("---")
+            print(value)
+        print("\n---\n")
+
+
+    print(f"User information after the run: {user_to_pets}")
+
+
+    config = {
+        "configurable": {
+            "thread_id":42,
+            "user_id": "123",
+            "tool_permission": False
+        }
+    }
+
+    inputs = ({"messages":[HumanMessage(content="my favorite pets are cats and dogs")]})
+
+    for output in app.stream(inputs,config):
+        # stream() yields dictionaries with output keyed by node name
+        for key, value in output.items():
+            print(f"Output from node '{key}':")
+            print("---")
+            print(value)
+        print("\n---\n")
+
+    print(f"User information after the run: {user_to_pets}")
+
+    inputs = {"messages": [HumanMessage(content="what are my favorite pets?")]}
+    for output in app.stream(inputs,config):
+        # stream() yields dictionaries with output keyed by node name
+        for key, value in output.items():
+            print(f"Output from node '{key}':")
+            print("---")
+            print(value)
+        print("\n---\n")
+
+
+    print(f"User information after the run: {user_to_pets}")
+
+    inputs = {
+        "messages": [
+            HumanMessage(content="please forget what i told you about my favorite animals")
+        ]
+    }
+    for output in app.stream(inputs, config):
         # stream() yields dictionaries with output keyed by node name
         for key, value in output.items():
             print(f"Output from node '{key}':")
