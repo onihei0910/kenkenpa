@@ -59,7 +59,7 @@ class StaticConditionalHandler:
                 if item["type"] == "state_value":
                     return state.get(item["name"])
                 elif item["type"] == "config_value":
-                    return config.get(item["name"]) # TODO これはlanggraphに合わせる必要あり。app.stream(inputs, {"configurable": {"user_id": "123"}})
+                    return config.get("configurable",{}).get(item["name"]) # TODO これはlanggraphに合わせる必要あり。app.stream(inputs, {"configurable": {"user_id": "123"}})
                 elif item["type"] == "function":
                     func_name = item["name"]
                     if func_name not in self.evaluate_functions:

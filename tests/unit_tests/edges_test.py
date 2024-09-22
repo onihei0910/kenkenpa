@@ -173,12 +173,12 @@ def test_static_conditional_handler_evaluate_expr():
 
     expr = {"eq": [{"type": "state_value", "name": "value_b1"},{"type": "config_value", "name": "value_b2"}]}
     state = {"value_b1":"result_b"}
-    config = {"value_b2":"result_b"}
+    config = {"configurable": {"value_b2":"result_b"}}
     assert handler._evaluate_expr(expr,state,config) == True
 
     expr = {"eq": [{"type": "config_value", "name": "value_c1"},{"type": "state_value", "name": "value_c2"}]}
     state = {"value_c2":"result_c"}
-    config = {"value_c1":"result_c"}
+    config = {"configurable": {"value_c1":"result_c"}}
     assert handler._evaluate_expr(expr,state,config) == True
 
     expr = {"eq": [{"type": "function", "name": "func_name_a"}, "func_return_value_a"]}
