@@ -12,12 +12,12 @@ class KConditionalEntoryPointFlowParam_v1(BaseModel):
 
 KConditionalEntoryPointFlowParam = Union[KConditionalEntoryPointFlowParam_v1]
 
-class StaticConditionalEntoryPoint_v1(BaseModel):
+class KStaticConditionalEntoryPoint_v1(BaseModel):
     graph_type:str
     flow_parameter:KConditionalEntoryPointFlowParam
     
     model_config = ConfigDict(extra='forbid')
 
-StaticConditionalEntoryPoint = Union[StaticConditionalEntoryPoint_v1]
+KStaticConditionalEntoryPoint = Union[KStaticConditionalEntoryPoint_v1]
 
 

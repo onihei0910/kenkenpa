@@ -14,7 +14,7 @@ KNodeParam = Union[KNodeParam_v1]
 class KNode_v1(BaseModel):
     graph_type: str
     flow_parameter: KNodeParam
-    factory_parameter: Optional[Union[Dict]] = None
+    factory_parameter: Optional[Dict] = None
 
     model_config = ConfigDict(extra='forbid')
 

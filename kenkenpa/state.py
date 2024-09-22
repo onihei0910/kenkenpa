@@ -55,7 +55,7 @@ class StateBuilder():
         }
 
         new_class = types.new_class(
-            'CustomState',
+            'State',
             (TypedDict,),
             exec_body=lambda ns: ns.update({
                 '__annotations__': annotations,

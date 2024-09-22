@@ -3,8 +3,8 @@ from pydantic import BaseModel, ConfigDict
 
 from kenkenpa.models.edge import KEdge
 from kenkenpa.models.node import KNode
-from kenkenpa.models.static_conditional_edge import StaticConditionalEdge
-from kenkenpa.models.static_conditional_entry_point import StaticConditionalEntoryPoint
+from kenkenpa.models.static_conditional_edge import KStaticConditionalEdge
+from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntoryPoint
 
 
 class KState_v1(BaseModel):
@@ -28,8 +28,8 @@ class KStateGraph_v1(BaseModel):
     flows:List[Union[
         KEdge,
         KNode,
-        StaticConditionalEdge,
-        StaticConditionalEntoryPoint,
+        KStaticConditionalEdge,
+        KStaticConditionalEntoryPoint,
         'KStateGraph'
     ]]
 
