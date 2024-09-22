@@ -23,6 +23,14 @@ def gen_chatbot_agent(factory_parameter,flow_parameter):
     """chatbot node factory"""
     return chatbot
 
+class Chatbot():
+    def __init__(self,factory_parameter,flow_parameter):
+        pass
+
+    def __call__(self,state,config):
+        return {"messages":[llm.invoke(state["messages"])]}
+
+
 # コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
     "graph_type":"stategraph",
@@ -75,7 +83,8 @@ def test_sample_simple_chatbot():
     # stategraph_builderにノードファクトリーを登録しておきます。
     # ここでは、gen_chatbot_agent関数をchatbot_factoryにマッピングしています。
     # graph_settingsに記載したキー値と一致しているか確認してください。
-    stategraph_builder.add_node_factory("chatbot_factory",gen_chatbot_agent)
+    #stategraph_builder.add_node_factory("chatbot_factory",gen_chatbot_agent)
+    stategraph_builder.add_node_factory("chatbot_factory",Chatbot)
 
     # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
     stategraph = stategraph_builder.gen_stategraph()

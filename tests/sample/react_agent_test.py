@@ -4,7 +4,6 @@ https://langchain-ai.github.io/langgraph/
 """
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
-from langchain_core.messages import AnyMessage
 from langchain_openai import ChatOpenAI
 
 from langgraph.graph import  add_messages
@@ -93,7 +92,7 @@ graph_settings = {
         ],
     },
     "flows":[
-        {
+        { # agent node
             "graph_type":"node",
             "flow_parameter":{
                 "name":"agent",
@@ -105,7 +104,7 @@ graph_settings = {
                 ],
             },
         },
-        {
+        { # tools node
             "graph_type":"node",
             "flow_parameter":{
                 "name":"tools",
@@ -117,14 +116,14 @@ graph_settings = {
                 ],
             },
         },
-        {# ノーマルエッジ
+        {# edge START -> agent
             "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"START",
                 "end_key":"agent"
             },
         },
-        {# 静的条件付きエッジ
+        {# coditional edge 
             "graph_type":"static_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
@@ -134,7 +133,7 @@ graph_settings = {
                         # この例では、定義した評価関数がTrueを返した場合に"tools"を返し、
                         # Falseを返した場合は"END"を返します。
                         # get_graph()メソッドを呼び出したときのエッジ描画の調整は自動で行います。
-                        # 評価式の構造や利用可能な演算子はドキュメントを参照してください。# TODO ドキュメント化
+                        # 評価式の構造や利用可能な演算子はドキュメントを参照してください。
                         "expression": {
                             "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
                         },
@@ -144,7 +143,7 @@ graph_settings = {
                 ]
             },
         },
-        {# ノーマルノード
+        {# edge tools -> agent
             "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"tools",
@@ -158,8 +157,6 @@ def test_sample_react_agent():
     # graph_settingsからStateGraphBuilderを生成します。
     stategraph_builder = StateGraphBuilder(graph_settings)
 
-    # 使用する型を登録します。
-    stategraph_builder.add_type("AnyMessage",AnyMessage)
     # 使用するreducerを登録します。
     stategraph_builder.add_reducer("add_messages",add_messages)
 
@@ -178,7 +175,7 @@ def test_sample_react_agent():
     app =  stategraph.compile(checkpointer=memory,debug=False)
 
     print(f"\ngraph")
-    app.get_graph(xray=10).print_ascii()
+    app.get_graph().print_ascii()
 
     final_state = app.invoke(
         {"messages": [HumanMessage(content="what is the weather in sf")]},

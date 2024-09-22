@@ -5,8 +5,8 @@ from langgraph.graph import  StateGraph
 from kenkenpa.models.stategraph import KStateGraph
 from kenkenpa.models.node import KNode
 from kenkenpa.models.edge import KEdge
-from kenkenpa.models.static_conditional_edge import StaticConditionalEdge
-from kenkenpa.models.static_conditional_entry_point import StaticConditionalEntoryPoint
+from kenkenpa.models.static_conditional_edge import KStaticConditionalEdge
+from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntoryPoint
 
 from kenkenpa.state import StateBuilder
 from kenkenpa.edges import gen_static_conditional_edge
@@ -120,7 +120,7 @@ class StateGraphBuilder():
                     end_key = end_key
                 )
 
-    def _add_static_conditional_edge(self,stategraph,flow:StaticConditionalEdge):
+    def _add_static_conditional_edge(self,stategraph,flow:KStaticConditionalEdge):
         flow_parameter = flow.get('flow_parameter',{})
         start_key = flow_parameter['start_key']
         conditions = flow_parameter['conditions']
@@ -138,7 +138,7 @@ class StateGraphBuilder():
             path_map = return_types
         )
 
-    def _add_static_conditional_entry_point(self,stategraph,flow: StaticConditionalEntoryPoint):
+    def _add_static_conditional_entry_point(self,stategraph,flow: KStaticConditionalEntoryPoint):
         flow_parameter = flow.get('flow_parameter',{})
         conditions = flow_parameter['conditions']
 

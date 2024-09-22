@@ -2,8 +2,8 @@ import pytest
 from kenkenpa.models.static_conditional_edge import KConditionalEdgeFlowParam_v1
 from kenkenpa.models.static_conditional_edge import KConditionalEdgeFlowParam
 
-from kenkenpa.models.static_conditional_edge import StaticConditionalEdge_v1
-from kenkenpa.models.static_conditional_edge import StaticConditionalEdge
+from kenkenpa.models.static_conditional_edge import KStaticConditionalEdge_v1
+from kenkenpa.models.static_conditional_edge import KStaticConditionalEdge
 
 def test_KConditionalEdgeFlowParam():
     flow_parameter = {
@@ -45,5 +45,5 @@ def test_StaticConditionalEdge():
             },
         }
     
-    StaticConditionalEdge_v1(**flow)
-    StaticConditionalEdge(**flow)
+    KStaticConditionalEdge_v1(**flow)
+    KStaticConditionalEdge(**flow)

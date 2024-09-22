@@ -12,11 +12,11 @@ class KConditionalEdgeFlowParam_v1(BaseModel):
 
 KConditionalEdgeFlowParam = Union[KConditionalEdgeFlowParam_v1]
 
-class StaticConditionalEdge_v1(BaseModel):
+class KStaticConditionalEdge_v1(BaseModel):
     graph_type:str
     flow_parameter:KConditionalEdgeFlowParam
     model_config = ConfigDict(extra='forbid')
 
-StaticConditionalEdge = Union[StaticConditionalEdge_v1]
+KStaticConditionalEdge = Union[KStaticConditionalEdge_v1]
 
 
