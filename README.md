@@ -578,6 +578,8 @@ conditional_edgeの定義です。
 
 ### `conditions`の定義(kenkenpa.models.conditions.KConditions)
 
+評価式の結果に応じて次のnodeを決定させるための定義です。少し詳しく説明します。
+
 ``` python
 "conditions":[
     {
@@ -589,3 +591,202 @@ conditional_edgeの定義です。
     {"default": "END"} 
 ]
 ```
+
+#### conditionsリスト
+
+1つのexpressionとresultを持つ評価式をリストとして定義できます。
+いずれのexpressionも偽となった場合はdefaultに指定されたnodeに遷移します。
+
+stateの値に応じてルーティングする場合は以下のような記述になります。
+
+``` python
+"conditions":[
+    {
+        "expression": {
+            "eq": [{"type": "state_value", "name": "next_node"}, "node_a"],
+        },
+        "result": "node_a"
+    },
+    {
+        "expression": {
+            "eq": [{"type": "state_value", "name": "next_node"}, "node_b"],
+        },
+        "result": "node_b"
+    },
+    {
+        "expression": {
+            "eq": [{"type": "state_value", "name": "next_node"}, "node_c"],
+        },
+        "result": "node_c"
+    },
+    {"default": "END"} 
+]
+```
+
+conditionsは、全ての評価式を評価し、結果がTrueになったすべてのresultを次のnodeに指定します。
+以下の例では、node_aとnode_bを返します。
+
+``` python
+"conditions":[
+    {
+        "expression": {
+            "eq": [True, True],
+        },
+        "result": "node_a"
+    },
+    {
+        "expression": {
+            "eq": [True, True],
+        },
+        "result": "node_b"
+    },
+    {"default": "END"} 
+]
+```
+
+- **expression**
+  比較式と論理式が使えます。
+
+- **比較式**
+
+  ``` python
+  "operator": [operand,operand]
+  ```
+
+- オペレータ
+  - `equals`,`eq`,`==`
+  - `not_equals`,`neq`,`!=`
+  - `greater_than`,`gt`,`>`
+  - `greater_than_or_equals`,`gte`,`>=`
+  - `less_than`,`lt`,`<`
+  - `less_than_or_equals`,`lte`,`<=`
+
+- オペランド
+  - state_value
+    stateの値を参照します。
+
+    ``` python
+    {"type":"state_value", "name":"state_key"}
+    ```
+
+  - config_value
+    configの値を参照します。
+
+    ``` python
+    {"type":"config_value", "name":"test_config_key"}
+    ```
+
+  - function
+    定義済みの評価関数を呼び出します。
+
+    ``` python
+    {"type":"function","name":"test_function","args":{"args_key":"args_value"}}
+    ```
+
+  - スカラー値
+    `int`,`float`,`complex`,`bool`,`str`,`bytes`,`None`
+
+- 使用例1
+
+    "is_tool_message_function"にマッピングした評価関数を呼び出し結果がTrueかを検証します。
+
+    ``` python
+    "expression": {
+        "eq": [
+            {"type": "function", "name": "is_tool_message_function"}, 
+            True
+        ],
+    }
+    ```
+
+    評価関数を使用するにはStateGraphBuilderにマッピングしておく必要があります。
+
+    ``` python
+    def is_tool_message(state, config, **kwargs):
+        """最後のメッセージがtool_callsかを評価します。"""
+        messages = state['messages']
+        last_message = messages[-1]
+        if last_message.tool_calls:
+            return True
+        return False
+    
+    # graph_settingsからStateGraphBuilderを生成します。
+    stategraph_builder = StateGraphBuilder(graph_settings)
+    # 評価関数の登録
+    stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
+
+    ```
+
+- 使用例2
+    stateの値を参照して"evaluate_value"かを検証します。
+
+    ``` python
+    "expression": {
+        "eq": [
+            {"type": "state_value", "name": "state_key"}, 
+            "evaluate_value"
+        ],
+    }
+    ```
+
+## 要改善
+- 使用例3
+    configの値を参照します
+
+    ``` python
+    class ConfigSchema(TypedDict):
+        dummy : str
+    ```
+
+- **論理式**
+
+  ``` python
+  "and": [評価式 or 論理式]
+  "or" : [評価式 or 論理式]
+  "not": 評価式 or 論理式
+  ```
+
+  ``` python
+  "expression": {
+      "and": [
+          {"eq": [{"type": "function", "name": "is_tool_message_function"}, True]},
+          {"eq": [{"type": "state_value", "name": "tool_call"}, True]},
+      ]
+  }
+  ```
+
+
+  ``` python
+  "expression": {
+      "or": [
+          {"eq": [{"type": "function", "name": "is_tool_message_function"}, True]},
+          {"eq": [{"type": "state_value", "name": "tool_call"}, True]},
+      ]
+  }
+  ```
+
+  ``` python
+  "expression": {
+      "not":{
+          "eq": [{"type": "function", "name": "is_tool_message_function"}, True]
+      }
+  }
+  ```
+
+  ``` python
+  "expression": {
+      "and":[
+          {
+              "or":[
+                  {
+                      "and":[
+                          {"eq": ["10", "10"]},
+                          ]
+                  },
+                  {"eq": ["10", "10"]}
+                  ]
+          },
+          {"eq": ["10", "10"]},
+      ],
+  }
+  ```
