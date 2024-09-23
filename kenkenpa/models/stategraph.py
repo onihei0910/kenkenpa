@@ -1,3 +1,7 @@
+"""
+This module defines data models for state graphs using Pydantic for validation.
+It includes models for state definitions, state graph parameters, and state graphs themselves, ensuring that certain constraints are met.
+"""
 from typing import List, Optional, Union
 from pydantic import BaseModel, ConfigDict
 
@@ -8,6 +12,14 @@ from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEnt
 
 
 class KState_v1(BaseModel):
+    """
+    KState_v1 represents the state with a field name, type, and an optional reducer.
+
+    Attributes:
+        field_name (str): The name of the field.
+        type (str): The type of the state.
+        reducer (Optional[str]): An optional reducer for the state.
+    """
     field_name:str
     type:str
     reducer:Optional[Union[str,None]] = None
@@ -17,12 +29,27 @@ class KState_v1(BaseModel):
 KState = Union[KState_v1]
 
 class KStateGraphParam_v1(BaseModel):
+    """
+    KStateGraphParam_v1 represents the parameters for a state graph.
+
+    Attributes:
+        name (str): The name of the state graph.
+        state (Optional[List[KState]]): An optional list of states in the graph.
+    """
     name: str
     state: Optional[Union[List[KState]]] = None
 
 KStateGraphParam = Union[KStateGraphParam_v1]
 
 class KStateGraph_v1(BaseModel):
+    """
+    KStateGraph_v1 represents a state graph with a type, flow parameters, and flows.
+
+    Attributes:
+        graph_type (str): The type of the graph.
+        flow_parameter (KStateGraphParam): The parameters for the state graph.
+        flows (List[Union[KEdge, KNode, KStaticConditionalEdge, KStaticConditionalEntoryPoint, 'KStateGraph']]): A list of flows in the graph.
+    """
     graph_type:str
     flow_parameter:KStateGraphParam
     flows:List[Union[

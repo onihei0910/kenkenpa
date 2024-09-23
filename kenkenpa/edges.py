@@ -1,35 +1,72 @@
 """
-This module provides functionality to add static conditional edges based on given
-conditions and evaluation functions.
-It includes a handler class `StaticConditionalHandler` to manage the conditions and evaluate them.
+This module provides functionality for generating and handling static conditional edges.
+It includes a function to generate a static conditional edge and a class to handle the evaluation of conditions.
 """
 from kenkenpa.common import to_list_key
 
 def gen_static_conditional_edge(conditions,evaluate_functions):
+    """
+    Generates a static conditional edge based on the provided conditions and evaluation functions.
 
+    Args:
+        conditions (List[Dict]): A list of conditions for the edge.
+        evaluate_functions (Dict[str, callable]): A dictionary of evaluation functions.
+
+    Returns:
+        callable: The function to call for the edge.
+    """
     conditional_edge = StaticConditionalHandler(conditions,evaluate_functions)
 
     return conditional_edge.call_edge
 
 class StaticConditionalHandler:
     """
-    A handler class to manage and evaluate static conditional edges based on given
-    conditions and evaluation functions.
+    StaticConditionalHandler evaluates conditions and returns results based on the state and configuration.
 
     Attributes:
-        conditions (list): A list of conditions to evaluate.
-        evaluate_functions (dict): A dictionary of functions used to evaluate conditions.
-        end_points (list): A list of possible end points extracted from the conditions.
+        conditions (List[Dict]): A list of conditions to evaluate.
+        evaluate_functions (Dict[str, callable]): A dictionary of evaluation functions.
     """
     def __init__(self,conditions,evaluate_functions):
+        """
+        Initializes the StaticConditionalHandler with conditions and evaluation functions.
+
+        Args:
+            conditions (List[Dict]): A list of conditions to evaluate.
+            evaluate_functions (Dict[str, callable]): A dictionary of evaluation functions.
+        """
         self.conditions = conditions
         self.evaluate_functions = evaluate_functions
 
     def call_edge(self, state,config):
+        """
+        Calls the edge based on the current state and configuration.
+
+        Args:
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            List: The results of the evaluated conditions.
+        """
         results = self._evaluate_conditions(self.conditions, state, config)
         return results
 
     def _evaluate_conditions(self, conditions, state, config):
+        """
+        Evaluates the conditions and returns the results.
+
+        Args:
+            conditions (List[Dict]): The conditions to evaluate.
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            List: The results of the evaluated conditions.
+
+        Raises:
+            ValueError: If no matching conditions are found and no default function is provided.
+        """
         results = []
         for condition in conditions:
             if "expression" in condition and self._evaluate_expr(
@@ -40,7 +77,7 @@ class StaticConditionalHandler:
         if results:
             return results
 
-        # どの条件も一致しない場合、デフォルトの関数を返す
+        # If none of the conditions match, return the default value.
         for condition in conditions:
             if "default" in condition:
                 results.extend(to_list_key(condition["default"]))
@@ -48,26 +85,40 @@ class StaticConditionalHandler:
         if results:
             return results
             
-        raise ValueError("一致する条件が見つからず、デフォルト関数が提供されていません")
+        raise ValueError("No matching conditions were found, and no default function was provided.")
 
     def _evaluate_expr(self,expr, state, config):
+        """
+        Evaluates an expression against the current state and configuration.
+
+        Args:
+            expr (Dict): The expression to evaluate.
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            bool: The result of the evaluation.
+
+        Raises:
+            ValueError: If the expression is not a dictionary.
+        """
         if not isinstance(expr, dict):
-            raise ValueError("式は辞書である必要があります")
+            raise ValueError("The formula must be a dictionary.")
 
         def get_value(item):
             if isinstance(item, dict):
                 if item["type"] == "state_value":
                     return state.get(item["name"])
                 elif item["type"] == "config_value":
-                    return config.get("configurable",{}).get(item["name"]) # TODO これはlanggraphに合わせる必要あり。app.stream(inputs, {"configurable": {"user_id": "123"}})
+                    return config.get("configurable",{}).get(item["name"])
                 elif item["type"] == "function":
                     func_name = item["name"]
                     if func_name not in self.evaluate_functions:
-                        raise ValueError(f"関数 {func_name} が evaluate_functions に見つかりません")
+                        raise ValueError(f"The function {func_name} cannot be found in evaluate_functions.")
                     args = item.get("args", {})
                     return self.evaluate_functions[func_name](state, config, **args)
                 else:
-                    raise ValueError(f"サポートされていないタイプ: {item['type']}")
+                    raise ValueError(f"Unsupported type: {item['type']}")
             else:
                 return item
 
@@ -88,7 +139,7 @@ class StaticConditionalHandler:
                 right_value = get_value(right_item)
                 return compare_values(op,left_value,right_value)
             else:
-                raise ValueError(f"サポートされていない演算: {op}")
+                raise ValueError(f"Unsupported operation: {op}")
             
 def compare_values(op,left_value,right_value):
     comparison_operations = {
@@ -114,4 +165,4 @@ def compare_values(op,left_value,right_value):
     if op in comparison_operations:
         return comparison_operations[op](left_value,right_value)
     else:
-        raise ValueError(f"サポートされていない比較演算子: {op}")
+        raise ValueError(f"Unsupported comparison operator: {op}")

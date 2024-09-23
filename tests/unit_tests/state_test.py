@@ -33,44 +33,44 @@ def test_statebuilder_type():
     assert state_builder._get_type("frozenset") == frozenset
     assert state_builder._get_type("bool") == bool
 
-    with pytest.raises(ValueError, match="予約済みの型: int"):
+    with pytest.raises(ValueError, match="Reserved type: int"):
         state_builder.add_type("int", int)
 
-    with pytest.raises(ValueError, match="予約済みの型: float"):
+    with pytest.raises(ValueError, match="Reserved type: float"):
         state_builder.add_type("float", float)
 
-    with pytest.raises(ValueError, match="予約済みの型: complex"):
+    with pytest.raises(ValueError, match="Reserved type: complex"):
         state_builder.add_type("complex", complex)
 
-    with pytest.raises(ValueError, match="予約済みの型: str"):
+    with pytest.raises(ValueError, match="Reserved type: str"):
         state_builder.add_type("str", str)
 
-    with pytest.raises(ValueError, match="予約済みの型: list"):
+    with pytest.raises(ValueError, match="Reserved type: list"):
         state_builder.add_type("list", list)
 
-    with pytest.raises(ValueError, match="予約済みの型: tuple"):
+    with pytest.raises(ValueError, match="Reserved type: tuple"):
         state_builder.add_type("tuple", tuple)
 
-    with pytest.raises(ValueError, match="予約済みの型: dict"):
+    with pytest.raises(ValueError, match="Reserved type: dict"):
         state_builder.add_type("dict", dict)
 
-    with pytest.raises(ValueError, match="予約済みの型: set"):
+    with pytest.raises(ValueError, match="Reserved type: set"):
         state_builder.add_type("set", set)
 
-    with pytest.raises(ValueError, match="予約済みの型: frozenset"):
+    with pytest.raises(ValueError, match="Reserved type: frozenset"):
         state_builder.add_type("frozenset", frozenset)
 
-    with pytest.raises(ValueError, match="予約済みの型: bool"):
+    with pytest.raises(ValueError, match="Reserved type: bool"):
         state_builder.add_type("bool", bool)
 
     class DummyState(TypedDict):
         dummy:str
 
     state_builder.add_type("dummy_type",DummyState)
-    with pytest.raises(ValueError, match="登録済みの型: dummy_type"):
-        state_builder.add_type("dummy_type", DummyState) # 同じ名前の型を登録しようとする。
+    with pytest.raises(ValueError, match="Registered type: dummy_type"):
+        state_builder.add_type("dummy_type", DummyState)
 
-    with pytest.raises(ValueError, match="登録されていない型: unresister_type"):
+    with pytest.raises(ValueError, match="Unregistered type: unresister_type"):
         state_builder._get_type("unresister_type") 
 
 def test_statebuilder_reducer():
@@ -79,13 +79,13 @@ def test_statebuilder_reducer():
 
     state_builder = StateBuilder()
     state_builder.add_reducer("test", dummy_func)  
-    with pytest.raises(ValueError, match="登録済みの関数: test"):
-        state_builder.add_reducer("test", dummy_func)  # 同じ名前のリデューサーを追加しようとする    
+    with pytest.raises(ValueError, match="Registered function: test"):
+        state_builder.add_reducer("test", dummy_func)
     
     assert state_builder._get_reducer("test") == dummy_func
 
-    with pytest.raises(ValueError, match="登録されていない関数: unresister"):
-        state_builder._get_reducer("unresister",)  # 同じ名前のリデューサーを追加しようとする    
+    with pytest.raises(ValueError, match="Unregistered function: unresister"):
+        state_builder._get_reducer("unresister",)
 
 def test_statebuilder_gen_state():
     def reduce_test(left, right):
@@ -95,25 +95,24 @@ def test_statebuilder_gen_state():
         dummy:str
 
     class TestState(TypedDict):
-    # The operator.add reducer fn makes this append-only
         operatoradd: Annotated[list, operator.add]
         udf: Annotated[DummyType, reduce_test]
         scalar: str
 
     test_state = [ 
             {
-                "field_name": "operatoradd", #フィールド名
-                "type": "list", # 型
-                "reducer":"add" # reducerと紐づけるキー
+                "field_name": "operatoradd",
+                "type": "list",
+                "reducer":"add"
             },
             {
-                "field_name": "udf", #フィールド名
-                "type": "DummyType", # 型
-                "reducer":"reduce_test" # reducerと紐づけるキー
+                "field_name": "udf",
+                "type": "DummyType",
+                "reducer":"reduce_test"
             },
             {
-                "field_name": "scalar", #フィールド名
-                "type": "str", # 型
+                "field_name": "scalar",
+                "type": "str",
             },
         ]
     
@@ -159,25 +158,24 @@ def test_statebuilder_gen_state_init():
         dummy:str
 
     class TestState(TypedDict):
-    # The operator.add reducer fn makes this append-only
         operatoradd: Annotated[list, operator.add]
         udf: Annotated[DummyType, reduce_test]
         scalar: str
 
     test_state = [ 
             {
-                "field_name": "operatoradd", #フィールド名
-                "type": "list", # 型
-                "reducer":"add" # reducerと紐づけるキー
+                "field_name": "operatoradd",
+                "type": "list",
+                "reducer":"add"
             },
             {
-                "field_name": "udf", #フィールド名
-                "type": "DummyType", # 型
-                "reducer":"reduce_test" # reducerと紐づけるキー
+                "field_name": "udf",
+                "type": "DummyType",
+                "reducer":"reduce_test"
             },
             {
-                "field_name": "scalar", #フィールド名
-                "type": "str", # 型
+                "field_name": "scalar",
+                "type": "str",
             },
         ]
     

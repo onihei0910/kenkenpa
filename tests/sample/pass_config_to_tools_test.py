@@ -1,5 +1,6 @@
 """
-How to pass config to toolsの実装例とconfig_valueの実験
+Implementation example of how to pass config to tools and experiment with config_value
+Some parts of the test code reuse the code described in the following URL.
 https://langchain-ai.github.io/langgraph/how-tos/pass-config-to-tools/
 """
 import operator
@@ -71,7 +72,7 @@ class Maintenance():
         pass
 
     def __call__(self,state: MessagesState):
-        """システムメンテナンス中"""
+        """System under maintenance"""
         messages = state["messages"]
         last_message = messages[-1]
         additional_kwargs = last_message.additional_kwargs
@@ -174,24 +175,24 @@ graph_settings = {
 }
 
 def test_sample_pass_config_to_tools():
-    # graph_settingsからStateGraphBuilderを生成します。
+    # Generate the StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)
 
-    # reducerを登録します
+    # Register the reducer to be used in the StateGraphBuilder.
     stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # stategraph_builderにノードファクトリーを登録しておきます。
+    # Register the node factory with the stategraph_builder.
     stategraph_builder.add_node_factory("AgentOpenAI",AgentOpenAI)
     stategraph_builder.add_node_factory("tools_node_factory",tools_node_factory)
     stategraph_builder.add_node_factory("Maintenance",Maintenance)
 
-    # 同様に、評価関数も登録します。
+    # Similarly, the evaluation function is also registered.
     stategraph_builder.add_evaluete_function("is_tool_message", is_tool_message,)
 
-    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    # The gen_stategraph method generates a compilable StateGraph.
     stategraph = stategraph_builder.gen_stategraph()
 
-    # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
+    # From here on, we will write the code following the general usage of LangGraph.
     memory = MemorySaver()
     app =  stategraph.compile(checkpointer=memory)
 

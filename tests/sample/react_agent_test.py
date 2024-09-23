@@ -1,5 +1,6 @@
 """
-このテストは、LangGraphのReact-Agentを例にkenkenpaの使用方法を説明します。
+This test explains how to use kenkenpa with the example of LangGraph's React-Agent.
+Part of the test code is borrowed from the code at the following URL.
 https://langchain-ai.github.io/langgraph/
 """
 from langchain_core.messages import HumanMessage
@@ -13,7 +14,7 @@ from langgraph.prebuilt import ToolNode
 from kenkenpa.builder import StateGraphBuilder
 
 
-# Toolノードは通常通り定義します。
+# Define the Tool node as usual.
 @tool
 def search(query: str):
     """Call to surf the web."""
@@ -22,20 +23,18 @@ def search(query: str):
         return "It's 60 degrees and foggy."
     return "It's 90 degrees and sunny."
 
-# 別のToolも定義しておきましょう。
+# define another Tool as well.
 @tool
 def search_un(query: str):
     """Call to surf the web."""
     return "I'm sorry, I don't understand."
 
-
-# 今回はnodeと同様に、キーマッピングの仕組みを使って説明します。
 tools = {
     "search_function":search,
     "search_unknown":search_un
     }
 
-# Toolノードのファクトリー関数を定義します。
+# Define the factory function for the Tool node.
 def gen_tool_node(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -46,7 +45,7 @@ def gen_tool_node(factory_parameter,flow_parameter):
     tool_node = ToolNode(tool_functions)
     return tool_node
 
-# agentノードのファクトリー関数を定義します。
+# Define the factory function for the agent node.
 def gen_agent(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -54,7 +53,7 @@ def gen_agent(factory_parameter,flow_parameter):
     for function in functions:
         tool_functions.append(tools[function])
     
-    # LLMの設定
+    # LLM
     model = ChatOpenAI(
         model="gpt-4o-mini"
     )
@@ -70,9 +69,10 @@ def gen_agent(factory_parameter,flow_parameter):
     
     return call_model
 
-# should_continueの代わりに最終メッセージがtool_callsかを評価する関数を定義します。
+# Define a function to evaluate whether the final message is a tool_call
+# instead of should_continue.
 def is_tool_message(state, config, **kwargs):
-    """最後のメッセージがtool_callsかを評価します。"""
+    """Evaluate whether the final message is a tool_call."""
     messages = state['messages']
     last_message = messages[-1]
     if last_message.tool_calls:
@@ -129,11 +129,11 @@ graph_settings = {
                 "start_key":"agent",
                 "conditions":[
                     {
-                        # ルーティングはここに記述します。
-                        # この例では、定義した評価関数がTrueを返した場合に"tools"を返し、
-                        # Falseを返した場合は"END"を返します。
-                        # get_graph()メソッドを呼び出したときのエッジ描画の調整は自動で行います。
-                        # 評価式の構造や利用可能な演算子はドキュメントを参照してください。
+                        # Routing is described here.
+                        # In this example, if the defined evaluation function returns True, it transitions to "tools",
+                        # and if it returns False, it transitions to "END".
+                        # The adjustment of edge drawing when calling the CompiledGraph.get_graph() method is done automatically.
+                        # Please refer to the README for the structure of the evaluation expressions and the available operators.
                         "expression": {
                             "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
                         },
@@ -154,23 +154,24 @@ graph_settings = {
 }
 
 def test_sample_react_agent():
-    # graph_settingsからStateGraphBuilderを生成します。
+    # Generate the StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)
 
-    # 使用するreducerを登録します。
+    # Register the reducer to be used in the StateGraphBuilder.
     stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # stategraph_builderにノードファクトリーを登録しておきます。
+    # Register the node factory with the stategraph_builder.
     stategraph_builder.add_node_factory("agent_node_factory",gen_agent)
     stategraph_builder.add_node_factory("tool_node_factory",gen_tool_node)
 
-    # 同様に、評価関数も登録します。
+    # Similarly, the evaluation function is also registered.
     stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
-    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    # The gen_stategraph method generates a compilable StateGraph.
     stategraph = stategraph_builder.gen_stategraph()
 
-    # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
+    # From here on, we will write the code following the general usage of LangGraph.
+    # Please note that this library does not involve config and checkpointer.
     memory = MemorySaver()
     app =  stategraph.compile(checkpointer=memory,debug=False)
 

@@ -1,3 +1,7 @@
+"""
+This module provides a StateGraphBuilder class for constructing state graphs based on provided settings.
+It includes methods for adding nodes, edges, and conditional edges, as well as for generating the state graph.
+"""
 from typing import List, Dict, Union, Optional, Type, Any
 
 from langgraph.graph import  StateGraph
@@ -13,6 +17,18 @@ from kenkenpa.edges import gen_static_conditional_edge
 from kenkenpa.common import to_list_key
 
 class StateGraphBuilder():
+    """
+    StateGraphBuilder is responsible for constructing a state graph based on provided settings.
+
+    Attributes:
+        graph_settings (Dict): The settings for the state graph.
+        config_schema (Optional[Type[Any]]): The schema for configuration.
+        node_factorys (Dict): A dictionary of node factory functions.
+        evaluete_functions (Dict): A dictionary of evaluation functions.
+        statebuilder (StateBuilder): An instance of StateBuilder for managing state.
+        stategraph (Dict): The constructed state graph.
+        custom_state (Any): The custom state generated for the graph.
+    """
     def __init__(
         self,
         graph_settings:Dict,
@@ -22,6 +38,17 @@ class StateGraphBuilder():
         reducers:Dict=None,
         types:Dict=None,
         ):
+        """
+        Initializes the StateGraphBuilder with provided settings, configuration schema, node factories, evaluation functions, reducers, and types.
+
+        Args:
+            graph_settings (Dict): The settings for the state graph.
+            config_schema (Optional[Type[Any]]): The schema for configuration.
+            node_factorys (Dict, optional): A dictionary of node factory functions. Defaults to an empty dictionary.
+            evaluete_functions (Dict, optional): A dictionary of evaluation functions. Defaults to an empty dictionary.
+            reducers (Dict, optional): A dictionary of reducers. Defaults to None.
+            types (Dict, optional): A dictionary of custom types. Defaults to None.
+        """
         self.graph_settings = graph_settings
         self.config_schema = config_schema
 
@@ -41,23 +68,66 @@ class StateGraphBuilder():
         self.custom_state = None
         
     def gen_stategraph(self):
+        """
+        Generates the state graph based on the provided settings.
+
+        Returns:
+            Dict: The constructed state graph.
+        """
         self.stategraph = self._gen_stategraph(self.graph_settings)
         return self.stategraph
 
     def add_node_factory(self,name:str,function):
+        """
+        Adds a node factory function to the builder.
+
+        Args:
+            name (str): The name of the node factory.
+            function (callable): The node factory function to add.
+        """
         self.node_factorys[name] = function
 
     def add_evaluete_function(self,name:str,function):
+        """
+        Adds an evaluation function to the builder.
+
+        Args:
+            name (str): The name of the evaluation function.
+            function (callable): The evaluation function to add.
+        """
         self.evaluete_functions[name] = function
 
     def add_reducer(self,name:str,function):
+        """
+        Adds a reducer function to the state builder.
+
+        Args:
+            name (str): The name of the reducer function.
+            function (callable): The reducer function to add.
+        """
         self.statebuilder.add_reducer(name,function)
 
     def add_type(self,name:str,type):
+        """
+        Adds a custom type to the state builder.
+
+        Args:
+            name (str): The name of the custom type.
+            type_ (type): The custom type to add.
+        """
         self.statebuilder.add_type(name,type)
 
     def _gen_stategraph(self,stategraph_settings):
-        # バリデーションチェック
+        """
+        Generates the state graph based on the provided settings.
+
+        Args:
+            stategraph_settings (Dict): The settings for the state graph.
+
+        Returns:
+            StateGraph: The constructed state graph.
+        """
+        # validate
         validate_state_graph(stategraph_settings)
 
         stategraph_flow_parameter = stategraph_settings.get("flow_parameter")
@@ -87,12 +157,26 @@ class StateGraphBuilder():
         return stategraph
 
     def _add_stategraph(self,stategraph,flow: KStateGraph):
+        """
+        Adds a sub-state graph to the main state graph.
+
+        Args:
+            stategraph (StateGraph): The main state graph.
+            flow (KStateGraph): The sub-state graph to add.
+        """
         flow_parameter = flow.get('flow_parameter',{})
         node_name = flow_parameter['name']
         substategraph = self._gen_stategraph(flow)
         stategraph.add_node(node_name,substategraph.compile())
 
     def _add_node(self,stategraph,flow: KNode):
+        """
+        Adds a node to the state graph.
+
+        Args:
+            stategraph (StateGraph): The state graph.
+            flow (KNode): The node to add.
+        """
         flow_parameter = flow.get('flow_parameter',{})
         factory_parameter = flow.get('factory_parameter',{})
         node_name = flow_parameter['name']
@@ -108,6 +192,13 @@ class StateGraphBuilder():
         stategraph.add_node(node_name,node_func)
     
     def _add_edge(self,stategraph,flow: KEdge):
+        """
+        Adds an edge to the state graph.
+
+        Args:
+            stategraph (StateGraph): The state graph.
+            flow (KEdge): The edge to add.
+        """
         flow_parameter = flow.get('flow_parameter',{})
         
         start_key_list = to_list_key(flow_parameter['start_key'])
@@ -121,6 +212,13 @@ class StateGraphBuilder():
                 )
 
     def _add_static_conditional_edge(self,stategraph,flow:KStaticConditionalEdge):
+        """
+        Adds a static conditional edge to the state graph.
+
+        Args:
+            stategraph (StateGraph): The state graph.
+            flow (KStaticConditionalEdge): The static conditional edge to add.
+        """
         flow_parameter = flow.get('flow_parameter',{})
         start_key = flow_parameter['start_key']
         conditions = flow_parameter['conditions']
@@ -139,6 +237,13 @@ class StateGraphBuilder():
         )
 
     def _add_static_conditional_entry_point(self,stategraph,flow: KStaticConditionalEntoryPoint):
+        """
+        Adds a static conditional entry point to the state graph.
+
+        Args:
+            stategraph (StateGraph): The state graph.
+            flow (KStaticConditionalEntoryPoint): The static conditional entry point to add.
+        """
         flow_parameter = flow.get('flow_parameter',{})
         conditions = flow_parameter['conditions']
 
@@ -155,6 +260,15 @@ class StateGraphBuilder():
         )
 
 def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
+    """
+    Extracts literals from the conditions.
+
+    Args:
+        conditions (List[Dict[str, Union[Dict, str]]]): The conditions to extract literals from.
+
+    Returns:
+        List[str]: A list of extracted literals.
+    """
     results = []
     for condition in conditions:
         if 'result' in condition:
@@ -164,6 +278,14 @@ def extract_literals(conditions: List[Dict[str, Union[Dict, str]]]) -> str:
     return results
 
 def validate_state_graph(values) -> bool :
-    # バリデーションチェック
+    """
+    Validates the state graph settings.
+
+    Args:
+        values (Dict): The state graph settings to validate.
+
+    Returns:
+        bool: True if the settings are valid, False otherwise.
+    """
     KStateGraph(**values)
     return True
