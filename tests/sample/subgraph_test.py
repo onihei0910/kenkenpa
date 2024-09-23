@@ -1,10 +1,11 @@
 """
-このテストでは、サブグラフの設定方法を説明します。
-react_agent_test.pyで説明したreact-agentをサブグラフとして設定します。
+In this test, we will explain how to set up a subgraph.
+We will define the react-agent, explained in react_agent_test.py, as a subgraph.
+Some parts of the test code reuse the code listed at the following URL.
+https://langchain-ai.github.io/langgraph/
 """
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
-from langchain_core.messages import AnyMessage
 
 from langchain_openai import ChatOpenAI
 from langgraph.graph import  add_messages
@@ -13,7 +14,7 @@ from langgraph.prebuilt import ToolNode
 
 from kenkenpa.builder import StateGraphBuilder
 
-# Toolノードは通常通り定義します。
+# Define the Tool node as usual.
 @tool
 def search(query: str):
     """Call to surf the web."""
@@ -22,20 +23,11 @@ def search(query: str):
         return "It's 60 degrees and foggy."
     return "It's 90 degrees and sunny."
 
-# 別のToolも定義しておきましょう。
-@tool
-def search_un(query: str):
-    """Call to surf the web."""
-    return "I'm sorry, I don't understand."
-
-
-# 今回はnodeと同様に、キーマッピングの仕組みを使って説明します。
 tools = {
     "search_function":search,
-    "search_unknown":search_un
     }
 
-# Toolノードのファクトリー関数を定義します。
+# Define the factory function for the Tool node.
 def gen_tool_node(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -46,6 +38,7 @@ def gen_tool_node(factory_parameter,flow_parameter):
     tool_node = ToolNode(tool_functions)
     return tool_node
 
+# Define the factory function for the agent node.
 def gen_agent(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -53,7 +46,6 @@ def gen_agent(factory_parameter,flow_parameter):
     for function in functions:
         tool_functions.append(tools[function])
     
-    # LLMの設定
     model = ChatOpenAI(
         model="gpt-4o-mini"
     )
@@ -69,7 +61,8 @@ def gen_agent(factory_parameter,flow_parameter):
     
     return call_model
 
-# should_continueの代わりに最終メッセージがtool_callsかを評価する関数を定義します。
+# Define a function to evaluate whether the final message is a tool_call
+# instead of should_continue.
 def is_tool_message(state, config, **kwargs):
     """最後のメッセージがtool_callsかを評価します。"""
     messages = state['messages']
@@ -78,12 +71,11 @@ def is_tool_message(state, config, **kwargs):
         return True
     return False
 
-# サブグラフの設定を定義します。
-# この定義はreact_agent_test.pyと全く同じものです。
+# Define the subgraph settings.
 react_agent_subgraph = {
     "graph_type":"stategraph",
     "flow_parameter":{
-        "name":"React-Agent-Subgraph",
+        "name":"React-Agent",
         "state" : [
             {
                 "field_name": "messages",
@@ -93,7 +85,7 @@ react_agent_subgraph = {
         ],
     },
     "flows":[
-        {
+        { # agent node
             "graph_type":"node",
             "flow_parameter":{
                 "name":"agent",
@@ -105,7 +97,7 @@ react_agent_subgraph = {
                 ],
             },
         },
-        {
+        { # tools node
             "graph_type":"node",
             "flow_parameter":{
                 "name":"tools",
@@ -117,29 +109,34 @@ react_agent_subgraph = {
                 ],
             },
         },
-        {# ノーマルエッジ
+        {# edge START -> agent
             "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"START",
                 "end_key":"agent"
             },
         },
-        {# 静的条件付きエッジ
+        {# coditional edge 
             "graph_type":"static_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
                 "conditions":[
                     {
+                        # Routing is described here.
+                        # In this example, if the defined evaluation function returns True, it transitions to "tools",
+                        # and if it returns False, it transitions to "END".
+                        # The adjustment of edge drawing when calling the CompiledGraph.get_graph() method is done automatically.
+                        # Please refer to the README for the structure of the evaluation expressions and the available operators.
                         "expression": {
                             "eq": [{"type": "function", "name": "is_tool_message_function"}, True],
                         },
-                        "result": "tools" 
+                        "result": "tools"
                     },
                     {"default": "END"} 
                 ]
             },
         },
-        {# ノーマルノード
+        {# edge tools -> agent
             "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"tools",
@@ -149,11 +146,11 @@ react_agent_subgraph = {
     ]
 }
 
-# 親グラフの設定を定義します。
+# Define the parent graph settings.
 graph_settings = {
     "graph_type":"stategraph",
     "flow_parameter":{
-        "name":"React-Agent",
+        "name":"Parent-Graph",
         "state" : [ 
             {
                 "field_name": "messages",
@@ -163,18 +160,18 @@ graph_settings = {
         ],
     },
     "flows":[
-        react_agent_subgraph, # flowsにreact_agent_subgraphを追加します。
-        {# ノーマルエッジ
+        react_agent_subgraph, #  add react_agent_subgraph to flows.
+        {# edge START -> React-Agent
             "graph_type":"edge",
             "flow_parameter":{
                 "start_key":"START",
-                "end_key":"React-Agent-Subgraph"
+                "end_key":"React-Agent"
             },
         },
-        {# ノーマルエッジ
+        {# edge React-Agent -> END
             "graph_type":"edge",
             "flow_parameter":{
-                "start_key":"React-Agent-Subgraph",
+                "start_key":"React-Agent",
                 "end_key":"END"
             },
         },
@@ -182,26 +179,23 @@ graph_settings = {
 }
 
 def test_sample_subgraph():
-
-    # graph_settingsからStateGraphBuilderを生成します。
+    # Generate the StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)
 
-    # 使用する型を登録します。
-    stategraph_builder.add_type("AnyMessage",AnyMessage)
-    # 使用するreducerを登録します。
+    # Register the reducer to be used in the StateGraphBuilder.
     stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # stategraph_builderにノードファクトリーを登録しておきます。
+    # Register the node factory with the stategraph_builder.
     stategraph_builder.add_node_factory("agent_node_factory",gen_agent)
     stategraph_builder.add_node_factory("tool_node_factory",gen_tool_node)
 
-    # 同様に、評価関数も登録します。
+    # Similarly, the evaluation function is also registered.
     stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
-    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    # The gen_stategraph method generates a compilable StateGraph.
     stategraph = stategraph_builder.gen_stategraph()
 
-    # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
+    # From here on, we will write the code following the general usage of LangGraph.
     memory = MemorySaver()
     app =  stategraph.compile(checkpointer=memory,debug=False)
     print(f"\ngraph(xray=0)")

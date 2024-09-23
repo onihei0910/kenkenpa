@@ -1,5 +1,6 @@
 """
-このテストは、LangGraphの"Parallel node fan-out and fan-in"を例にkenkenpaの使用方法を説明します。
+Experiment with the conditional entry point.
+Some parts of the test code are adapted from the code at the following URL.
 https://langchain-ai.github.io/langgraph/how-tos/branching/
 """
 
@@ -8,19 +9,7 @@ from typing import Any
 
 from kenkenpa.builder import StateGraphBuilder
 
-# Stateは定義しません。graph_settingsの中で定義します。
-#class State(TypedDict):
-    # The operator.add reducer fn makes this append-only
-    # aggregate: Annotated[list, operator.add]
-    # which: str
 
-# stateを参照するconditional edgeはgraph_settingsの中で定義するため、これも定義しません。
-#def route_bc_or_cd(state: State) -> Sequence[str]:
-    #if state["which"] == "cd":
-    #    return ["c", "d"]
-    #return ["b", "c"]
-
-# ReturnNodeValueを返すファクトリー関数を定義します。
 def gen_return_node_value(factory_parameter,flow_parameter):
 
     class ReturnNodeValue:
@@ -34,25 +23,24 @@ def gen_return_node_value(factory_parameter,flow_parameter):
     object = ReturnNodeValue(factory_parameter['node_secret'])
     return object
 
-# コンパイル可能なStateGraphの設定を辞書形式で記述します。
 graph_settings = {
     "graph_type":"stategraph",
     "flow_parameter":{
         "name":"Parallel-node",
         "state" : [ 
             {
-                "field_name": "aggregate", #フィールド名
-                "type": "list", # 型
-                "reducer":"add" # reducerと紐づけるキー
+                "field_name": "aggregate",
+                "type": "list",
+                "reducer":"add"
             },
             {
-                "field_name": "which", #フィールド名
-                "type": "str", # 型
+                "field_name": "which",
+                "type": "str",
             },
         ],
     },
     "flows": [
-        { # 静的条件付きエッジ __start__ -> b,c or c,d
+        { # __start__ -> b,c or c,d
             "graph_type":"static_conditional_entry_point",
             "flow_parameter":{
                 "conditions":[
@@ -117,20 +105,16 @@ graph_settings = {
 }
 
 def test_conditional_branching():
-
-    # graph_settingsからStateGraphBuilderを生成します。
+    # Generate the StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)
 
-    #listは基本型として予約されてます。(*1)
-    #stategraph_builder.add_type("list",list)  # Error
-
-    # Stateで使用するreducerをマッピングします。
+    # Register the reducer to be used in the StateGraphBuilder.
     stategraph_builder.add_reducer("add",operator.add)
 
-    # stategraph_builderにノードファクトリーを登録しておきます。
+    # Register the node factory with the stategraph_builder.
     stategraph_builder.add_node_factory("gen_return_node_value",gen_return_node_value)
 
-    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    # The gen_stategraph method generates a compilable StateGraph.
     stategraph = stategraph_builder.gen_stategraph()
 
     graph = stategraph.compile() 
@@ -143,14 +127,3 @@ def test_conditional_branching():
 
     print('graph.invoke({"aggregate": [],"which":"cd"}, {"configurable": {"thread_id": "foo"}})')
     graph.invoke({"aggregate": [],"which":"cd"}, {"configurable": {"thread_id": "foo"}})
-    # StateGraphBuilderでは以下の型が基本型として事前に登録されています。
-    # "int":int,
-    # "float":float,
-    # "complex":complex,
-    # "str":str,
-    # "list":list,
-    # "tuple":tuple,
-    # "dict":dict,
-    # "set":set,
-    # "frozenset":frozenset,
-    # "bool":bool,

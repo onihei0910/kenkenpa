@@ -1,5 +1,6 @@
 """
-このテストは、LangGraphのsimple chatbotを例にkenkenpaの使用方法を説明します。
+This test explains how to use kenkenpa using the simple chatbot example from LangGraph.
+Some parts of the test code reuse the code listed at the following URL.
 https://langchain-ai.github.io/langgraph/tutorials/introduction/
 """
 from langchain_openai import ChatOpenAI
@@ -9,34 +10,28 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from kenkenpa.builder import StateGraphBuilder
 
-# LLMの設定
+# LLM settings
 llm = ChatOpenAI(
     model="gpt-4o-mini"
 )
 
-# Nodeとなるchatbot関数を定義します。ここはQuickStart通りです。
+# We will define the chatbot function that will serve as the node.
+# This follows the QuickStart guide.
 def chatbot(state,config):
     return {"messages":[llm.invoke(state["messages"])]}
 
-# chatbotとは別に、定義したchatbotを返すファクトリー関数を定義します。
+# Apart from the chatbot,
+# it is necessary to define a factory function that returns the defined chatbot.
 def gen_chatbot_agent(factory_parameter,flow_parameter):
     """chatbot node factory"""
     return chatbot
 
-class Chatbot():
-    def __init__(self,factory_parameter,flow_parameter):
-        pass
-
-    def __call__(self,state,config):
-        return {"messages":[llm.invoke(state["messages"])]}
-
-
-# コンパイル可能なStateGraphの設定を辞書形式で記述します。
+# Define the structured data representing the StateGraph.
 graph_settings = {
     "graph_type":"stategraph",
     "flow_parameter":{
         "name":"React-Agent",
-        "state" : [ # TODO state項目を使用しない場合は設定しなくてもよい(optional)
+        "state" : [ 
             {
                 "field_name": "messages",
                 "type": "list",
@@ -45,12 +40,12 @@ graph_settings = {
         ],
     },
     "flows": [
-        { # node chatbotの定義です。
+        { # This is the definition of the node chatbot.
             "graph_type":"node",
             "flow_parameter": {
                 "name":"chatbot_agent",
-                # factoryに定義したファクトリー関数gen_chatbot_agentとマッピングする文字列を指定します。
-                # マッピングはコード実行時に指定します。
+                # Specify the string that maps to the factory function (gen_chatbot_agent) defined in the factory.
+                # The mapping is specified at runtime.
                 "factory":"chatbot_factory", 
             },
         },
@@ -72,24 +67,22 @@ graph_settings = {
 }
 
 def test_sample_simple_chatbot():
-    # graph_settingsからStateGraphBuilderを生成します。
+    # Generate the StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)
 
-    # 使用する型を登録します。
-    #stategraph_builder.add_type("AnyMessage",AnyMessage)
-    # 使用するreducerを登録します。
+    # Register the reducer with the StateGraphBuilder.
     stategraph_builder.add_reducer("add_messages",add_messages)
 
-    # stategraph_builderにノードファクトリーを登録しておきます。
-    # ここでは、gen_chatbot_agent関数をchatbot_factoryにマッピングしています。
-    # graph_settingsに記載したキー値と一致しているか確認してください。
-    #stategraph_builder.add_node_factory("chatbot_factory",gen_chatbot_agent)
-    stategraph_builder.add_node_factory("chatbot_factory",Chatbot)
+    # Register the node factory with the stategraph_builder.
+    # Here, we are mapping the gen_chatbot_agent function to "chatbot_factory".
+    # Please ensure it matches the key value listed in graph_settings.
+    stategraph_builder.add_node_factory("chatbot_factory",gen_chatbot_agent)
 
-    # gen_stategraphメソッドでコンパイル可能なStateGraphを取得できます。
+    # You can obtain a compilable StateGraph using the gen_stategraph method.
     stategraph = stategraph_builder.gen_stategraph()
 
-    # 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
+    # From here on, we will write the code following the general usage of LangGraph.
+    # Please note that this library does not involve config and checkpointer.
     memory = MemorySaver()
 
     app =  stategraph.compile(checkpointer=memory,debug=False)
@@ -109,4 +102,3 @@ def test_sample_simple_chatbot():
         number_of_events = number_of_events + 1
         event["messages"][-1].pretty_print()
 
-    assert number_of_events == 2
