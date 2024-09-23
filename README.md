@@ -287,11 +287,9 @@ Stateは`TypedDict`として生成されます。
         "reducer":"add_messages"
     },
 ]
-```
 
-この定義は以下に相当します。
-
-``` python
+# この定義は以下に相当します。
+from typing import Annotated
 from typing_extensions import TypedDict
 from langgraph.graph import  add_messages
 
@@ -729,13 +727,24 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
     }
     ```
 
-## 要改善
 - 使用例3
     configの値を参照します
 
     ``` python
-    class ConfigSchema(TypedDict):
-        dummy : str
+    config = {
+        "configurable": {
+            "thread_id":42,
+            "user_id": "123",
+            "tool_permission": True
+        }
+    }
+
+    "expression": {
+        "eq": [
+            {"type": "config_value", "name": "tool_permission"}, 
+            True
+        ],
+    }
     ```
 
 - **論理式**
@@ -773,6 +782,8 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
   }
   ```
 
+  論理式は入れ子にできます。
+
   ``` python
   "expression": {
       "and":[
@@ -781,6 +792,7 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
                   {
                       "and":[
                           {"eq": ["10", "10"]},
+                          {"eq": [True, True]},
                           ]
                   },
                   {"eq": ["10", "10"]}

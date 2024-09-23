@@ -1,35 +1,72 @@
 """
-This module provides functionality to add static conditional edges based on given
-conditions and evaluation functions.
-It includes a handler class `StaticConditionalHandler` to manage the conditions and evaluate them.
+This module provides functionality for generating and handling static conditional edges.
+It includes a function to generate a static conditional edge and a class to handle the evaluation of conditions.
 """
 from kenkenpa.common import to_list_key
 
 def gen_static_conditional_edge(conditions,evaluate_functions):
+    """
+    Generates a static conditional edge based on the provided conditions and evaluation functions.
 
+    Args:
+        conditions (List[Dict]): A list of conditions for the edge.
+        evaluate_functions (Dict[str, callable]): A dictionary of evaluation functions.
+
+    Returns:
+        callable: The function to call for the edge.
+    """
     conditional_edge = StaticConditionalHandler(conditions,evaluate_functions)
 
     return conditional_edge.call_edge
 
 class StaticConditionalHandler:
     """
-    A handler class to manage and evaluate static conditional edges based on given
-    conditions and evaluation functions.
+    StaticConditionalHandler evaluates conditions and returns results based on the state and configuration.
 
     Attributes:
-        conditions (list): A list of conditions to evaluate.
-        evaluate_functions (dict): A dictionary of functions used to evaluate conditions.
-        end_points (list): A list of possible end points extracted from the conditions.
+        conditions (List[Dict]): A list of conditions to evaluate.
+        evaluate_functions (Dict[str, callable]): A dictionary of evaluation functions.
     """
     def __init__(self,conditions,evaluate_functions):
+        """
+        Initializes the StaticConditionalHandler with conditions and evaluation functions.
+
+        Args:
+            conditions (List[Dict]): A list of conditions to evaluate.
+            evaluate_functions (Dict[str, callable]): A dictionary of evaluation functions.
+        """
         self.conditions = conditions
         self.evaluate_functions = evaluate_functions
 
     def call_edge(self, state,config):
+        """
+        Calls the edge based on the current state and configuration.
+
+        Args:
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            List: The results of the evaluated conditions.
+        """
         results = self._evaluate_conditions(self.conditions, state, config)
         return results
 
     def _evaluate_conditions(self, conditions, state, config):
+        """
+        Evaluates the conditions and returns the results.
+
+        Args:
+            conditions (List[Dict]): The conditions to evaluate.
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            List: The results of the evaluated conditions.
+
+        Raises:
+            ValueError: If no matching conditions are found and no default function is provided.
+        """
         results = []
         for condition in conditions:
             if "expression" in condition and self._evaluate_expr(
@@ -51,6 +88,20 @@ class StaticConditionalHandler:
         raise ValueError("一致する条件が見つからず、デフォルト関数が提供されていません")
 
     def _evaluate_expr(self,expr, state, config):
+        """
+        Evaluates an expression against the current state and configuration.
+
+        Args:
+            expr (Dict): The expression to evaluate.
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            bool: The result of the evaluation.
+
+        Raises:
+            ValueError: If the expression is not a dictionary.
+        """
         if not isinstance(expr, dict):
             raise ValueError("式は辞書である必要があります")
 
