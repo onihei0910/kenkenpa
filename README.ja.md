@@ -1,11 +1,11 @@
 # kenkenpa
 
-Generate a StateGraph of LangGraph that can be compiled from structured data.
+Generate a StateGraph of LangGraph that can be compiled from structured data.  
 
 ## Usage Example
 
-React-Agentを例にkenkenpaの使用方法を説明します。
-https://langchain-ai.github.io/langgraph/
+React-Agentを例にkenkenpaの使用方法を説明します。  
+https://langchain-ai.github.io/langgraph/  
 
 ``` python
 from langchain_core.messages import HumanMessage
@@ -181,7 +181,7 @@ stategraph_builder.add_node_factory("agent_node_factory",gen_agent)
 stategraph_builder.add_node_factory("tool_node_factory",gen_tool_node)
 
 # *4. 評価関数も登録します。
-stategraph_builder.add_evaluete_function("is_tool_message_function", s_tool_message,)
+stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
 # gen_stategraph()メソッドでコンパイル可能なStateGraphを取得できます。
 stategraph = stategraph_builder.gen_stategraph()
@@ -621,7 +621,7 @@ stateの値に応じてルーティングする場合は以下のような記述
 ]
 ```
 
-conditionsは、全ての評価式を評価し、結果がTrueになったすべてのresultを次のnodeに指定します。
+conditionsは、全ての評価式を評価し、結果がTrueになったすべてのresultを次のnodeに指定します。  
 以下の例では、node_aとnode_bを返します。
 
 ``` python
@@ -643,7 +643,7 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
 ```
 
 - **expression**
-  比較式と論理式が使えます。
+  比較式と論理式が使えます。  
 
 - **比較式**
 
@@ -671,7 +671,7 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
     configの値を参照します。
 
     ``` python
-    {"type":"config_value", "name":"test_config_key"}
+    {"type":"config_value", "name":"config_key"}
     ```
 
   - function
