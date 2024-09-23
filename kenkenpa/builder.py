@@ -127,7 +127,7 @@ class StateGraphBuilder():
         Returns:
             StateGraph: The constructed state graph.
         """
-        # バリデーションチェック
+        # validate
         validate_state_graph(stategraph_settings)
 
         stategraph_flow_parameter = stategraph_settings.get("flow_parameter")
@@ -287,6 +287,5 @@ def validate_state_graph(values) -> bool :
     Returns:
         bool: True if the settings are valid, False otherwise.
     """
-    # バリデーションチェック
     KStateGraph(**values)
     return True

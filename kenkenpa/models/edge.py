@@ -36,7 +36,7 @@ class KEdgeParam_v1(BaseModel):
         """
         start_key = values.data.get('start_key')
         if isinstance(start_key,list) and isinstance(v,list):
-            raise ValueError('start_key または end_keyのいずれか一方のみがリストでなければなりません。')
+            raise ValueError('You can only list either the start_key or the end_key.')
         return v
 
 KEdgeParam = Union[KEdgeParam_v1]

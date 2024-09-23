@@ -56,7 +56,7 @@ class StateBuilder():
             ValueError: If the reducer function name is already registered.
         """
         if name in self.reducer_list:
-            raise ValueError(f"登録済みの関数: {name}")
+            raise ValueError(f"Registered function: {name}")
 
         self.reducer_list[name] = function
 
@@ -72,10 +72,10 @@ class StateBuilder():
             ValueError: If the type name is reserved or already registered.
         """
         if name in self.primitive_type_list:
-            raise ValueError(f"予約済みの型: {name}")
+            raise ValueError(f"Reserved type: {name}")
 
         if name in self.type_list:
-            raise ValueError(f"登録済みの型: {name}")
+            raise ValueError(f"Registered type: {name}")
 
         self.type_list[name] = type
 
@@ -126,7 +126,7 @@ class StateBuilder():
         if name in self.reducer_list:
             return self.reducer_list[name]
         
-        raise ValueError(f"登録されていない関数: {name}")
+        raise ValueError(f"Unregistered function: {name}")
     
     def _get_type(self,name:str):
         """
@@ -147,4 +147,4 @@ class StateBuilder():
         if name in self.type_list:
             return self.type_list[name]
 
-        raise ValueError(f"登録されていない型: {name}")
+        raise ValueError(f"Unregistered type: {name}")

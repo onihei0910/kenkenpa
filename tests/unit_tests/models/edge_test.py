@@ -21,10 +21,10 @@ def test_KEdgeParam():
     }
 
     exc_info = pytest.raises(ValueError, KEdgeParam_v1, **flow_parameter)
-    assert "start_key または end_keyのいずれか一方のみがリストでなければなりません。" in str(exc_info.value)
+    assert "You can only list either the start_key or the end_key." in str(exc_info.value)
 
     exc_info = pytest.raises(ValueError, KEdgeParam, **flow_parameter)
-    assert "start_key または end_keyのいずれか一方のみがリストでなければなりません。" in str(exc_info.value)
+    assert "You can only list either the start_key or the end_key." in str(exc_info.value)
 
 def test_KEdge():
     flow = {

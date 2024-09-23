@@ -87,9 +87,9 @@ def test_state_state_graph_init():
             "name":"builder_test",
             "state" : [ 
                 {
-                    "field_name": "test_field", #フィールド名
-                    "type": "Type_A_key", # 型
-                    "reducer":"reducer_a_key" # reducerと紐づけるキー
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
                 },
             ],
         },
@@ -149,9 +149,9 @@ def test_state_state_graph_add_method():
             "name":"builder_test",
             "state" : [ 
                 {
-                    "field_name": "test_field", #フィールド名
-                    "type": "Type_A_key", # 型
-                    "reducer":"reducer_a_key" # reducerと紐づけるキー
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
                 },
             ],
         },
@@ -242,9 +242,9 @@ def test_state_state_graph_graph_types():
             "name":"subgraph_a",
             "state" : [ 
                 {
-                    "field_name": "test_field", #フィールド名
-                    "type": "Type_A_key", # 型
-                    "reducer":"reducer_a_key" # reducerと紐づけるキー
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
                 },
             ],
         },
@@ -280,14 +280,14 @@ def test_state_state_graph_graph_types():
             "name":"subgraph_b",
             "state" : [ 
                 {
-                    "field_name": "test_field", #フィールド名
-                    "type": "Type_A_key", # 型
-                    "reducer":"reducer_a_key" # reducerと紐づけるキー
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
                 },
                 {
-                    "field_name": "test_field_b", #フィールド名
-                    "type": "Type_B_key", # 型
-                    "reducer":"reducer_a_key" # reducerと紐づけるキー
+                    "field_name": "test_field_b",
+                    "type": "Type_B_key",
+                    "reducer":"reducer_a_key"
                 },
             ],
         },
@@ -346,16 +346,16 @@ def test_state_state_graph_graph_types():
             "name":"parent_graph",
             "state" : [ 
                 {
-                    "field_name": "test_field", #フィールド名
-                    "type": "Type_A_key", # 型
-                    "reducer":"reducer_a_key" # reducerと紐づけるキー
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
                 },
             ],
         },
         "flows": [
             sub_graph_a_settings,
             sub_graph_b_settings,
-            {# 静的条件付きエントリーポイント
+            {# conditional entry point
                 "graph_type":"static_conditional_entry_point",
                 "flow_parameter":{
                     "conditions":[

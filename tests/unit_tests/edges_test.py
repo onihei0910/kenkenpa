@@ -97,7 +97,7 @@ def test_conpare_values():
     assert compare_values("lte","C","B") == False
 
     exc_info = pytest.raises(ValueError, compare_values, "int", 1,1)
-    assert str(exc_info.value) == "サポートされていない比較演算子: int"
+    assert str(exc_info.value) == "Unsupported comparison operator: int"
 
 class DummyType(TypedDict):
     dummy:str
@@ -191,18 +191,17 @@ def test_static_conditional_handler_evaluate_expr():
 
     expr = {"error_op": [10, 10]}
     exc_info = pytest.raises(ValueError, handler._evaluate_expr, expr, {},{})
-    assert str(exc_info.value) == "サポートされていない演算: error_op"
+    assert str(exc_info.value) == "Unsupported operation: error_op"
 
     expr = {"eq": [{"type": "error_type", "name": "func_name_a"}, "func_return_value_a"]}
     exc_info = pytest.raises(ValueError, handler._evaluate_expr, expr, {},{})
-    assert str(exc_info.value) == "サポートされていないタイプ: error_type"
+    assert str(exc_info.value) == "Unsupported type: error_type"
 
     expr = {"eq": [{"type": "function", "name": "error_function_name"}, "func_return_value_a"]}
     exc_info = pytest.raises(ValueError, handler._evaluate_expr, expr, {},{})
-    assert str(exc_info.value) == "関数 error_function_name が evaluate_functions に見つかりません"
-
+    assert str(exc_info.value) == "The function error_function_name cannot be found in evaluate_functions."
     exc_info = pytest.raises(ValueError, handler._evaluate_expr, "NON_DICT_DATA", {},{})
-    assert str(exc_info.value) == "式は辞書である必要があります"
+    assert str(exc_info.value) == "The formula must be a dictionary."
 
 def test_static_conditional_handler_evaluate_conditions():
     evaluate_functions = {}
@@ -425,7 +424,7 @@ def test_static_conditional_handler_evaluate_conditions():
         ]
     
     exc_info = pytest.raises(ValueError, handler._evaluate_conditions, conditions, {},{})
-    assert str(exc_info.value) == "一致する条件が見つからず、デフォルト関数が提供されていません"
+    assert str(exc_info.value) == "No matching conditions were found, and no default function was provided."
 
 
 def test_static_conditional_handler_call_edge():

@@ -92,7 +92,7 @@ def test_extract_literals():
                         {"eq": ["10", "10"]},
                     ],
                 },
-                "result": ["Result_Value_B"] # arry
+                "result": ["Result_Value_B"] # list
             },
             {"default": "Default_Value"} 
         ]
@@ -114,7 +114,7 @@ def test_extract_literals():
                         {"eq": ["10", "9"]},
                     ],
                 },
-                "result": ["Result_Value_B"] # arry
+                "result": ["Result_Value_B"]
             },
             {"default": "Default_Value"} 
         ]
@@ -136,7 +136,7 @@ def test_extract_literals():
                         {"eq": ["10", "9"]},
                     ],
                 },
-                "result": ["Result_Value_B"] # arry
+                "result": ["Result_Value_B"]
             },
             {"default": ["Default_Value_1","Default_Value_2"]} 
         ]
