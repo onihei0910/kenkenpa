@@ -665,13 +665,13 @@ tiktoken = ">=0.7,<1"
 
 [[package]]
 name = "langgraph"
-version = "0.2.24"
+version = "0.2.27"
 description = "Building stateful, multi-actor applications with LLMs"
 optional = false
 python-versions = "<4.0,>=3.9.0"
 files = [
-    {file = "langgraph-0.2.24-py3-none-any.whl", hash = "sha256:416362e1f22f3d396d10d03be1330bf757027062e7cb00eef91283fc408487da"},
-    {file = "langgraph-0.2.24.tar.gz", hash = "sha256:141f08dcba870c069d45ab086146331aae918391ddcffcd3025f9c0adea49eb4"},
+    {file = "langgraph-0.2.27-py3-none-any.whl", hash = "sha256:2ed1a521209737f50833d433a1c0ffef3a1f0e2a94f6ffda97f5bc2d673db010"},
+    {file = "langgraph-0.2.27.tar.gz", hash = "sha256:b9e98fe011100a0a52f0c6936ce672330fd245b81cd6fe5ae30c0eb34663b99a"},
 ]
 
 [package.dependencies]
@@ -680,13 +680,13 @@ langgraph-checkpoint = ">=1.0.2,<2.0.0"
 
 [[package]]
 name = "langgraph-checkpoint"
-version = "1.0.10"
+version = "1.0.11"
 description = "Library with base interfaces for LangGraph checkpoint savers."
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 files = [
-    {file = "langgraph_checkpoint-1.0.10-py3-none-any.whl", hash = "sha256:3396734143fda0165964e4f0b73b39e77fbea9f13cb4da1ed16a5c41fc136e50"},
-    {file = "langgraph_checkpoint-1.0.10.tar.gz", hash = "sha256:f800f6d340a5301f4f0d3c17f1ec87b778ebe2c7a20c9ea5caf3d2eb0c6b464d"},
+    {file = "langgraph_checkpoint-1.0.11-py3-none-any.whl", hash = "sha256:9644bd61e3ab5b03fc0422aa5e625061ad14aa2012d046bf4bb306451da95371"},
+    {file = "langgraph_checkpoint-1.0.11.tar.gz", hash = "sha256:156af1666272a0be3cda4a2c4ffe6b2e2f5af8ead7d450d345cbb39828ce4b05"},
 ]
 
 [package.dependencies]
@@ -695,13 +695,13 @@ msgpack = ">=1.1.0,<2.0.0"
 
 [[package]]
 name = "langsmith"
-version = "0.1.125"
+version = "0.1.127"
 description = "Client library to connect to the LangSmith LLM Tracing and Evaluation Platform."
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langsmith-0.1.125-py3-none-any.whl", hash = "sha256:74ce8eb2663e1ed20bfcfc88d41e0712879306956c9938d1cdbab7d60458bdca"},
-    {file = "langsmith-0.1.125.tar.gz", hash = "sha256:2c0eb0c3cbf22cff55bf519b8e889041f9a591bcf97af5152c8e130333c5940e"},
+    {file = "langsmith-0.1.127-py3-none-any.whl", hash = "sha256:b4e8058d16ee0c814b16fae135c1e8817d1f43a38462d7f55e0eb1f87b9526aa"},
+    {file = "langsmith-0.1.127.tar.gz", hash = "sha256:19c6f95d5558180c600455781e6faacc7798d0e1c54d6eb50ffb744d56f02bc9"},
 ]
 
 [package.dependencies]

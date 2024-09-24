@@ -13,6 +13,8 @@ from langgraph.graph import END, StateGraph, START
 
 from pydantic import BaseModel, Field
 
+from kenkenpa.builder import StateGraphBuilder
+
 # Model and prompts
 # Define model and prompts we will use
 
@@ -120,6 +122,25 @@ def continue_to_jokes(state:OverallState):
     #        },
     #    },
 
+def continue_to_jokes_sender(state:OverallState, config, **kwargs):
+    # We will return a list of `Send` objects
+    # Each `Send` object consists of the name of a node in the graph
+    # as well as the state to send to that node
+    # Sendオブジェクトのリストを返します
+    # 各`Send`オブジェクトはグラフ内のノードの名前と
+    # そのノードに送信する状態で構成されています
+
+    send_list = []
+    for s in state["subjects"]:
+        send_list.append(
+            Send(
+                "generate_joke", # node ( str) – メッセージを送信する対象ノードの名前。
+                {"subject":s})   # arg ( Any) – 対象ノードに送信する状態またはメッセージ。
+            )
+
+    #return [Send("generate_joke",{"subject":s}) for s in state["subjects"]]
+    return send_list
+
 # Here we will judge the best joke
 # ここで最高のジョークを評価します
 def best_joke(state: OverallState):
@@ -127,6 +148,101 @@ def best_joke(state: OverallState):
     prompt = best_joke_prompt.format(topic=state["topic"], jokes=jokes)
     response = model.with_structured_output(BestJoke).invoke(prompt)
     return {"best_selected_joke": state["jokes"][response.id]}
+
+def gen_generate_topics(factory_parameter,flow_parameter):
+    return generate_topics
+
+def gen_generate_joke(factory_parameter,flow_parameter):
+    return generate_joke
+
+def gen_best_joke(factory_parameter,flow_parameter):
+    return best_joke
+
+
+#class OverallState(TypedDict):
+#    topic: str
+#    subjects: list
+#    jokes: Annotated[list, operator.add]
+#    best_selected_joke: str
+
+graph_settings = {
+    "graph_type":"stategraph",
+    "flow_parameter":{
+        "name":"React-Agent",
+        "state" : [
+            {
+                "field_name": "topic",
+                "type": "str",
+            },
+            {
+                "field_name": "subjects",
+                "type": "list",
+            },
+            {
+                "field_name": "jokes",
+                "type": "list",
+                "reducer":"operator_add"
+            },
+            {
+                "field_name": "best_selected_joke",
+                "type": "str",
+            },
+        ],
+    },
+    "flows":[
+        { # generate_topics node
+            "graph_type":"node",
+            "flow_parameter":{
+                "name":"generate_topics",
+                "factory":"gen_generate_topics",
+            },
+        },
+        { # generate_joke node
+            "graph_type":"node",
+            "flow_parameter":{
+                "name":"generate_joke",
+                "factory":"gen_generate_joke",
+            },
+        },
+        { # best_joke node
+            "graph_type":"node",
+            "flow_parameter":{
+                "name":"best_joke",
+                "factory":"gen_best_joke",
+            },
+        },
+        {# edge START -> generate_topics
+            "graph_type":"edge",
+            "flow_parameter":{
+                "start_key":"START",
+                "end_key":"generate_topics"
+            },
+        },
+        {# coditional edge generate_topics -> continue_to_jokes
+            "graph_type":"static_conditional_edge",
+            "flow_parameter":{
+                "start_key":"generate_topics",
+                "conditions":[
+                    {"default": {"type": "function", "name": "continue_to_jokes"}} 
+                ]
+            },
+        },
+        {# edge generate_joke -> best_joke
+            "graph_type":"edge",
+            "flow_parameter":{
+                "start_key":"generate_joke",
+                "end_key":"best_joke"
+            },
+        },
+        {# edge best_joke -> END
+            "graph_type":"edge",
+            "flow_parameter":{
+                "start_key":"best_joke",
+                "end_key":"END"
+            },
+        },
+    ]
+}
 
 # Construct the graph: here we put everything together to construct our graph
 # グラフを構築する：ここでは、すべてをまとめてグラフを構築します
@@ -141,6 +257,37 @@ def test_best_joke():
     graph.add_edge("generate_joke", "best_joke")
     graph.add_edge("best_joke",END)
     app = graph.compile()
+
+    print(f"\ngraph")
+    app.get_graph().print_ascii()
+
+    # Call the graph: here we call it to generate a list of jokes
+    for s in app.stream({"topic": "animals"}):
+        print(s)
+
+    
+    # TODO conditional edgeの設定にpath_mapが必要
+
+    # Generate the StateGraphBuilder from graph_settings.
+    stategraph_builder = StateGraphBuilder(graph_settings)
+
+    # Register the reducer to be used in the StateGraphBuilder.
+    stategraph_builder.add_reducer("operator_add",operator.add)
+
+    # Register the node factory with the stategraph_builder.
+    stategraph_builder.add_node_factory("gen_generate_topics",gen_generate_topics)
+    stategraph_builder.add_node_factory("gen_generate_joke",gen_generate_joke)
+    stategraph_builder.add_node_factory("gen_best_joke",gen_best_joke)
+
+    # Similarly, the evaluation function is also registered.
+    stategraph_builder.add_evaluete_function("continue_to_jokes", continue_to_jokes_sender,)
+
+    # The gen_stategraph method generates a compilable StateGraph.
+    stategraph = stategraph_builder.gen_stategraph()
+
+    # From here on, we will write the code following the general usage of LangGraph.
+    # Please note that this library does not involve config and checkpointer.
+    app = stategraph.compile()
 
     print(f"\ngraph")
     app.get_graph().print_ascii()

@@ -138,7 +138,61 @@ def test_KCondition():
     KConditionExpression_v1(**condition)
     KConditionExpression(**condition)
 
+    # result確認用,state,config,function
+    # {"type":"function","name":"test_function","args":{"args_key":"args_value"}}
+    # {"type":"state_value", "name":"test_state_key"}
+    # {"type":"config_value", "name":"test_config_key"}
+    condition = {
+        "expression": {
+            "eq": ["10", "10"],
+        },
+        "result": {"type":"function","name":"test_function","args":{"args_key":"args_value"}} 
+    }
+    KConditionExpression_v1(**condition)
+    KConditionExpression(**condition)
+
+    condition = {
+        "expression": {
+            "eq": ["10", "10"],
+        },
+        "result": {"type":"state_value", "name":"test_state_key"}
+    }
+
+    condition = {
+        "expression": {
+            "eq": ["10", "10"],
+        },
+        "result": {"type":"config_value", "name":"test_config_key"}
+    }
+    KConditionExpression_v1(**condition)
+    KConditionExpression(**condition)
+
+
     condition = {"default": "Default_Value"} 
+    KConditionDefault_v1(**condition)
+    KConditionDefault(**condition)
+
+    # result確認用,state,config,function
+    # {"type":"function","name":"test_function","args":{"args_key":"args_value"}}
+    # {"type":"state_value", "name":"test_state_key"}
+    # {"type":"config_value", "name":"test_config_key"}
+
+    condition = {"default":
+        {"type":"function","name":"test_function","args":{"args_key":"args_value"}}
+    }
+    KConditionDefault_v1(**condition)
+    KConditionDefault(**condition)
+
+    condition = {"default":
+        {"type":"state_value", "name":"test_state_key"}
+    }
+    KConditionDefault_v1(**condition)
+    KConditionDefault(**condition)
+
+    condition = {"default":
+        {"type":"config_value", "name":"test_config_key"}
+
+    }
     KConditionDefault_v1(**condition)
     KConditionDefault(**condition)
 
@@ -158,3 +212,4 @@ def test_KCondition():
     }
     KConditions_v1(**conditions)
     KConditions(**conditions)
+

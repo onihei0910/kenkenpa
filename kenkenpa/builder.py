@@ -233,7 +233,7 @@ class StateGraphBuilder():
         stategraph.add_conditional_edges(
             source = start_key,
             path = edge_function,
-            path_map = return_types
+            #path_map = return_types
         )
 
     def _add_static_conditional_entry_point(self,stategraph,flow: KStaticConditionalEntoryPoint):

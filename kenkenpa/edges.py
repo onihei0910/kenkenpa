@@ -2,7 +2,9 @@
 This module provides functionality for generating and handling static conditional edges.
 It includes a function to generate a static conditional edge and a class to handle the evaluation of conditions.
 """
-from kenkenpa.common import to_list_key
+from typing import List
+from kenkenpa.common import to_list_key,convert_key
+from langgraph.types import Send
 
 def gen_static_conditional_edge(conditions,evaluate_functions):
     """
@@ -72,16 +74,46 @@ class StaticConditionalHandler:
             if "expression" in condition and self._evaluate_expr(
                 condition["expression"], state, config
                 ):
+                result_value = self._get_value(condition["result"],state, config)
+
+                wk_result = []
+
+                if isinstance(result_value,str):
+                    wk_result.append(result_value)
+                elif isinstance(result_value,List):
+                    wk_result.extend(result_value)
+                elif isinstance(result_value,Send):
+                    wk_result.append(result_value)
                 
-                results.extend(to_list_key(condition["result"]))
+                for wk in wk_result:
+                    if isinstance(wk,str):
+                        results.append(convert_key(wk))
+                    else:
+                        results.append(wk)
+                
         if results:
             return results
 
         # If none of the conditions match, return the default value.
         for condition in conditions:
             if "default" in condition:
-                results.extend(to_list_key(condition["default"]))
-        
+                result_value = self._get_value(condition["default"],state, config)
+
+                wk_result = []
+
+                if isinstance(result_value,str):
+                    wk_result.append(result_value)
+                elif isinstance(result_value,List):
+                    wk_result.extend(result_value)
+                elif isinstance(result_value,Send):
+                    wk_result.append(result_value)
+                
+                for wk in wk_result:
+                    if isinstance(wk,str):
+                        results.append(convert_key(wk))
+                    else:
+                        results.append(wk)
+                
         if results:
             return results
             
