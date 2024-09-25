@@ -1,6 +1,14 @@
 kenkenpa package
 ================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   kenkenpa.models
+
 Submodules
 ----------
 
