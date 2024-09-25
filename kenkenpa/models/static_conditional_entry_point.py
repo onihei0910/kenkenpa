@@ -3,7 +3,7 @@ This module defines data models for conditional entry point flow parameters and 
 It includes models for conditional entry point flow parameters and static conditional entry points, ensuring that certain constraints are met.
 """
 from pydantic import BaseModel, ConfigDict
-from typing import List, Union
+from typing import List, Union, Optional
 
 from kenkenpa.models.conditions import KConditionExpression
 from kenkenpa.models.conditions import KConditionDefault
@@ -17,6 +17,7 @@ class KConditionalEntoryPointFlowParam_v1(BaseModel):
         conditions (List[Union[KConditionExpression, KConditionDefault]]): A list of conditions for the entry point.
     """
     conditions:List[Union[KConditionExpression,KConditionDefault]]
+    path_map:Optional[List[str]] = None
 
     model_config = ConfigDict(extra='forbid')
 

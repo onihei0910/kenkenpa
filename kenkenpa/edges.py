@@ -2,7 +2,8 @@
 This module provides functionality for generating and handling static conditional edges.
 It includes a function to generate a static conditional edge and a class to handle the evaluation of conditions.
 """
-from kenkenpa.common import to_list_key
+from typing import List
+from kenkenpa.common import convert_key
 
 def gen_static_conditional_edge(conditions,evaluate_functions):
     """
@@ -72,16 +73,40 @@ class StaticConditionalHandler:
             if "expression" in condition and self._evaluate_expr(
                 condition["expression"], state, config
                 ):
+                result_value = self._get_value(condition["result"],state, config)
+
+                wk_result = []
+                if isinstance(result_value,List):
+                    wk_result.extend(result_value)
+                else:
+                    wk_result.append(result_value)
                 
-                results.extend(to_list_key(condition["result"]))
+                for wk in wk_result:
+                    if isinstance(wk,str):
+                        results.append(convert_key(wk))
+                    else:
+                        results.append(wk)
+                
         if results:
             return results
 
         # If none of the conditions match, return the default value.
         for condition in conditions:
             if "default" in condition:
-                results.extend(to_list_key(condition["default"]))
-        
+                result_value = self._get_value(condition["default"],state, config)
+
+                wk_result = []
+                if isinstance(result_value,List):
+                    wk_result.extend(result_value)
+                else:
+                    wk_result.append(result_value)
+                
+                for wk in wk_result:
+                    if isinstance(wk,str):
+                        results.append(convert_key(wk))
+                    else:
+                        results.append(wk)
+                
         if results:
             return results
             
@@ -105,23 +130,6 @@ class StaticConditionalHandler:
         if not isinstance(expr, dict):
             raise ValueError("The formula must be a dictionary.")
 
-        def get_value(item):
-            if isinstance(item, dict):
-                if item["type"] == "state_value":
-                    return state.get(item["name"])
-                elif item["type"] == "config_value":
-                    return config.get("configurable",{}).get(item["name"])
-                elif item["type"] == "function":
-                    func_name = item["name"]
-                    if func_name not in self.evaluate_functions:
-                        raise ValueError(f"The function {func_name} cannot be found in evaluate_functions.")
-                    args = item.get("args", {})
-                    return self.evaluate_functions[func_name](state, config, **args)
-                else:
-                    raise ValueError(f"Unsupported type: {item['type']}")
-            else:
-                return item
-
         for op, args in expr.items():
             if op == "and":
                 return all(self._evaluate_expr(sub_expr, state, config) for sub_expr in args)
@@ -135,11 +143,28 @@ class StaticConditionalHandler:
                         "eq","neq","gt","gte","lt","lte",
                         }:
                 left_item, right_item = args
-                left_value = get_value(left_item)
-                right_value = get_value(right_item)
+                left_value = self._get_value(left_item,state, config)
+                right_value = self._get_value(right_item,state, config)
                 return compare_values(op,left_value,right_value)
             else:
                 raise ValueError(f"Unsupported operation: {op}")
+
+    def _get_value(self,item, state, config):
+        if isinstance(item, dict):
+            if item["type"] == "state_value":
+                return state.get(item["name"])
+            elif item["type"] == "config_value":
+                return config.get("configurable",{}).get(item["name"])
+            elif item["type"] == "function":
+                func_name = item["name"]
+                if func_name not in self.evaluate_functions:
+                    raise ValueError(f"The function {func_name} cannot be found in evaluate_functions.")
+                args = item.get("args", {})
+                return self.evaluate_functions[func_name](state, config, **args)
+            else:
+                raise ValueError(f"Unsupported type: {item['type']}")
+        else:
+            return item
             
 def compare_values(op,left_value,right_value):
     comparison_operations = {

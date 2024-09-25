@@ -2,7 +2,7 @@
 This module defines data models for conditional edge flow parameters and static conditional edges using Pydantic for validation.
 It includes models for conditional edge flow parameters and static conditional edges, ensuring that certain constraints are met.
 """
-from typing import List, Union
+from typing import List, Union, Optional
 from pydantic import BaseModel, ConfigDict
 
 from kenkenpa.models.conditions import KConditionExpression
@@ -18,6 +18,7 @@ class KConditionalEdgeFlowParam_v1(BaseModel):
     """
     start_key:str
     conditions:List[Union[KConditionExpression,KConditionDefault]]
+    path_map:Optional[List[str]] = None
 
     model_config = ConfigDict(extra='forbid')
 
@@ -33,6 +34,7 @@ class KStaticConditionalEdge_v1(BaseModel):
     """
     graph_type:str
     flow_parameter:KConditionalEdgeFlowParam
+
     model_config = ConfigDict(extra='forbid')
 
 KStaticConditionalEdge = Union[KStaticConditionalEdge_v1]

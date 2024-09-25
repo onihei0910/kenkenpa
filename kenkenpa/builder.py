@@ -227,8 +227,11 @@ class StateGraphBuilder():
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
             )
-        
-        return_types = extract_literals(conditions)
+
+        if 'path_map' in flow_parameter:
+            return_types = to_list_key(flow_parameter['path_map'])
+        else:
+            return_types = extract_literals(conditions)
 
         stategraph.add_conditional_edges(
             source = start_key,
@@ -251,8 +254,11 @@ class StateGraphBuilder():
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
             )
-        
-        return_types = extract_literals(conditions)
+
+        if 'path_map' in flow_parameter:
+            return_types = to_list_key(flow_parameter['path_map'])
+        else:
+            return_types = extract_literals(conditions)
 
         stategraph.set_conditional_entry_point(
             path = edge_function,

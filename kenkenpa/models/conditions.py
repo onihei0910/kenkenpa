@@ -117,16 +117,19 @@ class KExpression_v1(BaseModel):
 
 KExpression = Union[KExpression_v1]
 
+KConcitionResult = Union[str,KOperandFunction,KOperandStateValue,KOperandConfigValue]
+KConcitionResultList = List[KConcitionResult]
+
 class KConditionExpression_v1(BaseModel):
     """
     KConditionExpression_v1 represents a condition expression with an expression and a result.
 
     Attributes:
         expression (Union[KExpression]): The logical expression.
-        result (Union[str, List[str]]): The result of the condition.
+        result (Union[KConcitionResult,KConcitionResultList]): The result of the condition.
     """
     expression: Union[KExpression] = None
-    result: Union[str, List[str]] = None
+    result: Union[KConcitionResult,KConcitionResultList] = None
 
     model_config = ConfigDict(extra='forbid')
 
@@ -137,9 +140,9 @@ class KConditionDefault_v1(BaseModel):
     KConditionDefault_v1 represents a default condition with a default value.
 
     Attributes:
-        default (Union[str, List[str]]): The default value.
+        default (Union[KConcitionResult,KConcitionResultList]): The default value.
     """
-    default: Union[str, List[str]] = None
+    default: Union[KConcitionResult,KConcitionResultList] = None
 
     model_config = ConfigDict(extra='forbid')
 

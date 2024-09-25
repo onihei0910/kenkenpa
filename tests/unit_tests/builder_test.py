@@ -319,6 +319,7 @@ def test_state_state_graph_graph_types():
                 "graph_type":"static_conditional_edge",
                 "flow_parameter":{
                     "start_key":"test_node_a",
+                    "path_map":["test_node_b","END"],
                     "conditions":[
                         {
                             "expression": {
@@ -358,6 +359,7 @@ def test_state_state_graph_graph_types():
             {# conditional entry point
                 "graph_type":"static_conditional_entry_point",
                 "flow_parameter":{
+                    "path_map":["subgraph_a","subgraph_b"],
                     "conditions":[
                         {
                             "expression": {
