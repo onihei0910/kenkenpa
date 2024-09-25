@@ -7,6 +7,25 @@ from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEnt
 
 def test_KConditionalEdgeFlowParam():
     flow_parameter = {
+            "path_map":["generate_joke"],
+            "conditions":[
+                {
+                    "expression": {
+                        "eq": [
+                            {"type": "function", "name": "is_tool_message_function"},
+                            True
+                            ],
+                    },
+                    "result": "tools"
+                },
+                {"default": "END"} 
+            ]
+        }
+
+    KConditionalEntoryPointFlowParam_v1(**flow_parameter)
+    KConditionalEntoryPointFlowParam(**flow_parameter)
+
+    flow_parameter = {
             "conditions":[
                 {
                     "expression": {

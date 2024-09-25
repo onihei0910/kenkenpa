@@ -25,6 +25,26 @@ def test_KConditionalEdgeFlowParam():
     KConditionalEdgeFlowParam_v1(**flow_parameter)
     KConditionalEdgeFlowParam(**flow_parameter)
 
+    flow_parameter = {
+            "start_key":"agent",
+            "path_map":["generate_joke"],
+            "conditions":[
+                {
+                    "expression": {
+                        "eq": [
+                            {"type": "function", "name": "is_tool_message_function"},
+                            True
+                            ],
+                    },
+                    "result": "tools"
+                },
+                {"default": "END"} 
+            ]
+        }
+
+    KConditionalEdgeFlowParam_v1(**flow_parameter)
+    KConditionalEdgeFlowParam(**flow_parameter)
+
 def test_StaticConditionalEdge():
     flow = {
             "graph_type":"static_conditional_edge",

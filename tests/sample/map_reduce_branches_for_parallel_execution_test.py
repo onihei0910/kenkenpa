@@ -222,6 +222,7 @@ graph_settings = {
             "graph_type":"static_conditional_edge",
             "flow_parameter":{
                 "start_key":"generate_topics",
+                "path_map":["generate_joke"], # path_mapが必要です。
                 "conditions":[
                     {"default": {"type": "function", "name": "continue_to_jokes"}} 
                 ]
@@ -264,9 +265,6 @@ def test_best_joke():
     # Call the graph: here we call it to generate a list of jokes
     for s in app.stream({"topic": "animals"}):
         print(s)
-
-    
-    # TODO conditional edgeの設定にpath_mapが必要
 
     # Generate the StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)

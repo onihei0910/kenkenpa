@@ -227,13 +227,12 @@ class StateGraphBuilder():
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
             )
-        
-        return_types = extract_literals(conditions)
+        return_types = flow_parameter.get('path_map',extract_literals(conditions))
 
         stategraph.add_conditional_edges(
             source = start_key,
             path = edge_function,
-            #path_map = return_types
+            path_map = return_types
         )
 
     def _add_static_conditional_entry_point(self,stategraph,flow: KStaticConditionalEntoryPoint):
@@ -251,8 +250,7 @@ class StateGraphBuilder():
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
             )
-        
-        return_types = extract_literals(conditions)
+        return_types = flow_parameter.get('path_map',extract_literals(conditions))
 
         stategraph.set_conditional_entry_point(
             path = edge_function,

@@ -695,13 +695,13 @@ msgpack = ">=1.1.0,<2.0.0"
 
 [[package]]
 name = "langsmith"
-version = "0.1.127"
+version = "0.1.128"
 description = "Client library to connect to the LangSmith LLM Tracing and Evaluation Platform."
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langsmith-0.1.127-py3-none-any.whl", hash = "sha256:b4e8058d16ee0c814b16fae135c1e8817d1f43a38462d7f55e0eb1f87b9526aa"},
-    {file = "langsmith-0.1.127.tar.gz", hash = "sha256:19c6f95d5558180c600455781e6faacc7798d0e1c54d6eb50ffb744d56f02bc9"},
+    {file = "langsmith-0.1.128-py3-none-any.whl", hash = "sha256:c1b59d947584be7487ac53dffb4e232704626964011b714fd3d9add4b3694cbc"},
+    {file = "langsmith-0.1.128.tar.gz", hash = "sha256:3299e17a659f3c47725c97c47f4445fc34113ac668becce425919866fbcb6ec2"},
 ]
 
 [package.dependencies]
@@ -1016,13 +1016,13 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.47"
+version = "3.0.48"
 description = "Library for building powerful interactive command lines in Python"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "prompt_toolkit-3.0.47-py3-none-any.whl", hash = "sha256:0d7bfa67001d5e39d02c224b663abc33687405033a8c422d0d675a5a13361d10"},
-    {file = "prompt_toolkit-3.0.47.tar.gz", hash = "sha256:1e1b29cb58080b1e69f207c893a1a7bf16d127a5c30c9d17a25a5d77792e5360"},
+    {file = "prompt_toolkit-3.0.48-py3-none-any.whl", hash = "sha256:f49a827f90062e411f1ce1f854f2aedb3c23353244f8108b89283587397ac10e"},
+    {file = "prompt_toolkit-3.0.48.tar.gz", hash = "sha256:d6623ab0477a80df74e646bdbc93621143f5caf104206aa29294d53de1a03d90"},
 ]
 
 [package.dependencies]
