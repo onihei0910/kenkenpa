@@ -204,7 +204,7 @@ final_state = app.invoke(
 print(final_state["messages"][-1].content)
 ```
 
-実行結果
+Execution Result
 
 ``` shell
         +-----------+         
@@ -226,9 +226,9 @@ print(final_state["messages"][-1].content)
 The current weather in San Francisco is 60 degrees and foggy.
 ```
 
-## graph settings定義
+## Definition of graph settings
 
-### `stategraph`の定義(kenkenpa.models.stategraph.KStateGraph)
+### Definition of `stategraph` (kenkenpa.models.stategraph.KStateGraph)
 
 It represents a StateGraph.
   
@@ -399,7 +399,7 @@ stategraph_builder = StateGraphBuilder(
 
 ### Definition of node (kenkenpa.models.node.KNode)
 
-1つのnodeを表します。
+This represents a single node.
 
 ``` python
 {
@@ -500,7 +500,7 @@ stategraph_builder = StateGraphBuilder(
 
 ```
 
-### `edge`の定義(kenkenpa.models.edge.KEdge)
+### Definition of `edge` (kenkenpa.models.edge.KEdge)
 
 Represents a single edge.
 
@@ -534,7 +534,7 @@ Represents a single edge.
 - type: Union[List[str],str]
 - desc: Represents the endpoint of the edge. Either `start_key` or `end_key` can be a list, but not both.
 
-### `static_conditional_edge`の定義(kenkenpa.models.static_conditional_edge.KStaticConditionalEdge)
+### Definition of `static_conditional_edge` (kenkenpa.models.static_conditional_edge.KStaticConditionalEdge)
 
 This is the definition of a conditional edge.
 
@@ -575,7 +575,7 @@ This is the definition of a conditional edge.
 ##### `conditions`
 
 - type: List[Union[KConditionExpression,KConditionDefault]]
-- desc: 次のnodeを決定するための条件式を記述します。詳細は後述。
+- desc: Describes the conditional expressions to determine the next node. Details are provided below.
 
 ### Definition of `conditions` (kenkenpa.models.conditions.KConditions)
 
@@ -593,7 +593,7 @@ This is the definition to determine the next node based on the result of the eva
 ]
 ```
 
-#### conditionsリスト
+#### conditions List
 
 You can define a list of evaluation expressions, each with an expression and a result.
 If all expressions evaluate to false, the node specified in default will be transitioned to.
