@@ -1,6 +1,14 @@
 """
 This module defines data models for conditional entry point flow parameters and static conditional entry points using Pydantic for validation.
 It includes models for conditional entry point flow parameters and static conditional entry points, ensuring that certain constraints are met.
+
+Classes:
+    KConditionalEntryPointFlowParam_v1: Represents the flow parameters for a conditional entry point.
+    KStaticConditionalEntryPoint_v1: Represents a static conditional entry point in a graph.
+
+Type Aliases:
+    KConditionalEntryPointFlowParam: Alias for KConditionalEntryPointFlowParam_v1.
+    KStaticConditionalEntryPoint: Alias for KStaticConditionalEntryPoint_v1.
 """
 from pydantic import BaseModel, ConfigDict
 from typing import List, Union, Optional
@@ -9,33 +17,32 @@ from kenkenpa.models.conditions import KConditionExpression
 from kenkenpa.models.conditions import KConditionDefault
 
 
-class KConditionalEntoryPointFlowParam_v1(BaseModel):
+class KConditionalEntryPointFlowParam_v1(BaseModel):
     """
-    KConditionalEntoryPointFlowParam_v1 represents the flow parameters for a conditional entry point.
+    KConditionalEntryPointFlowParam_v1 represents the flow parameters for a conditional entry point.
 
     Attributes:
+        path_map (Optional[List[str]]): An optional list of path mappings.
         conditions (List[Union[KConditionExpression, KConditionDefault]]): A list of conditions for the entry point.
     """
-    conditions:List[Union[KConditionExpression,KConditionDefault]]
     path_map:Optional[List[str]] = None
+    conditions:List[Union[KConditionExpression,KConditionDefault]]
 
     model_config = ConfigDict(extra='forbid')
 
-KConditionalEntoryPointFlowParam = Union[KConditionalEntoryPointFlowParam_v1]
+KConditionalEntryPointFlowParam = Union[KConditionalEntryPointFlowParam_v1]
 
-class KStaticConditionalEntoryPoint_v1(BaseModel):
+class KStaticConditionalEntryPoint_v1(BaseModel):
     """
-    KStaticConditionalEntoryPoint_v1 represents a static conditional entry point in a graph.
+    KStaticConditionalEntryPoint_v1 represents a static conditional entry point in a graph.
 
     Attributes:
         graph_type (str): The type of the graph.
-        flow_parameter (KConditionalEntoryPointFlowParam): The flow parameters for the conditional entry point.
+        flow_parameter (KConditionalEntryPointFlowParam): The flow parameters for the conditional entry point.
     """
     graph_type:str
-    flow_parameter:KConditionalEntoryPointFlowParam
+    flow_parameter:KConditionalEntryPointFlowParam
     
     model_config = ConfigDict(extra='forbid')
 
-KStaticConditionalEntoryPoint = Union[KStaticConditionalEntoryPoint_v1]
-
-
+KStaticConditionalEntryPoint = Union[KStaticConditionalEntryPoint_v1]

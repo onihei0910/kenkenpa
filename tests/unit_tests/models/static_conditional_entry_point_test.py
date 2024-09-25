@@ -1,9 +1,9 @@
 import pytest
-from kenkenpa.models.static_conditional_entry_point import KConditionalEntoryPointFlowParam_v1
-from kenkenpa.models.static_conditional_entry_point import KConditionalEntoryPointFlowParam
+from kenkenpa.models.static_conditional_entry_point import KConditionalEntryPointFlowParam_v1
+from kenkenpa.models.static_conditional_entry_point import KConditionalEntryPointFlowParam
 
-from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntoryPoint_v1
-from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntoryPoint
+from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntryPoint_v1
+from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntryPoint
 
 def test_KConditionalEdgeFlowParam():
     flow_parameter = {
@@ -22,8 +22,8 @@ def test_KConditionalEdgeFlowParam():
             ]
         }
 
-    KConditionalEntoryPointFlowParam_v1(**flow_parameter)
-    KConditionalEntoryPointFlowParam(**flow_parameter)
+    KConditionalEntryPointFlowParam_v1(**flow_parameter)
+    KConditionalEntryPointFlowParam(**flow_parameter)
 
     flow_parameter = {
             "conditions":[
@@ -40,8 +40,8 @@ def test_KConditionalEdgeFlowParam():
             ]
         }
 
-    KConditionalEntoryPointFlowParam_v1(**flow_parameter)
-    KConditionalEntoryPointFlowParam(**flow_parameter)
+    KConditionalEntryPointFlowParam_v1(**flow_parameter)
+    KConditionalEntryPointFlowParam(**flow_parameter)
 
 def test_KStaticConditionalEdge():
     flow = {
@@ -62,5 +62,5 @@ def test_KStaticConditionalEdge():
             },
         }
     
-    KStaticConditionalEntoryPoint_v1(**flow)
-    KStaticConditionalEntoryPoint(**flow)
+    KStaticConditionalEntryPoint_v1(**flow)
+    KStaticConditionalEntryPoint(**flow)

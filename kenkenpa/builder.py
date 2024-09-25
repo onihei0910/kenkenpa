@@ -10,7 +10,7 @@ from kenkenpa.models.stategraph import KStateGraph
 from kenkenpa.models.node import KNode
 from kenkenpa.models.edge import KEdge
 from kenkenpa.models.static_conditional_edge import KStaticConditionalEdge
-from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntoryPoint
+from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntryPoint
 
 from kenkenpa.state import StateBuilder
 from kenkenpa.edges import gen_static_conditional_edge
@@ -239,13 +239,13 @@ class StateGraphBuilder():
             path_map = return_types
         )
 
-    def _add_static_conditional_entry_point(self,stategraph,flow: KStaticConditionalEntoryPoint):
+    def _add_static_conditional_entry_point(self,stategraph,flow: KStaticConditionalEntryPoint):
         """
         Adds a static conditional entry point to the state graph.
 
         Args:
             stategraph (StateGraph): The state graph.
-            flow (KStaticConditionalEntoryPoint): The static conditional entry point to add.
+            flow (KStaticConditionalEntryPoint): The static conditional entry point to add.
         """
         flow_parameter = flow.get('flow_parameter',{})
         conditions = flow_parameter['conditions']
