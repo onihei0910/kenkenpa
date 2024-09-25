@@ -7,6 +7,8 @@ Generate a StateGraph of LangGraph that can be compiled from structured data.
 React-Agentを例にkenkenpaの使用方法を説明します。  
 https://langchain-ai.github.io/langgraph/  
 
+React-Agentのほか、LangGraphの実装パターンのいくつかをtestとして記述してあります。
+
 ``` python
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
@@ -20,7 +22,7 @@ from langgraph.prebuilt import ToolNode
 from kenkenpa.builder import StateGraphBuilder
 ```
 
-Toolノードは通常通り定義します。
+1. Toolノードは通常通り定義します。
 
 ``` python
 @tool
@@ -32,7 +34,7 @@ def search(query: str):
     return "It's 90 degrees and sunny."
 ```
 
-Toolノードのファクトリー関数を定義します。
+2. Toolノードのファクトリー関数を定義します。
 
 ``` python
 tools = {
@@ -89,7 +91,7 @@ def is_tool_message(state, config, **kwargs):
     return False
 ```
 
-StateGraphの構造化データを作成します。
+StateGraphを表す構造化データを作成します。
 
 ``` python
 graph_settings = {
@@ -221,8 +223,6 @@ print(final_state["messages"][-1].content)
 The current weather in San Francisco is 60 degrees and foggy.
 ```
 
-React-Agent以外の使用例のいくつかをテストとして記述してあります。
-
 ## graph settings定義
 
 ### `stategraph`の定義(kenkenpa.models.stategraph.KStateGraph)
@@ -315,7 +315,7 @@ def is_tool_message(state, config, **kwargs):
 以下の型は事前に登録されています。
 `int`,`float`,`complex`,`str`,`list`,`tuple`,`dict`,`set`,`frozenset`,`bool`
 
-予約済みの型以外を使用するにはStateGraphBuilderに型を登録しておく必要があります。
+予約済みの型以外はStateGraphBuilderに登録しておく必要があります。
 
 ``` python
 #...
@@ -350,7 +350,7 @@ stategraph_builder = StateGraphBuilder(
 - type: str
 - reducerを表すキーの文字列です。
 
-reducerを使用するにはStateGraphBuilderにreducerを登録しておく必要があります。
+reducerを使用するにはStateGraphBuilderに登録しておく必要があります。
 
 ``` python
 import operator
@@ -493,7 +493,6 @@ stategraph_builder = StateGraphBuilder(
     graph_settings = graph_settings,
     node_factorys = factory_map
     )
-
 
 ```
 
@@ -801,3 +800,66 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
       ],
   }
   ```
+
+- **resultとdefault**
+以下の値を設定できます。
+
+  - state_value
+    stateの値を参照します。stateの値はstr(ノード名)である必要があります。
+
+    ``` python
+    {"type":"state_value", "name":"state_key"}
+    ```
+
+  - config_value
+    configの値を参照します。configの値はstr(ノード名)である必要があります。
+
+    ``` python
+    {"type":"config_value", "name":"config_key"}
+    ```
+
+  - function
+    定義済みの評価関数を呼び出します。
+    関数の戻り値はstr(ノード名)かSendのインスタンスである必要があります。
+
+    ``` python
+    {"type":"function","name":"test_function","args":{"args_key":"args_value"}}
+    ```
+
+  - スカラー値
+    `str`
+
+- 使用例
+評価関数は以下のように、Send APIを利用する用途で使えます。
+
+``` python
+# continue_to_jokesは評価関数として呼び出し可能なように定義します。
+def continue_to_jokes(state:OverallState, config, **kwargs):
+    return [Send("generate_joke",{"subject":s}) for s in state["subjects"]]
+
+# Generate the StateGraphBuilder from graph_settings.
+stategraph_builder = StateGraphBuilder(graph_settings)
+
+# Similarly, the evaluation function is also registered.
+stategraph_builder.add_evaluete_function("continue_to_jokes", continue_to_jokes)
+
+graph_settings = {
+    # (省略)
+
+    "flows":[
+        {　# coditional edge generate_topics -> continue_to_jokes
+            "graph_type":"static_conditional_edge",
+            "flow_parameter":{
+                "start_key":"generate_topics",
+                "path_map":["generate_joke"], # path_mapを指定します
+                "conditions":[
+                    # static_conditional_edgeのconditionsにdefaultのみを定義し、
+                    # ここでcontinue_to_jokesを呼び出すようにします。
+                    {"default": {"type": "function", "name": "continue_to_jokes"}} 
+                ]
+            },
+        },
+    ]
+}
+
+```

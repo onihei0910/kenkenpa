@@ -2,10 +2,15 @@
 
 Generate a StateGraph of LangGraph that can be compiled from structured data.
 
+## Note
+
+This document is a translation of a text originally written in Japanese.
+
 ## Usage Example
 
-React-Agentを例にkenkenpaの使用方法を説明します。
+I will explain how to use kenkenpa with the example of React-Agent.
 https://langchain-ai.github.io/langgraph/
+In addition to React-Agent, several implementation patterns of LangGraph are described as tests.
 
 ``` python
 from langchain_core.messages import HumanMessage
@@ -20,7 +25,7 @@ from langgraph.prebuilt import ToolNode
 from kenkenpa.builder import StateGraphBuilder
 ```
 
-Toolノードは通常通り定義します。
+The Tool node is defined as usual.
 
 ``` python
 @tool
@@ -32,7 +37,7 @@ def search(query: str):
     return "It's 90 degrees and sunny."
 ```
 
-Toolノードのファクトリー関数を定義します。
+Define the factory function for the Tool node.
 
 ``` python
 tools = {
@@ -50,7 +55,7 @@ def gen_tool_node(factory_parameter,flow_parameter):
     return tool_node
 ```
 
-agentノードのファクトリー関数を定義します。
+Define the factory function for the agent node.
 
 ``` python
 def gen_agent(factory_parameter,flow_parameter):
@@ -60,7 +65,7 @@ def gen_agent(factory_parameter,flow_parameter):
     for function in functions:
         tool_functions.append(tools[function])
     
-    # LLMの設定
+     # Setting up the LLM
     model = ChatOpenAI(
         model="gpt-4o-mini"
     )
@@ -77,11 +82,11 @@ def gen_agent(factory_parameter,flow_parameter):
     return call_model
 ```
 
-should_continueの代わりに最終メッセージがtool_callsかを評価する関数を定義します。
+Define a function to evaluate whether the final message is a tool call instead of using should_continue.
 
 ``` python
 def is_tool_message(state, config, **kwargs):
-    """最後のメッセージがtool_callsかを評価します。"""
+    """Evaluate whether the last message is a tool call."""
     messages = state['messages']
     last_message = messages[-1]
     if last_message.tool_calls:
@@ -89,7 +94,7 @@ def is_tool_message(state, config, **kwargs):
     return False
 ```
 
-StateGraphの構造化データを作成します。
+Create structured data representing a StateGraph.
 
 ``` python
 graph_settings = {
@@ -142,7 +147,7 @@ graph_settings = {
                 "start_key":"agent",
                 "conditions":[
                     {
-                        # is_tool_messageの結果がTrueの時にtools nodeに遷移します。
+                        # Transition to the tools node if the result of is_tool_message is True.
                         "expression": {
                             "eq": [{"type": "function", "name": "is_tool_message_function"}, True], # *4
                         },
@@ -163,30 +168,30 @@ graph_settings = {
 }
 ```
 
-graph_settingsからStateGraphBuilderを生成します。
+Generate a StateGraphBuilder from graph_settings.
 
 ``` python
-# StateGraphBuilderのインスタンス化
+# Instantiate the StateGraphBuilder
 stategraph_builder = StateGraphBuilder(graph_settings)
 
-# コンパイル可能なStateGraphを生成するにはいくつかの準備が必要です。
-# *1. 使用する型を登録します。(listは予約されていますが、説明のために記述しています。)
-#stategraph_builder.add_type("list",list)
+# Some preparations are needed to generate a compilable StateGraph.
+# *1. Register the types to be used. (list is reserved, but it is written for explanation purposes.)
+#stategraph_builder.add_type("list", list)
 
-# *2. 使用するreducerを登録します。
+# *2. Register the reducers to be used.
 stategraph_builder.add_reducer("add_messages",add_messages)
 
-# *3. Node Factoryを登録します。
+# *3. Register the Node Factories.
 stategraph_builder.add_node_factory("agent_node_factory",gen_agent)
 stategraph_builder.add_node_factory("tool_node_factory",gen_tool_node)
 
-# *4. 評価関数も登録します。
+# *4. Register the evaluation functions as well.
 stategraph_builder.add_evaluete_function("is_tool_message_function", s_tool_message,)
 
-# gen_stategraph()メソッドでコンパイル可能なStateGraphを取得できます。
+# You can obtain a compilable StateGraph with the gen_stategraph() method.
 stategraph = stategraph_builder.gen_stategraph()
 
-# 以降はLangGraphの一般的な使用方法に従ってコードを記述します。
+# From here, write the code following the general usage of LangGraph.
 memory = MemorySaver()
 app =  stategraph.compile(checkpointer=memory,debug=False)
 
@@ -221,13 +226,11 @@ print(final_state["messages"][-1].content)
 The current weather in San Francisco is 60 degrees and foggy.
 ```
 
-React-Agent以外の使用例のいくつかをテストとして記述してあります。
-
 ## graph settings定義
 
 ### `stategraph`の定義(kenkenpa.models.stategraph.KStateGraph)
 
-1つのStateGraphを表します。
+It represents a StateGraph.
   
 ``` python
 {
@@ -252,32 +255,32 @@ React-Agent以外の使用例のいくつかをテストとして記述してあ
 #### `graph_type`
 
 - type: str
-- desc: graphタイプを指定します。`stategraph`固定です。
+- desc: Specifies the graph type. Fixed as stategraph.
 
 #### `flow_parameter`
 
 - type: Dict
-- desc: StateGraph生成時に参照されるデータです。
+- desc: Data referenced when generating the StateGraph.
 
 ##### `name`
 
 - type: str
-- desc: StateGraphの名前。サブグラフの場合、`CompiledGraph`.`get_graph()`で表示される名称になります。
+- desc: The name of the StateGraph. In the case of a subgraph, it will be the name displayed in  CompiledGraph. get_graph().
 
 ##### `state`
 
 - type: List[Dict]
-- desc: カスタムステートの定義を記述します。詳細は後述。  
+- desc: Describes the definition of custom states. Details are provided later.
 
 #### `flows`
 
 - type: List[Dict]
-- desc: StateGraphを構成するStateGraph(SubGraph),node,edge定義のリスト。
+- desc: A list of definitions for StateGraph (SubGraph), node, and edge that make up the StateGraph.
 
-### `state`の定義(kenkenpa.models.stategraph.KState)
+### Definition of state (kenkenpa.models.stategraph.KState)
 
-StateGraphが参照するState定義です。
-Stateは`TypedDict`として生成されます。
+This is the state definition referenced by the StateGraph.
+State is generated as  TypedDict.
 
 ``` python
 "state" : [
@@ -288,7 +291,7 @@ Stateは`TypedDict`として生成されます。
     },
 ]
 
-# この定義は以下に相当します。
+# This definition corresponds to the following.
 from typing import Annotated
 from typing_extensions import TypedDict
 from langgraph.graph import  add_messages
@@ -296,7 +299,7 @@ from langgraph.graph import  add_messages
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
-# 実際のアクセス
+# Actual access
 def is_tool_message(state, config, **kwargs):
     messages = state['messages']
 
@@ -305,17 +308,17 @@ def is_tool_message(state, config, **kwargs):
 #### `field_name`
 
 - type: str
-- desc: フィールドネームです。
+- desc: This is the field name.
 
 #### `type`
 
 - type: str
-- フィールドの型を表すキーの文字列です。
+- his is a string representing the key for the field type.
 
-以下の型は事前に登録されています。
+The following types are pre-registered:
 `int`,`float`,`complex`,`str`,`list`,`tuple`,`dict`,`set`,`frozenset`,`bool`
 
-予約済みの型以外を使用するにはStateGraphBuilderに型を登録しておく必要があります。
+To use types other than the reserved ones, you need to register the type with the StateGraphBuilder.
 
 ``` python
 #...
@@ -333,7 +336,7 @@ class SomeType(TypedDict):
 stategraph_builder = StateGraphBuilder(graph_settings)
 stategraph_builder.add_type("SomeType_Key",SomeType)
 
-# コンストラクタに渡すこともできます。
+# You can also pass it to the constructor.
 type_map = {
     "SomeType_Key": SomeType
 }
@@ -348,9 +351,9 @@ stategraph_builder = StateGraphBuilder(
 #### `reducer`
 
 - type: str
-- reducerを表すキーの文字列です。
+- rThis is a string representing the key for the reducer.
 
-reducerを使用するにはStateGraphBuilderにreducerを登録しておく必要があります。
+To use a reducer, you need to register it with the StateGraphBuilder.
 
 ``` python
 import operator
@@ -381,7 +384,7 @@ stategraph_builder = StateGraphBuilder(graph_settings)
 stategraph_builder.add_reducer("operator_add",operator.add)
 stategraph_builder.add_reducer("reducer_a_key",custom_reducer_a)
 
-# コンストラクタに渡すこともできます。
+# You can also pass it to the constructor.
 reducer_map = {
     "operator_add": operator.add,
     "reducer_a_key": custom_reducer_a
@@ -394,7 +397,7 @@ stategraph_builder = StateGraphBuilder(
 
 ```
 
-### `node`の定義(kenkenpa.models.node.KNode)
+### Definition of node (kenkenpa.models.node.KNode)
 
 1つのnodeを表します。
 
@@ -417,29 +420,29 @@ stategraph_builder = StateGraphBuilder(
 #### `graph_type`
 
 - type: str
-- desc: graphタイプを指定します。`node`固定です。
+- desc: Specifies the graph type. Fixed to `node`.
 
 #### `flow_parameter`
 
 - type: Dict
-- desc: StateGraph生成時に参照されるデータです。
+- desc: Data referenced when generating the StateGraph.
 
 ##### `name`
 
 - type: str
-- desc: nodeの名前。`CompiledGraph`.`get_graph()`で表示される名称になります。
+- desc: The name of the node. This will be the name displayed in `CompiledGraph`.`get_graph()`.
 
 ##### `factory`
 
 - type: str
-- factory: nodeとして機能するrunnableを生成するファクトリー関数を表します。
+- factory: Represents the factory function that generates the runnable functioning as a node.
 
 #### `factory_parameter`
 
 - type: Optional[Dict]
-- desc: ファクトリー関数に渡されるパラメータです。
+- desc: Parameters passed to the factory function.
   
-ファクトリ関数は`factory_parameter`と`flow_parameter`を受け取る様に定義します。
+The factory function is defined to accept `factory_parameter` and `flow_parameter`.
 
 ``` python
 #{
@@ -468,7 +471,7 @@ stategraph_builder.add_node_factory("gen_chatbot_agent_key",gen_chatbot_agent)
 stategraph = stategraph_builder.gen_stategraph()
 ```
 
-LangGraphが受け入れ可能なClassとしての定義もできます。
+You can also define it as a class acceptable by LangGraph.
 
 ``` python
 class Chatbot():
@@ -483,7 +486,7 @@ stategraph_builder.add_node_factory("gen_chatbot_agent_key",Chatbot)
 
 stategraph = stategraph_builder.gen_stategraph()
 
-# ファクトリー関数のマップはコンストラクタに渡すこともできます。
+# You can also pass the factory function map to the constructor.
 factory_map = {
     "gen_chatbot_agent_key": Chatbot,
 
@@ -499,7 +502,7 @@ stategraph_builder = StateGraphBuilder(
 
 ### `edge`の定義(kenkenpa.models.edge.KEdge)
 
-1つのedgeを表します。
+Represents a single edge.
 
 ``` python
 {
@@ -514,26 +517,26 @@ stategraph_builder = StateGraphBuilder(
 #### `graph_type`
 
 - type: str
-- desc: graphタイプを指定します。`edge`固定です。
+- desc: Specifies the graph type. Fixed to `edge`.
 
 #### `flow_parameter`
 
 - type: Dict
-- desc: StateGraph生成時に参照されるデータです。
+- desc: Data referenced when generating the StateGraph.
 
 ##### `start_key`
 
 - type: Union[List[str],str]
-- desc: edgeの始点を表します。`start_key`と`end_key`のいずれか一方のみをlistにできます。
+- desc: Represents the starting point of the edge. Either `start_key` or `end_key` can be a list, but not both.
 
 ##### `end_key`
 
 - type: Union[List[str],str]
-- desc: edgeの終点を表します。`start_key`と`end_key`のいずれか一方のみをlistにできます。
+- desc: Represents the endpoint of the edge. Either `start_key` or `end_key` can be a list, but not both.
 
 ### `static_conditional_edge`の定義(kenkenpa.models.static_conditional_edge.KStaticConditionalEdge)
 
-conditional_edgeの定義です。
+This is the definition of a conditional edge.
 
 ``` python
 {
@@ -557,26 +560,26 @@ conditional_edgeの定義です。
 #### `graph_type`
 
 - type: str
-- desc: graphタイプを指定します。`static_conditional_edge`固定です。
+- desc: Specifies the graph type. Fixed to `static_conditional_edge`.
 
 #### `flow_parameter`
 
 - type: Dict
-- desc: StateGraph生成時に参照されるデータです。
+- desc: Data referenced when generating the StateGraph.
 
 ##### `start_key`
 
 - type: str
-- desc: edgeの始点です。
+- desc: The starting point of the edge.
 
 ##### `conditions`
 
 - type: List[Union[KConditionExpression,KConditionDefault]]
 - desc: 次のnodeを決定するための条件式を記述します。詳細は後述。
 
-### `conditions`の定義(kenkenpa.models.conditions.KConditions)
+### Definition of `conditions` (kenkenpa.models.conditions.KConditions)
 
-評価式の結果に応じて次のnodeを決定させるための定義です。少し詳しく説明します。
+This is the definition to determine the next node based on the result of the evaluation expression. Let's explain in a bit more detail.
 
 ``` python
 "conditions":[
@@ -592,10 +595,10 @@ conditional_edgeの定義です。
 
 #### conditionsリスト
 
-1つのexpressionとresultを持つ評価式をリストとして定義できます。
-いずれのexpressionも偽となった場合はdefaultに指定されたnodeに遷移します。
+You can define a list of evaluation expressions, each with an expression and a result.
+If all expressions evaluate to false, the node specified in default will be transitioned to.
 
-stateの値に応じてルーティングする場合は以下のような記述になります。
+When routing based on the value of the state, it can be described as follows:
 
 ``` python
 "conditions":[
@@ -621,8 +624,8 @@ stateの値に応じてルーティングする場合は以下のような記述
 ]
 ```
 
-conditionsは、全ての評価式を評価し、結果がTrueになったすべてのresultを次のnodeに指定します。
-以下の例では、node_aとnode_bを返します。
+The conditions evaluate all expressions and specify all results that evaluate to True as the next nodes.
+In the following example, both node_a and node_b are returned.
 
 ``` python
 "conditions":[
@@ -643,15 +646,15 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
 ```
 
 - **expression**
-  比較式と論理式が使えます。
+  Comparison and logical expressions can be used.
 
-- **比較式**
+- ***Comparison Expressions***
 
   ``` python
   "operator": [operand,operand]
   ```
 
-- オペレータ
+- Operators
   - `equals`,`eq`,`==`
   - `not_equals`,`neq`,`!=`
   - `greater_than`,`gt`,`>`
@@ -659,34 +662,33 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
   - `less_than`,`lt`,`<`
   - `less_than_or_equals`,`lte`,`<=`
 
-- オペランド
+- Operands
   - state_value
-    stateの値を参照します。
+    Refers to the value of the state.
 
     ``` python
     {"type":"state_value", "name":"state_key"}
     ```
 
   - config_value
-    configの値を参照します。
+    Refers to the value of the config.
 
     ``` python
     {"type":"config_value", "name":"test_config_key"}
     ```
 
   - function
-    定義済みの評価関数を呼び出します。
+    Calls a predefined evaluation function.
 
     ``` python
     {"type":"function","name":"test_function","args":{"args_key":"args_value"}}
     ```
 
-  - スカラー値
+  - Scalar values
     `int`,`float`,`complex`,`bool`,`str`,`bytes`,`None`
 
-- 使用例1
-
-    "is_tool_message_function"にマッピングした評価関数を呼び出し結果がTrueかを検証します。
+- Example 1
+    Verifies if the result of calling the evaluation function mapped to "is_tool_message_function" is True.
 
     ``` python
     "expression": {
@@ -697,26 +699,26 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
     }
     ```
 
-    評価関数を使用するにはStateGraphBuilderにマッピングしておく必要があります。
+    To use an evaluation function, it must be mapped in the StateGraphBuilder.
 
     ``` python
     def is_tool_message(state, config, **kwargs):
-        """最後のメッセージがtool_callsかを評価します。"""
+        """Evaluates if the last message is a tool_call."""
         messages = state['messages']
         last_message = messages[-1]
         if last_message.tool_calls:
             return True
         return False
     
-    # graph_settingsからStateGraphBuilderを生成します。
+    # Generate StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)
-    # 評価関数の登録
+    # Register the evaluation function
     stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
     ```
 
-- 使用例2
-    stateの値を参照して"evaluate_value"かを検証します。
+- Example 2
+    Verifies if the value of the state is "evaluate_value".
 
     ``` python
     "expression": {
@@ -727,8 +729,8 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
     }
     ```
 
-- 使用例3
-    configの値を参照します
+- Example 3
+    Refers to the value of the config.
 
     ``` python
     config = {
@@ -747,12 +749,12 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
     }
     ```
 
-- **論理式**
+- ***Logical Expressions***
 
   ``` python
-  "and": [評価式 or 論理式]
-  "or" : [評価式 or 論理式]
-  "not": 評価式 or 論理式
+  "and": [evaluation expression or logical expression]
+  "or" : [evaluation expression or logical expression]
+  "not": evaluation expression or logical expression
   ```
 
   ``` python
@@ -781,7 +783,7 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
   }
   ```
 
-  論理式は入れ子にできます。
+  Logical expressions can be nested.
 
   ``` python
   "expression": {
@@ -801,3 +803,64 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
       ],
   }
   ```
+
+- ***result and default***
+The following values can be set.
+  - state_value
+    Refers to the value of the state. The value of the state must be a str (node name).
+
+    ``` python
+    {"type": "state_value", "name": "state_key"}
+    ```
+
+  - config_value
+    Refers to the value of the config. The value of the config must be a str (node name).
+
+    ``` python
+    {"type": "config_value", "name": "config_key"}
+    ```
+
+  - function
+    Calls a predefined evaluation function.
+    The return value of the function must be a str (node name) or an instance of Send.
+
+    ``` python
+    {"type": "function", "name": "test_function", "args": {"args_key": "args_value"}}
+    ```
+
+  - Scalar values
+    `str`
+
+- Example
+Evaluation functions can be used for purposes such as utilizing the Send API as shown below.
+
+``` python
+# Define continue_to_jokes so that it can be called as an evaluation function.
+def continue_to_jokes(state: OverallState, config, **kwargs):
+    return [Send("generate_joke", {"subject": s}) for s in state["subjects"]]
+
+# Generate the StateGraphBuilder from graph_settings.
+stategraph_builder = StateGraphBuilder(graph_settings)
+
+# Similarly, the evaluation function is also registered.
+stategraph_builder.add_evaluate_function("continue_to_jokes", continue_to_jokes)
+
+graph_settings = {
+    # (omitted)
+
+    "flows": [
+        {  # conditional edge generate_topics -> continue_to_jokes
+            "graph_type": "static_conditional_edge",
+            "flow_parameter": {
+                "start_key": "generate_topics",
+                "path_map": ["generate_joke"],  # Specify the path_map
+                "conditions": [
+                    # Define only the default in the conditions of static_conditional_edge,
+                    # and call continue_to_jokes here.
+                    {"default": {"type": "function", "name": "continue_to_jokes"}}
+                ]
+            },
+        },
+    ]
+}
+```
