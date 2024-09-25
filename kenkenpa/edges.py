@@ -3,8 +3,7 @@ This module provides functionality for generating and handling static conditiona
 It includes a function to generate a static conditional edge and a class to handle the evaluation of conditions.
 """
 from typing import List
-from kenkenpa.common import to_list_key,convert_key
-from langgraph.types import Send
+from kenkenpa.common import convert_key
 
 def gen_static_conditional_edge(conditions,evaluate_functions):
     """
@@ -77,12 +76,9 @@ class StaticConditionalHandler:
                 result_value = self._get_value(condition["result"],state, config)
 
                 wk_result = []
-
-                if isinstance(result_value,str):
-                    wk_result.append(result_value)
-                elif isinstance(result_value,List):
+                if isinstance(result_value,List):
                     wk_result.extend(result_value)
-                elif isinstance(result_value,Send):
+                else:
                     wk_result.append(result_value)
                 
                 for wk in wk_result:
@@ -100,12 +96,9 @@ class StaticConditionalHandler:
                 result_value = self._get_value(condition["default"],state, config)
 
                 wk_result = []
-
-                if isinstance(result_value,str):
-                    wk_result.append(result_value)
-                elif isinstance(result_value,List):
+                if isinstance(result_value,List):
                     wk_result.extend(result_value)
-                elif isinstance(result_value,Send):
+                else:
                     wk_result.append(result_value)
                 
                 for wk in wk_result:

@@ -2,6 +2,8 @@ import pytest
 
 from typing_extensions import TypedDict
 
+from langgraph.types import Send
+
 from kenkenpa.edges import StaticConditionalHandler
 from kenkenpa.edges import compare_values
 
@@ -425,6 +427,47 @@ def test_static_conditional_handler_evaluate_conditions():
     
     exc_info = pytest.raises(ValueError, handler._evaluate_conditions, conditions, {},{})
     assert str(exc_info.value) == "No matching conditions were found, and no default function was provided."
+
+def test_static_conditional_handler_evaluate_conditions_return():
+    def return_function(state, config, **kwargs):
+        return Send("node",{"arg":"test"}) 
+
+    conditions = []
+    evaluate_functions = {
+        "return_function": return_function
+    }
+
+    handler = StaticConditionalHandler(
+        conditions,
+        evaluate_functions
+    )
+
+    conditions = [
+            {
+                "expression": {
+                    "eq": ["10", "10"],
+                },
+                "result": {"type": "function", "name": "return_function"}
+            },
+            {"default": ["ERROR"]} 
+        ]
+
+    expected_result = [Send("node", {"arg": "test"})]
+    assert handler._evaluate_conditions(conditions,{},{}) == expected_result
+
+    conditions = [
+            {
+                "expression": {
+                    "eq": ["10", "9"],
+                },
+                "result": ["ERROR"]
+            },
+            {"default": {"type": "function", "name": "return_function"}} 
+        ]
+
+    expected_result = [Send("node", {"arg": "test"})]
+    assert handler._evaluate_conditions(conditions,{},{}) == expected_result
+
 
 
 def test_static_conditional_handler_call_edge():
