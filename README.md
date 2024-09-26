@@ -4,7 +4,7 @@ Generate a StateGraph of LangGraph that can be compiled from structured data.
 
 ## Note
 
-This document is a translation of a text originally written in Japanese.
+This document is a translation of a text originally written in [Japanese](README.ja.md).
 
 ## Usage Example
 
