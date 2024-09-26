@@ -117,7 +117,7 @@ react_agent_subgraph = {
             },
         },
         {# coditional edge 
-            "graph_type":"static_conditional_edge",
+            "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
                 "conditions":[

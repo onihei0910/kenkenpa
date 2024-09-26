@@ -12,6 +12,22 @@ kenkenpa.models.conditions module
    :undoc-members:
    :show-inheritance:
 
+kenkenpa.models.configurable\_conditional\_edge module
+------------------------------------------------------
+
+.. automodule:: kenkenpa.models.configurable_conditional_edge
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+kenkenpa.models.configurable\_conditional\_entry\_point module
+--------------------------------------------------------------
+
+.. automodule:: kenkenpa.models.configurable_conditional_entry_point
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 kenkenpa.models.edge module
 ---------------------------
 
@@ -32,22 +48,6 @@ kenkenpa.models.stategraph module
 ---------------------------------
 
 .. automodule:: kenkenpa.models.stategraph
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-kenkenpa.models.static\_conditional\_edge module
-------------------------------------------------
-
-.. automodule:: kenkenpa.models.static_conditional_edge
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-kenkenpa.models.static\_conditional\_entry\_point module
---------------------------------------------------------
-
-.. automodule:: kenkenpa.models.static_conditional_entry_point
    :members:
    :undoc-members:
    :show-inheritance:

@@ -139,7 +139,7 @@ graph_settings = {
             },
         },
         {# coditional edge 
-            "graph_type":"static_conditional_edge",
+            "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
                 "conditions":[
@@ -243,7 +243,7 @@ The current weather in San Francisco is 60 degrees and foggy.
         ],
     },
     "flows":[
-        #stategraph | node | edge | static_conditional_edge | static_conditional_entory_point
+        #stategraph | node | edge | configurable_conditional_edge | configurable_conditional_entory_point
     ]
 }
 
@@ -530,13 +530,13 @@ stategraph_builder = StateGraphBuilder(
 - type: Union[List[str],str]
 - desc: edgeの終点を表します。`start_key`と`end_key`のいずれか一方のみをlistにできます。
 
-### `static_conditional_edge`の定義(kenkenpa.models.static_conditional_edge.KStaticConditionalEdge)
+### `configurable_conditional_edge`の定義(kenkenpa.models.configurable_conditional_edge.KConfigurableConditionalEdge)
 
 conditional_edgeの定義です。
 
 ``` python
 {
-    "graph_type":"static_conditional_edge",
+    "graph_type":"configurable_conditional_edge",
     "flow_parameter":{
         "start_key":"agent",
         "conditions":[
@@ -556,7 +556,7 @@ conditional_edgeの定義です。
 #### `graph_type`
 
 - type: str
-- desc: graphタイプを指定します。`static_conditional_edge`固定です。
+- desc: graphタイプを指定します。`configurable_conditional_edge`固定です。
 
 #### `flow_parameter`
 
@@ -848,12 +848,12 @@ graph_settings = {
 
     "flows":[
         {　# coditional edge generate_topics -> continue_to_jokes
-            "graph_type":"static_conditional_edge",
+            "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"generate_topics",
                 "path_map":["generate_joke"], # path_mapを指定します
                 "conditions":[
-                    # static_conditional_edgeのconditionsにdefaultのみを定義し、
+                    # configurable_conditional_edgeのconditionsにdefaultのみを定義し、
                     # ここでcontinue_to_jokesを呼び出すようにします。
                     {"default": {"type": "function", "name": "continue_to_jokes"}} 
                 ]

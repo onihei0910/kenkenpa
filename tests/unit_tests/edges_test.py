@@ -4,7 +4,7 @@ from typing_extensions import TypedDict
 
 from langgraph.types import Send
 
-from kenkenpa.edges import StaticConditionalHandler
+from kenkenpa.edges import ConfigurableConditionalHandler
 from kenkenpa.edges import compare_values
 
 def test_conpare_values():
@@ -104,7 +104,7 @@ def test_conpare_values():
 class DummyType(TypedDict):
     dummy:str
 
-def test_static_conditional_handler_init():
+def test_configurable_conditional_handler_init():
     def test_func():
         pass
     
@@ -122,7 +122,7 @@ def test_static_conditional_handler_init():
             {"default": ["False"]} 
         ]
 
-    handler = StaticConditionalHandler(
+    handler = ConfigurableConditionalHandler(
         conditions,
         evaluate_functions
     )
@@ -130,7 +130,7 @@ def test_static_conditional_handler_init():
     assert handler.conditions == conditions
     assert handler.evaluate_functions == evaluate_functions
 
-def test_static_conditional_handler_evaluate_expr():
+def test_configurable_conditional_handler_evaluate_expr():
     def func_a(state,config,**kwargs):
         if kwargs:
             return kwargs['args_a']
@@ -141,7 +141,7 @@ def test_static_conditional_handler_evaluate_expr():
     }
     conditions = []
 
-    handler = StaticConditionalHandler(
+    handler = ConfigurableConditionalHandler(
         conditions,
         evaluate_functions
     )
@@ -205,11 +205,11 @@ def test_static_conditional_handler_evaluate_expr():
     exc_info = pytest.raises(ValueError, handler._evaluate_expr, "NON_DICT_DATA", {},{})
     assert str(exc_info.value) == "The formula must be a dictionary."
 
-def test_static_conditional_handler_evaluate_conditions():
+def test_configurable_conditional_handler_evaluate_conditions():
     evaluate_functions = {}
     conditions = []
 
-    handler = StaticConditionalHandler(
+    handler = ConfigurableConditionalHandler(
         conditions,
         evaluate_functions
     )
@@ -428,7 +428,7 @@ def test_static_conditional_handler_evaluate_conditions():
     exc_info = pytest.raises(ValueError, handler._evaluate_conditions, conditions, {},{})
     assert str(exc_info.value) == "No matching conditions were found, and no default function was provided."
 
-def test_static_conditional_handler_evaluate_conditions_return():
+def test_configurable_conditional_handler_evaluate_conditions_return():
     def return_function(state, config, **kwargs):
         return Send("node",{"arg":"test"}) 
 
@@ -437,7 +437,7 @@ def test_static_conditional_handler_evaluate_conditions_return():
         "return_function": return_function
     }
 
-    handler = StaticConditionalHandler(
+    handler = ConfigurableConditionalHandler(
         conditions,
         evaluate_functions
     )
@@ -470,7 +470,7 @@ def test_static_conditional_handler_evaluate_conditions_return():
 
 
 
-def test_static_conditional_handler_call_edge():
+def test_configurable_conditional_handler_call_edge():
     evaluate_functions = {}
     conditions = [
             {
@@ -486,7 +486,7 @@ def test_static_conditional_handler_call_edge():
             {"default": "Default_Value"} 
         ]
 
-    handler = StaticConditionalHandler(
+    handler = ConfigurableConditionalHandler(
         conditions,
         evaluate_functions
     )

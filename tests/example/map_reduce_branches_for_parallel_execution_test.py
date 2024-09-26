@@ -123,12 +123,12 @@ graph_settings = {
             },
         },
         {# coditional edge generate_topics -> continue_to_jokes
-            "graph_type":"static_conditional_edge",
+            "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"generate_topics",
                 "path_map":["generate_joke"], # path_mapを指定します
                 "conditions":[
-                    # static_conditional_edgeのconditionsにdefaultのみを定義し、
+                    # configurable_conditional_edgeのconditionsにdefaultのみを定義し、
                     # ここでcontinue_to_jokesを呼び出すようにします。
                     {"default": {"type": "function", "name": "continue_to_jokes"}} 
                 ]
