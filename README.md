@@ -353,7 +353,7 @@ stategraph_builder = StateGraphBuilder(
 - type: str
 - rThis is a string representing the key for the reducer.
 
-To use a reducer, you need to register it with the StateGraphBuilder.
+To use a reducer, you need to register it with the StateGraphBuilder.[コード全文](tests/example/conditional_branching_test.py)
 
 ``` python
 import operator
@@ -749,7 +749,7 @@ In the following example, both node_a and node_b are returned.
     }
     ```
 
-- ***Logical Expressions***
+- **Logical Expressions**
 
   ``` python
   "and": [evaluation expression or logical expression]
@@ -804,7 +804,7 @@ In the following example, both node_a and node_b are returned.
   }
   ```
 
-- ***result and default***
+- **`result` and `default`**
 The following values can be set.
   - state_value
     Refers to the value of the state. The value of the state must be a str (node name).
@@ -831,8 +831,8 @@ The following values can be set.
   - Scalar values
     `str`
 
-- Example
-Evaluation functions can be used for purposes such as utilizing the Send API as shown below.
+- Example  
+The evaluation function can be used for purposes utilizing the Send API as follows. [Full code](tests/example/map_reduce_branches_for_parallel_execution_test.py)  
 
 ``` python
 # Define continue_to_jokes so that it can be called as an evaluation function.

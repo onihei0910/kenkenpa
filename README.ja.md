@@ -349,7 +349,7 @@ stategraph_builder = StateGraphBuilder(
 - type: str
 - reducerを表すキーの文字列です。
 
-reducerを使用するにはStateGraphBuilderに登録しておく必要があります。
+reducerを使用するにはStateGraphBuilderに登録しておく必要があります。[コード全文](tests/example/conditional_branching_test.py)
 
 ``` python
 import operator
@@ -800,7 +800,7 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
   }
   ```
 
-- **resultとdefault**
+- **`result`と`default`**
 以下の値を設定できます。
 
   - state_value
@@ -828,8 +828,8 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
   - スカラー値
     `str`
 
-- 使用例
-評価関数は以下のように、Send APIを利用する用途で使えます。
+- 使用例  
+評価関数は以下のように、Send APIを利用する用途で使えます。[コード全文](tests/example/map_reduce_branches_for_parallel_execution_test.py)
 
 ``` python
 # continue_to_jokesは評価関数として呼び出し可能なように定義します。
