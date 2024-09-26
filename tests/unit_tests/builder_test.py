@@ -316,7 +316,7 @@ def test_state_state_graph_graph_types():
                 },
             },
             {# 静的条件付きエッジ
-                "graph_type":"static_conditional_edge",
+                "graph_type":"configurable_conditional_edge",
                 "flow_parameter":{
                     "start_key":"test_node_a",
                     "path_map":["test_node_b","END"],
@@ -357,7 +357,7 @@ def test_state_state_graph_graph_types():
             sub_graph_a_settings,
             sub_graph_b_settings,
             {# conditional entry point
-                "graph_type":"static_conditional_entry_point",
+                "graph_type":"configurable_conditional_entry_point",
                 "flow_parameter":{
                     "path_map":["subgraph_a","subgraph_b"],
                     "conditions":[

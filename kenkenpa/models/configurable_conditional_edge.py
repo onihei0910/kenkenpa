@@ -1,14 +1,14 @@
 """
-This module defines data models for conditional edge flow parameters and static conditional edges using Pydantic for validation.
-It includes models for conditional edge flow parameters and static conditional edges, ensuring that certain constraints are met.
+This module defines data models for conditional edge flow parameters and configurable conditional edges using Pydantic for validation.
+It includes models for conditional edge flow parameters and configurable conditional edges, ensuring that certain constraints are met.
 
 Classes:
     KConditionalEdgeFlowParam_v1: Represents the flow parameters for a conditional edge.
-    KStaticConditionalEdge_v1: Represents a static conditional edge in a graph.
+    KConfigurableConditionalEdge_v1: Represents a configurable conditional edge in a graph.
 
 Type Aliases:
     KConditionalEdgeFlowParam: Alias for KConditionalEdgeFlowParam_v1.
-    KStaticConditionalEdge: Alias for KStaticConditionalEdge_v1.
+    KConfigurableConditionalEdge: Alias for KConfigurableConditionalEdge_v1.
 """
 from typing import List, Union, Optional
 from pydantic import BaseModel, ConfigDict
@@ -33,9 +33,9 @@ class KConditionalEdgeFlowParam_v1(BaseModel):
 
 KConditionalEdgeFlowParam = Union[KConditionalEdgeFlowParam_v1]
 
-class KStaticConditionalEdge_v1(BaseModel):
+class KConfigurableConditionalEdge_v1(BaseModel):
     """
-    KStaticConditionalEdge_v1 represents a static conditional edge in a graph.
+    KConfigurableConditionalEdge_v1 represents a configurable conditional edge in a graph.
 
     Attributes:
         graph_type (str): The type of the graph.
@@ -46,6 +46,6 @@ class KStaticConditionalEdge_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KStaticConditionalEdge = Union[KStaticConditionalEdge_v1]
+KConfigurableConditionalEdge = Union[KConfigurableConditionalEdge_v1]
 
 

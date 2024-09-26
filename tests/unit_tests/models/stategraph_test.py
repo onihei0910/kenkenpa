@@ -72,7 +72,7 @@ def test_KStateGraph():
         },
         "flows": [
             {
-                "graph_type":"static_conditional_entry_point",
+                "graph_type":"configurable_conditional_entry_point",
                 "flow_parameter":{
                     "conditions":[
                         {
@@ -133,7 +133,7 @@ def test_KStateGraph():
                 },
             },
             {
-                "graph_type":"static_conditional_edge",
+                "graph_type":"configurable_conditional_edge",
                 "flow_parameter":{
                     "start_key":"agent",
                     "conditions":[

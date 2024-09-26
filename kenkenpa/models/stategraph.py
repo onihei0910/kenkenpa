@@ -7,8 +7,8 @@ from pydantic import BaseModel, ConfigDict
 
 from kenkenpa.models.edge import KEdge
 from kenkenpa.models.node import KNode
-from kenkenpa.models.static_conditional_edge import KStaticConditionalEdge
-from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntryPoint
+from kenkenpa.models.configurable_conditional_edge import KConfigurableConditionalEdge
+from kenkenpa.models.configurable_conditional_entry_point import KConfigurableConditionalEntryPoint
 
 
 class KState_v1(BaseModel):
@@ -48,15 +48,15 @@ class KStateGraph_v1(BaseModel):
     Attributes:
         graph_type (str): The type of the graph.
         flow_parameter (KStateGraphParam): The parameters for the state graph.
-        flows (List[Union[KEdge, KNode, KStaticConditionalEdge, KStaticConditionalEntryPoint, 'KStateGraph']]): A list of flows in the graph.
+        flows (List[Union[KEdge, KNode, KConfigurableConditionalEdge, KConfigurableConditionalEntryPoint, 'KStateGraph']]): A list of flows in the graph.
     """
     graph_type:str
     flow_parameter:KStateGraphParam
     flows:List[Union[
         KEdge,
         KNode,
-        KStaticConditionalEdge,
-        KStaticConditionalEntryPoint,
+        KConfigurableConditionalEdge,
+        KConfigurableConditionalEntryPoint,
         'KStateGraph'
     ]]
 

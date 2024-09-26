@@ -143,7 +143,7 @@ graph_settings = {
             },
         },
         {# coditional edge 
-            "graph_type":"static_conditional_edge",
+            "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
                 "conditions":[
@@ -247,7 +247,7 @@ It represents a StateGraph.
         ],
     },
     "flows":[
-        #stategraph | node | edge | static_conditional_edge | static_conditional_entory_point
+        #stategraph | node | edge | configurable_conditional_edge | configurable_conditional_entory_point
     ]
 }
 
@@ -535,13 +535,13 @@ Represents a single edge.
 - type: Union[List[str],str]
 - desc: Represents the endpoint of the edge. Either `start_key` or `end_key` can be a list, but not both.
 
-### Definition of `static_conditional_edge` (kenkenpa.models.static_conditional_edge.KStaticConditionalEdge)
+### Definition of `configurable_conditional_edge` (kenkenpa.models.configurable_conditional_edge.KConfigurableConditionalEdge)
 
 This is the definition of a conditional edge.
 
 ``` python
 {
-    "graph_type":"static_conditional_edge",
+    "graph_type":"configurable_conditional_edge",
     "flow_parameter":{
         "start_key":"agent",
         "conditions":[
@@ -561,7 +561,7 @@ This is the definition of a conditional edge.
 #### `graph_type`
 
 - type: str
-- desc: Specifies the graph type. Fixed to `static_conditional_edge`.
+- desc: Specifies the graph type. Fixed to `configurable_conditional_edge`.
 
 #### `flow_parameter`
 
@@ -851,12 +851,12 @@ graph_settings = {
 
     "flows": [
         {  # conditional edge generate_topics -> continue_to_jokes
-            "graph_type": "static_conditional_edge",
+            "graph_type": "configurable_conditional_edge",
             "flow_parameter": {
                 "start_key": "generate_topics",
                 "path_map": ["generate_joke"],  # Specify the path_map
                 "conditions": [
-                    # Define only the default in the conditions of static_conditional_edge,
+                    # Define only the default in the conditions of configurable_conditional_edge,
                     # and call continue_to_jokes here.
                     {"default": {"type": "function", "name": "continue_to_jokes"}}
                 ]
