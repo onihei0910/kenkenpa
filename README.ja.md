@@ -1,11 +1,11 @@
 # kenkenpa
 
-Generate a StateGraph of LangGraph that can be compiled from structured data.  
+構造化データからコンパイル可能なLangGraphのStateGraphを生成します。
 
-## Usage Example
+## 使用例
 
 React-Agentを例にkenkenpaの使用方法を説明します。  
-https://langchain-ai.github.io/langgraph/  
+[https://langchain-ai.github.io/langgraph/](https://langchain-ai.github.io/langgraph/)
 
 React-Agentのほか、LangGraphの実装パターンのいくつかをtestとして記述してあります。
 
@@ -22,7 +22,7 @@ from langgraph.prebuilt import ToolNode
 from kenkenpa.builder import StateGraphBuilder
 ```
 
-1. Toolノードは通常通り定義します。
+Toolノードは通常通り定義します。
 
 ``` python
 @tool
@@ -34,7 +34,7 @@ def search(query: str):
     return "It's 90 degrees and sunny."
 ```
 
-2. Toolノードのファクトリー関数を定義します。
+Toolノードのファクトリー関数を定義します。
 
 ``` python
 tools = {

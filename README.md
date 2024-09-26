@@ -8,8 +8,9 @@ This document is a translation of a text originally written in Japanese.
 
 ## Usage Example
 
-I will explain how to use kenkenpa with the example of React-Agent.
-https://langchain-ai.github.io/langgraph/
+I will explain how to use kenkenpa with the example of React-Agent.  
+[https://langchain-ai.github.io/langgraph/](https://langchain-ai.github.io/langgraph/)
+
 In addition to React-Agent, several implementation patterns of LangGraph are described as tests.
 
 ``` python
@@ -25,7 +26,7 @@ from langgraph.prebuilt import ToolNode
 from kenkenpa.builder import StateGraphBuilder
 ```
 
-The Tool node is defined as usual.
+Define the Tool node as usual.
 
 ``` python
 @tool
@@ -82,7 +83,7 @@ def gen_agent(factory_parameter,flow_parameter):
     return call_model
 ```
 
-Define a function to evaluate whether the final message is a tool call instead of using should_continue.
+Define a function to evaluate whether the last message is a tool call instead of should_continue.
 
 ``` python
 def is_tool_message(state, config, **kwargs):
