@@ -9,11 +9,11 @@ from langgraph.graph import  StateGraph
 from kenkenpa.models.stategraph import KStateGraph
 from kenkenpa.models.node import KNode
 from kenkenpa.models.edge import KEdge
-from kenkenpa.models.static_conditional_edge import KStaticConditionalEdge
-from kenkenpa.models.static_conditional_entry_point import KStaticConditionalEntoryPoint
+from kenkenpa.models.configurable_conditional_edge import KConfigurableConditionalEdge
+from kenkenpa.models.configurable_conditional_entry_point import KConfigurableConditionalEntryPoint
 
 from kenkenpa.state import StateBuilder
-from kenkenpa.edges import gen_static_conditional_edge
+from kenkenpa.edges import gen_configurable_conditional_edge
 from kenkenpa.common import to_list_key
 
 class StateGraphBuilder():
@@ -148,11 +148,11 @@ class StateGraphBuilder():
             elif graph_type == "edge":
                 self._add_edge(stategraph,flow)
 
-            elif graph_type == "static_conditional_edge":
-                self._add_static_conditional_edge(stategraph,flow)
+            elif graph_type == "configurable_conditional_edge":
+                self._add_configurable_conditional_edge(stategraph,flow)
 
-            elif graph_type == "static_conditional_entry_point":
-                self._add_static_conditional_entry_point(stategraph,flow)
+            elif graph_type == "configurable_conditional_entry_point":
+                self._add_configurable_conditional_entry_point(stategraph,flow)
 
         return stategraph
 
@@ -211,19 +211,19 @@ class StateGraphBuilder():
                     end_key = end_key
                 )
 
-    def _add_static_conditional_edge(self,stategraph,flow:KStaticConditionalEdge):
+    def _add_configurable_conditional_edge(self,stategraph,flow:KConfigurableConditionalEdge):
         """
-        Adds a static conditional edge to the state graph.
+        Adds a configurable conditional edge to the state graph.
 
         Args:
             stategraph (StateGraph): The state graph.
-            flow (KStaticConditionalEdge): The static conditional edge to add.
+            flow (KConfigurableConditionalEdge): The configurable conditional edge to add.
         """
         flow_parameter = flow.get('flow_parameter',{})
         start_key = flow_parameter['start_key']
         conditions = flow_parameter['conditions']
 
-        edge_function = gen_static_conditional_edge(
+        edge_function = gen_configurable_conditional_edge(
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
             )
@@ -239,18 +239,18 @@ class StateGraphBuilder():
             path_map = return_types
         )
 
-    def _add_static_conditional_entry_point(self,stategraph,flow: KStaticConditionalEntoryPoint):
+    def _add_configurable_conditional_entry_point(self,stategraph,flow: KConfigurableConditionalEntryPoint):
         """
-        Adds a static conditional entry point to the state graph.
+        Adds a configurable conditional entry point to the state graph.
 
         Args:
             stategraph (StateGraph): The state graph.
-            flow (KStaticConditionalEntoryPoint): The static conditional entry point to add.
+            flow (KConfigurableConditionalEntryPoint): The configurable conditional entry point to add.
         """
         flow_parameter = flow.get('flow_parameter',{})
         conditions = flow_parameter['conditions']
 
-        edge_function = gen_static_conditional_edge(
+        edge_function = gen_configurable_conditional_edge(
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
             )

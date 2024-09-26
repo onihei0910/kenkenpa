@@ -1,13 +1,13 @@
 """
-This module provides functionality for generating and handling static conditional edges.
-It includes a function to generate a static conditional edge and a class to handle the evaluation of conditions.
+This module provides functionality for generating and handling configurable conditional edges.
+It includes a function to generate a configurable conditional edge and a class to handle the evaluation of conditions.
 """
 from typing import List
 from kenkenpa.common import convert_key
 
-def gen_static_conditional_edge(conditions,evaluate_functions):
+def gen_configurable_conditional_edge(conditions,evaluate_functions):
     """
-    Generates a static conditional edge based on the provided conditions and evaluation functions.
+    Generates a configurable conditional edge based on the provided conditions and evaluation functions.
 
     Args:
         conditions (List[Dict]): A list of conditions for the edge.
@@ -16,13 +16,13 @@ def gen_static_conditional_edge(conditions,evaluate_functions):
     Returns:
         callable: The function to call for the edge.
     """
-    conditional_edge = StaticConditionalHandler(conditions,evaluate_functions)
+    conditional_edge = ConfigurableConditionalHandler(conditions,evaluate_functions)
 
     return conditional_edge.call_edge
 
-class StaticConditionalHandler:
+class ConfigurableConditionalHandler:
     """
-    StaticConditionalHandler evaluates conditions and returns results based on the state and configuration.
+    ConfigurableConditionalHandler evaluates conditions and returns results based on the state and configuration.
 
     Attributes:
         conditions (List[Dict]): A list of conditions to evaluate.
@@ -30,7 +30,7 @@ class StaticConditionalHandler:
     """
     def __init__(self,conditions,evaluate_functions):
         """
-        Initializes the StaticConditionalHandler with conditions and evaluation functions.
+        Initializes the ConfigurableConditionalHandler with conditions and evaluation functions.
 
         Args:
             conditions (List[Dict]): A list of conditions to evaluate.
