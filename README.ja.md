@@ -9,22 +9,11 @@ React-Agentを例にkenkenpaの使用方法を説明します。
 
 React-Agentのほか、LangGraphの実装パターンのいくつかをtestとして記述してあります。
 
-``` python
-from langchain_core.messages import HumanMessage
-from langchain_core.tools import tool
-from langchain_core.messages import AnyMessage
-from langchain_openai import ChatOpenAI
-
-from langgraph.graph import  add_messages
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.prebuilt import ToolNode
-
-from kenkenpa.builder import StateGraphBuilder
-```
-
 Toolノードは通常通り定義します。
 
 ``` python
+from langchain_core.tools import tool
+
 @tool
 def search(query: str):
     """Call to surf the web."""
@@ -37,6 +26,8 @@ def search(query: str):
 Toolノードのファクトリー関数を定義します。
 
 ``` python
+from langgraph.prebuilt import ToolNode
+
 tools = {
     "search_function":search,
     }
@@ -55,6 +46,8 @@ def gen_tool_node(factory_parameter,flow_parameter):
 agentノードのファクトリー関数を定義します。
 
 ``` python
+from langchain_openai import ChatOpenAI
+
 def gen_agent(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -168,6 +161,12 @@ graph_settings = {
 graph_settingsからStateGraphBuilderを生成します。
 
 ``` python
+from langchain_core.messages import HumanMessage
+from langgraph.graph import  add_messages
+from langgraph.checkpoint.memory import MemorySaver
+
+from kenkenpa.builder import StateGraphBuilder
+
 # StateGraphBuilderのインスタンス化
 stategraph_builder = StateGraphBuilder(graph_settings)
 

@@ -50,7 +50,7 @@ def generate_joke(state: JokeState):
     return {"jokes": [response.joke]}
 
 
-# continue_to_jokesは評価関数として呼び出し可能なように定義します。
+# Define continue_to_jokes as a callable evaluation function.
 def continue_to_jokes(state:OverallState, config, **kwargs):
     return [Send("generate_joke",{"subject":s}) for s in state["subjects"]]
 

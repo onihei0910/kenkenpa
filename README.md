@@ -13,22 +13,11 @@ I will explain how to use kenkenpa with the example of React-Agent.
 
 In addition to React-Agent, several implementation patterns of LangGraph are described as tests.
 
-``` python
-from langchain_core.messages import HumanMessage
-from langchain_core.tools import tool
-from langchain_core.messages import AnyMessage
-from langchain_openai import ChatOpenAI
-
-from langgraph.graph import  add_messages
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.prebuilt import ToolNode
-
-from kenkenpa.builder import StateGraphBuilder
-```
-
 Define the Tool node as usual.
 
 ``` python
+from langchain_core.tools import tool
+
 @tool
 def search(query: str):
     """Call to surf the web."""
@@ -41,6 +30,8 @@ def search(query: str):
 Define the factory function for the Tool node.
 
 ``` python
+from langgraph.prebuilt import ToolNode
+
 tools = {
     "search_function":search,
     }
@@ -59,6 +50,8 @@ def gen_tool_node(factory_parameter,flow_parameter):
 Define the factory function for the agent node.
 
 ``` python
+from langchain_openai import ChatOpenAI
+
 def gen_agent(factory_parameter,flow_parameter):
     functions = factory_parameter['functions']
 
@@ -172,6 +165,12 @@ graph_settings = {
 Generate a StateGraphBuilder from graph_settings.
 
 ``` python
+from langchain_core.messages import HumanMessage
+from langgraph.graph import  add_messages
+from langgraph.checkpoint.memory import MemorySaver
+
+from kenkenpa.builder import StateGraphBuilder
+
 # Instantiate the StateGraphBuilder
 stategraph_builder = StateGraphBuilder(graph_settings)
 
