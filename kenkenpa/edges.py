@@ -53,49 +53,69 @@ class ConfigurableConditionalHandler:
         Raises:
             ValueError: If no matching conditions are found and no default function is provided.
         """
+        results = self._evaluate_matching_conditions(conditions, state, config)
+        if results:
+            return results
+
+        results = self._evaluate_default_conditions(conditions, state, config)
+        if results:
+            return results
+
+        raise ValueError("No matching conditions were found, and no default function was provided.")
+
+    def _evaluate_matching_conditions(self, conditions, state, config):
+        """
+        Evaluates the conditions that match the given state and config.
+
+        Args:
+            conditions (List[Dict]): The conditions to evaluate.
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            List: The results of the evaluated conditions.
+        """
         results = []
         for condition in conditions:
-            if "expression" in condition and self._evaluate_expr(
-                condition["expression"], state, config
-                ):
-                result_value = self._get_value(condition["result"],state, config)
+            if "expression" in condition and self._evaluate_expr(condition["expression"], state, config):
+                results.extend(self._process_result(condition["result"], state, config))
+        return results
 
-                wk_result = []
-                if isinstance(result_value,List):
-                    wk_result.extend(result_value)
-                else:
-                    wk_result.append(result_value)
-                
-                for wk in wk_result:
-                    if isinstance(wk,str):
-                        results.append(convert_key(wk))
-                    else:
-                        results.append(wk)
-                
-        if results:
-            return results
+    def _evaluate_default_conditions(self, conditions, state, config):
+        """
+        Evaluates the default conditions if no matching conditions are found.
 
-        # If none of the conditions match, return the default value.
+        Args:
+            conditions (List[Dict]): The conditions to evaluate.
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            List: The results of the evaluated conditions.
+        """
+        results = []
         for condition in conditions:
             if "default" in condition:
-                result_value = self._get_value(condition["default"],state, config)
+                results.extend(self._process_result(condition["default"], state, config))
+        return results
 
-                wk_result = []
-                if isinstance(result_value,List):
-                    wk_result.extend(result_value)
-                else:
-                    wk_result.append(result_value)
-                
-                for wk in wk_result:
-                    if isinstance(wk,str):
-                        results.append(convert_key(wk))
-                    else:
-                        results.append(wk)
-                
-        if results:
-            return results
-            
-        raise ValueError("No matching conditions were found, and no default function was provided.")
+    def _process_result(self, result, state, config):
+        """
+        Processes the result value and converts keys if necessary.
+
+        Args:
+            result: The result value to process.
+            state (Dict): The current state.
+            config (Dict): The configuration.
+
+        Returns:
+            List: The processed result values.
+        """
+        result_value = self._get_value(result, state, config)
+        if isinstance(result_value, List):
+            return [convert_key(wk) if isinstance(wk, str) else wk for wk in result_value]
+        else:
+            return [convert_key(result_value) if isinstance(result_value, str) else result_value]
 
     def _evaluate_expr(self,expr, state, config):
         """
