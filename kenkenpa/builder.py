@@ -49,6 +49,8 @@ class StateGraphBuilder():
             reducers (Dict, optional): A dictionary of reducers. Defaults to None.
             types (Dict, optional): A dictionary of custom types. Defaults to None.
         """
+        # validate
+        validate_state_graph(graph_settings)
         self.graph_settings = graph_settings
         self.config_schema = config_schema
 
@@ -127,8 +129,6 @@ class StateGraphBuilder():
         Returns:
             StateGraph: The constructed state graph.
         """
-        # validate
-        validate_state_graph(stategraph_settings)
 
         stategraph_flow_parameter = stategraph_settings.get("flow_parameter")
         state = stategraph_flow_parameter.get("state",[])
