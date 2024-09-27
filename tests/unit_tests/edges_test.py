@@ -288,7 +288,7 @@ def test_handler_call():
                     {"eq": ["10", "10"]}
                 ]
             },
-            "result": "Result_Value"
+            "result": ["Result_Value"]
         },
         {"default": "Default_Value"}
     ]
