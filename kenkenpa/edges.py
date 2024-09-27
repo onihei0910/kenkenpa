@@ -5,21 +5,6 @@ It includes a function to generate a configurable conditional edge and a class t
 from typing import List
 from kenkenpa.common import convert_key
 
-def gen_configurable_conditional_edge(conditions,evaluate_functions):
-    """
-    Generates a configurable conditional edge based on the provided conditions and evaluation functions.
-
-    Args:
-        conditions (List[Dict]): A list of conditions for the edge.
-        evaluate_functions (Dict[str, callable]): A dictionary of evaluation functions.
-
-    Returns:
-        callable: The function to call for the edge.
-    """
-    conditional_edge = ConfigurableConditionalHandler(conditions,evaluate_functions)
-
-    return conditional_edge.call_edge
-
 class ConfigurableConditionalHandler:
     """
     ConfigurableConditionalHandler evaluates conditions and returns results based on the state and configuration.
@@ -39,7 +24,7 @@ class ConfigurableConditionalHandler:
         self.conditions = conditions
         self.evaluate_functions = evaluate_functions
 
-    def call_edge(self, state,config):
+    def __call__(self, state,config):
         """
         Calls the edge based on the current state and configuration.
 

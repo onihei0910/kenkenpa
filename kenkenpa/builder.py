@@ -13,7 +13,7 @@ from kenkenpa.models.configurable_conditional_edge import KConfigurableCondition
 from kenkenpa.models.configurable_conditional_entry_point import KConfigurableConditionalEntryPoint
 
 from kenkenpa.state import StateBuilder
-from kenkenpa.edges import gen_configurable_conditional_edge
+from kenkenpa.edges import ConfigurableConditionalHandler
 from kenkenpa.common import to_list_key
 
 class StateGraphBuilder():
@@ -223,10 +223,10 @@ class StateGraphBuilder():
         start_key = flow_parameter['start_key']
         conditions = flow_parameter['conditions']
 
-        edge_function = gen_configurable_conditional_edge(
+        edge = ConfigurableConditionalHandler(
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
-            )
+        )
 
         if 'path_map' in flow_parameter:
             return_types = to_list_key(flow_parameter['path_map'])
@@ -235,7 +235,7 @@ class StateGraphBuilder():
 
         stategraph.add_conditional_edges(
             source = start_key,
-            path = edge_function,
+            path = edge,
             path_map = return_types
         )
 
@@ -250,10 +250,10 @@ class StateGraphBuilder():
         flow_parameter = flow.get('flow_parameter',{})
         conditions = flow_parameter['conditions']
 
-        edge_function = gen_configurable_conditional_edge(
+        edge = ConfigurableConditionalHandler(
             conditions = conditions,
             evaluate_functions = self.evaluete_functions
-            )
+        )
 
         if 'path_map' in flow_parameter:
             return_types = to_list_key(flow_parameter['path_map'])
@@ -261,7 +261,7 @@ class StateGraphBuilder():
             return_types = extract_literals(conditions)
 
         stategraph.set_conditional_entry_point(
-            path = edge_function,
+            path = edge,
             path_map = return_types
         )
 

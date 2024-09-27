@@ -470,7 +470,7 @@ def test_configurable_conditional_handler_evaluate_conditions_return():
 
 
 
-def test_configurable_conditional_handler_call_edge():
+def test_configurable_conditional_handler_call_():
     evaluate_functions = {}
     conditions = [
             {
@@ -491,4 +491,4 @@ def test_configurable_conditional_handler_call_edge():
         evaluate_functions
     )
 
-    assert handler.call_edge({},{}) == ["Result_Value"]
+    assert handler.__call__({},{}) == ["Result_Value"]
