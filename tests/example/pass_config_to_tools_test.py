@@ -26,7 +26,7 @@ def update_favorite_pets(
     config: RunnableConfig,
 ) -> str:
     """Add the list of favorite pets.
-    
+
     Args:
         pets: List of favorite pets to set.
     """
@@ -128,7 +128,7 @@ graph_settings = {
                 "end_key":"agent"
             },
         },
-        {# coditional edge 
+        {# coditional edge
             "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
@@ -139,7 +139,6 @@ graph_settings = {
                                 {"eq": [{"type": "function", "name": "is_tool_message"}, True]},
                                 {"eq": [{"type": "config_value", "name":"tool_permission"}, True]}
                                 ]
-                            
                         },
                         "result": "tools"
                     },
@@ -149,11 +148,10 @@ graph_settings = {
                                 {"eq": [{"type": "function", "name": "is_tool_message"}, True]},
                                 {"eq": [{"type": "config_value", "name":"tool_permission"}, False]}
                                 ]
-                            
                         },
                         "result": "Maintenance"
                     },
-                    {"default": "END"} 
+                    {"default": "END"}
                 ]
             },
         },

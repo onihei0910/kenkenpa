@@ -1,6 +1,8 @@
 """
-This module provides a StateGraphBuilder class for constructing state graphs based on provided settings.
-It includes methods for adding nodes, edges, and conditional edges, as well as for generating the state graph.
+This module provides a StateGraphBuilder class for
+constructing state graphs based on provided settings.
+It includes methods for adding nodes, edges, and conditional edges,
+as well as for generating the state graph.
 """
 from typing import List, Dict, Union, Optional, Type, Any
 
@@ -39,13 +41,16 @@ class StateGraphBuilder():
         types:Dict=None,
         ):
         """
-        Initializes the StateGraphBuilder with provided settings, configuration schema, node factories, evaluation functions, reducers, and types.
+        Initializes the StateGraphBuilder with provided settings,
+        configuration schema, node factories, evaluation functions, reducers, and types.
 
         Args:
             graph_settings (Dict): The settings for the state graph.
             config_schema (Optional[Type[Any]]): The schema for configuration.
-            node_factorys (Dict, optional): A dictionary of node factory functions. Defaults to an empty dictionary.
-            evaluete_functions (Dict, optional): A dictionary of evaluation functions. Defaults to an empty dictionary.
+            node_factorys (Dict, optional):
+                A dictionary of node factory functions. Defaults to an empty dictionary.
+            evaluete_functions (Dict, optional):
+                A dictionary of evaluation functions. Defaults to an empty dictionary.
             reducers (Dict, optional): A dictionary of reducers. Defaults to None.
             types (Dict, optional): A dictionary of custom types. Defaults to None.
         """
@@ -63,12 +68,12 @@ class StateGraphBuilder():
             self.evaluete_functions = evaluete_functions
         else:
             self.evaluete_functions = {}
-        
+
         self.statebuilder = StateBuilder(types,reducers)
 
         self.stategraph = {}
         self.custom_state = None
-        
+
     def gen_stategraph(self):
         """
         Generates the state graph based on the provided settings.
@@ -109,7 +114,7 @@ class StateGraphBuilder():
         """
         self.statebuilder.add_reducer(name,function)
 
-    def add_type(self,name:str,type):
+    def add_type(self,name:str,type_):
         """
         Adds a custom type to the state builder.
 
@@ -117,7 +122,7 @@ class StateGraphBuilder():
             name (str): The name of the custom type.
             type_ (type): The custom type to add.
         """
-        self.statebuilder.add_type(name,type)
+        self.statebuilder.add_type(name,type_)
 
     def _gen_stategraph(self,stategraph_settings):
         """
@@ -190,7 +195,7 @@ class StateGraphBuilder():
             )
 
         stategraph.add_node(node_name,node_func)
-    
+
     def _add_edge(self,stategraph,flow: KEdge):
         """
         Adds an edge to the state graph.
@@ -200,10 +205,10 @@ class StateGraphBuilder():
             flow (KEdge): The edge to add.
         """
         flow_parameter = flow.get('flow_parameter',{})
-        
+
         start_key_list = to_list_key(flow_parameter['start_key'])
         end_key_list = to_list_key(flow_parameter['end_key'])
-        
+
         for end_key in end_key_list:
             for start_key in start_key_list:
                 stategraph.add_edge(
@@ -239,13 +244,18 @@ class StateGraphBuilder():
             path_map = return_types
         )
 
-    def _add_configurable_conditional_entry_point(self,stategraph,flow: KConfigurableConditionalEntryPoint):
+    def _add_configurable_conditional_entry_point(
+            self,
+            stategraph,
+            flow: KConfigurableConditionalEntryPoint
+            ):
         """
         Adds a configurable conditional entry point to the state graph.
 
         Args:
             stategraph (StateGraph): The state graph.
-            flow (KConfigurableConditionalEntryPoint): The configurable conditional entry point to add.
+            flow (KConfigurableConditionalEntryPoint):
+                The configurable conditional entry point to add.
         """
         flow_parameter = flow.get('flow_parameter',{})
         conditions = flow_parameter['conditions']

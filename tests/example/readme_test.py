@@ -130,7 +130,7 @@ def test_readmeja_example():
                     "end_key":"agent"
                 },
             },
-            {# coditional edge 
+            {# coditional edge
                 "graph_type":"configurable_conditional_edge",
                 "flow_parameter":{
                     "start_key":"agent",
@@ -142,7 +142,7 @@ def test_readmeja_example():
                             },
                             "result": "tools"
                         },
-                        {"default": "END"} 
+                        {"default": "END"}
                     ]
                 },
             },
@@ -163,7 +163,7 @@ def test_readmeja_example():
     from langchain_core.messages import HumanMessage
     from langgraph.graph import  add_messages
     from langgraph.checkpoint.memory import MemorySaver
-    
+
     from kenkenpa.builder import StateGraphBuilder
 
     # StateGraphBuilderのインスタンス化

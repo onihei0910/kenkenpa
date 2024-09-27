@@ -5,13 +5,13 @@ from kenkenpa.builder import StateGraphBuilder
 
 def node_factory_a(factory_parameter,flow_parameter):
     def node_a(state):
-        return 
+        return
     return node_a
 
 def node_factory_b(factory_parameter,flow_parameter):
 
     def node_b(state):
-        return 
+        return
     return node_b
 
 class NodeClassA():

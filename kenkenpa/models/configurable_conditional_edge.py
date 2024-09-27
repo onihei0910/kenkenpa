@@ -1,6 +1,8 @@
 """
-This module defines data models for conditional edge flow parameters and configurable conditional edges using Pydantic for validation.
-It includes models for conditional edge flow parameters and configurable conditional edges, ensuring that certain constraints are met.
+This module defines data models for conditional edge flow parameters and
+configurable conditional edges using Pydantic for validation.
+It includes models for conditional edge flow parameters and
+configurable conditional edges, ensuring that certain constraints are met.
 
 Classes:
     KConditionalEdgeFlowParam_v1: Represents the flow parameters for a conditional edge.
@@ -23,7 +25,8 @@ class KConditionalEdgeFlowParam_v1(BaseModel):
     Attributes:
         start_key (str): The starting key for the edge.
         path_map (Optional[List[str]]): An optional list of path mappings.
-        conditions (List[Union[KConditionExpression, KConditionDefault]]): A list of conditions for the edge.
+        conditions (List[Union[KConditionExpression, KConditionDefault]]):
+            A list of conditions for the edge.
     """
     start_key:str
     path_map:Optional[List[str]] = None
@@ -47,5 +50,3 @@ class KConfigurableConditionalEdge_v1(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
 KConfigurableConditionalEdge = Union[KConfigurableConditionalEdge_v1]
-
-

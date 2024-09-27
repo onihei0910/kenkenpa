@@ -3,8 +3,8 @@ This module defines data models for graph edges using Pydantic for validation.
 It includes models for edge parameters and edges themselves, ensuring that
 certain constraints are met.
 """
-from pydantic import BaseModel, ConfigDict,field_validator
 from typing import List, Union
+from pydantic import BaseModel, ConfigDict,field_validator
 
 class KEdgeParam_v1(BaseModel):
     """

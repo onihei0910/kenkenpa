@@ -1,5 +1,6 @@
 """
-This module provides a StateBuilder class for dynamically creating state classes with specified types and reducers.
+This module provides a StateBuilder class for
+dynamically creating state classes with specified types and reducers.
 """
 import types
 from typing import Annotated, Dict
@@ -7,7 +8,8 @@ from typing_extensions import TypedDict
 
 class StateBuilder():
     """
-    StateBuilder is a class that helps in creating dynamic state classes with specified types and reducers.
+    StateBuilder is a class that helps in creating dynamic state classes with
+    specified types and reducers.
 
     Attributes:
         primitive_type_list (Dict[str, type]): A dictionary of primitive types.
@@ -26,19 +28,21 @@ class StateBuilder():
         "frozenset":frozenset,
         "bool":bool,
     }
-    def __init__(self,types:Dict=None,reducers:Dict=None):
+    def __init__(self,type_map:Dict=None,reducers:Dict=None):
         """
         Initializes the StateBuilder with optional user-defined types and reducers.
 
         Args:
-            types (Dict, optional): A dictionary of user-defined types. Defaults to an empty dictionary.
-            reducers (Dict, optional): A dictionary of reducers. Defaults to an empty dictionary.
+            type_map (Dict, optional): A dictionary of user-defined types.
+                Defaults to an empty dictionary.
+            reducers (Dict, optional): A dictionary of reducers.
+                Defaults to an empty dictionary.
         """
-        if types:
-            self.type_list = types
+        if type_map:
+            self.type_list = type_map
         else:
             self.type_list = {}
-        
+
         if reducers:
             self.reducer_list = reducers
         else:
@@ -60,7 +64,7 @@ class StateBuilder():
 
         self.reducer_list[name] = function
 
-    def add_type(self,name:str,type):
+    def add_type(self,name:str,type_):
         """
         Adds a user-defined type to the type list.
 
@@ -77,14 +81,15 @@ class StateBuilder():
         if name in self.type_list:
             raise ValueError(f"Registered type: {name}")
 
-        self.type_list[name] = type
+        self.type_list[name] = type_
 
     def gen_state(self,params):
         """
         Generates a new state class based on the provided parameters.
 
         Args:
-            params (List[Dict[str, Union[str, Optional[str]]]]): A list of dictionaries containing field names, types, and optional reducers.
+            params (List[Dict[str, Union[str, Optional[str]]]]):
+                A list of dictionaries containing field names, types, and optional reducers.
 
         Returns:
             Type[TypedDict]: A new state class with the specified annotations.
@@ -92,7 +97,7 @@ class StateBuilder():
         annotations = {
             param['field_name']: (
                 Annotated[
-                    self._get_type(param['type']), 
+                    self._get_type(param['type']),
                     self._get_reducer(param['reducer'])
                     ]
                 if 'reducer' in param else
@@ -125,9 +130,9 @@ class StateBuilder():
         """
         if name in self.reducer_list:
             return self.reducer_list[name]
-        
+
         raise ValueError(f"Unregistered function: {name}")
-    
+
     def _get_type(self,name:str):
         """
         Retrieves a type by name.

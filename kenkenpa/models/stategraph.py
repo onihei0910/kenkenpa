@@ -1,6 +1,7 @@
 """
 This module defines data models for state graphs using Pydantic for validation.
-It includes models for state definitions, state graph parameters, and state graphs themselves, ensuring that certain constraints are met.
+It includes models for state definitions, state graph parameters,
+and state graphs themselves, ensuring that certain constraints are met.
 """
 from typing import List, Optional, Union
 from pydantic import BaseModel, ConfigDict
@@ -48,7 +49,9 @@ class KStateGraph_v1(BaseModel):
     Attributes:
         graph_type (str): The type of the graph.
         flow_parameter (KStateGraphParam): The parameters for the state graph.
-        flows (List[Union[KEdge, KNode, KConfigurableConditionalEdge, KConfigurableConditionalEntryPoint, 'KStateGraph']]): A list of flows in the graph.
+        flows (List[Union[KEdge, KNode, KConfigurableConditionalEdge,
+            KConfigurableConditionalEntryPoint, 'KStateGraph']]):
+            A list of flows in the graph.
     """
     graph_type:str
     flow_parameter:KStateGraphParam

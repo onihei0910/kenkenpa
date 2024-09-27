@@ -58,7 +58,7 @@ def gen_agent(factory_parameter,flow_parameter):
     tool_functions = []
     for function in functions:
         tool_functions.append(tools[function])
-    
+
      # Setting up the LLM
     model = ChatOpenAI(
         model="gpt-4o-mini"
@@ -72,7 +72,7 @@ def gen_agent(factory_parameter,flow_parameter):
         response = model.invoke(messages)
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
-    
+
     return call_model
 ```
 
@@ -231,7 +231,7 @@ The current weather in San Francisco is 60 degrees and foggy.
 ### Definition of `stategraph` (kenkenpa.models.stategraph.KStateGraph)
 
 It represents a StateGraph.
-  
+
 ``` python
 {
     "graph_type":"stategraph",
@@ -441,7 +441,7 @@ This represents a single node.
 
 - type: Optional[Dict]
 - desc: Parameters passed to the factory function.
-  
+
 The factory function is defined to accept `factory_parameter` and `flow_parameter`.
 
 ``` python
@@ -709,7 +709,7 @@ In the following example, both node_a and node_b are returned.
         if last_message.tool_calls:
             return True
         return False
-    
+
     # Generate StateGraphBuilder from graph_settings.
     stategraph_builder = StateGraphBuilder(graph_settings)
     # Register the evaluation function

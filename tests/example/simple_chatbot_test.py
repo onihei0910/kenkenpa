@@ -31,7 +31,7 @@ graph_settings = {
     "graph_type":"stategraph",
     "flow_parameter":{
         "name":"React-Agent",
-        "state" : [ 
+        "state" : [
             {
                 "field_name": "messages",
                 "type": "list",
@@ -46,7 +46,7 @@ graph_settings = {
                 "name":"chatbot_agent",
                 # Specify the string that maps to the factory function (gen_chatbot_agent) defined in the factory.
                 # The mapping is specified at runtime.
-                "factory":"chatbot_factory", 
+                "factory":"chatbot_factory",
             },
         },
         { # normal_edge START-> chatbot_agent

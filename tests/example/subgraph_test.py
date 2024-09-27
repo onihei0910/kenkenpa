@@ -45,7 +45,7 @@ def gen_agent(factory_parameter,flow_parameter):
     tool_functions = []
     for function in functions:
         tool_functions.append(tools[function])
-    
+
     model = ChatOpenAI(
         model="gpt-4o-mini"
     )
@@ -58,7 +58,7 @@ def gen_agent(factory_parameter,flow_parameter):
         response = model.invoke(messages)
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
-    
+
     return call_model
 
 # Define a function to evaluate whether the final message is a tool_call
@@ -116,7 +116,7 @@ react_agent_subgraph = {
                 "end_key":"agent"
             },
         },
-        {# coditional edge 
+        {# coditional edge
             "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
@@ -132,7 +132,7 @@ react_agent_subgraph = {
                         },
                         "result": "tools"
                     },
-                    {"default": "END"} 
+                    {"default": "END"}
                 ]
             },
         },
@@ -151,7 +151,7 @@ graph_settings = {
     "graph_type":"stategraph",
     "flow_parameter":{
         "name":"Parent-Graph",
-        "state" : [ 
+        "state" : [
             {
                 "field_name": "messages",
                 "type": "list",

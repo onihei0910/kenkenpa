@@ -37,7 +37,7 @@ def to_list_key(keys:Dict[str, Union[str, List[str]]]):
     if isinstance(keys, str):
         key_list.append(convert_key(keys))
         return key_list
-    
+
     for key in keys:
         key_list.append(convert_key(key))
 
