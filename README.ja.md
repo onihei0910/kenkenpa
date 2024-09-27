@@ -54,7 +54,7 @@ def gen_agent(factory_parameter,flow_parameter):
     tool_functions = []
     for function in functions:
         tool_functions.append(tools[function])
-    
+
     # LLMの設定
     model = ChatOpenAI(
         model="gpt-4o-mini"
@@ -68,7 +68,7 @@ def gen_agent(factory_parameter,flow_parameter):
         response = model.invoke(messages)
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
-    
+
     return call_model
 ```
 
@@ -227,7 +227,7 @@ The current weather in San Francisco is 60 degrees and foggy.
 ### `stategraph`の定義(kenkenpa.models.stategraph.KStateGraph)
 
 1つのStateGraphを表します。
-  
+
 ``` python
 {
     "graph_type":"stategraph",
@@ -437,7 +437,7 @@ stategraph_builder = StateGraphBuilder(
 
 - type: Optional[Dict]
 - desc: ファクトリー関数に渡されるパラメータです。
-  
+
 ファクトリ関数は`factory_parameter`と`flow_parameter`を受け取る様に定義します。
 
 ``` python
@@ -705,7 +705,7 @@ conditionsは、全ての評価式を評価し、結果がTrueになったすべ
         if last_message.tool_calls:
             return True
         return False
-    
+
     # graph_settingsからStateGraphBuilderを生成します。
     stategraph_builder = StateGraphBuilder(graph_settings)
     # 評価関数の登録

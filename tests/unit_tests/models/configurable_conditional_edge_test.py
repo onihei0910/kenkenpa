@@ -64,6 +64,6 @@ def test_ConfigurableConditionalEdge():
                 ]
             },
         }
-    
+
     KConfigurableConditionalEdge_v1(**flow)
     KConfigurableConditionalEdge(**flow)

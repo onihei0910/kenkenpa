@@ -61,6 +61,6 @@ def test_KConfigurableConditionalEdge():
                 ]
             },
         }
-    
+
     KConfigurableConditionalEntryPoint_v1(**flow)
     KConfigurableConditionalEntryPoint(**flow)

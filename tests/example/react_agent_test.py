@@ -52,7 +52,7 @@ def gen_agent(factory_parameter,flow_parameter):
     tool_functions = []
     for function in functions:
         tool_functions.append(tools[function])
-    
+
     # LLM
     model = ChatOpenAI(
         model="gpt-4o-mini"
@@ -66,7 +66,7 @@ def gen_agent(factory_parameter,flow_parameter):
         response = model.invoke(messages)
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
-    
+
     return call_model
 
 # Define a function to evaluate whether the final message is a tool_call
@@ -123,7 +123,7 @@ graph_settings = {
                 "end_key":"agent"
             },
         },
-        {# coditional edge 
+        {# coditional edge
             "graph_type":"configurable_conditional_edge",
             "flow_parameter":{
                 "start_key":"agent",
@@ -139,7 +139,7 @@ graph_settings = {
                         },
                         "result": "tools"
                     },
-                    {"default": "END"} 
+                    {"default": "END"}
                 ]
             },
         },

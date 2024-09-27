@@ -1,6 +1,8 @@
 """
-This module defines data models for various types of operands, expressions, and conditions using Pydantic for validation.
-It includes models for operand functions, state values, config values, scalar values, logical expressions, and conditions.
+This module defines data models for various types of operands,
+expressions, and conditions using Pydantic for validation.
+It includes models for operand functions, state values,
+config values, scalar values, logical expressions, and conditions.
 """
 from typing import List, Union, Dict, Any, Optional
 from pydantic import BaseModel, Field, ConfigDict
@@ -63,27 +65,47 @@ class KExpression_v1(BaseModel):
     KExpression_v1 represents a logical expression with various comparison operators.
 
     Attributes:
-        and_ (Optional[List['KExpression_v1']]): Logical AND expressions.
-        or_ (Optional[List['KExpression_v1']]): Logical OR expressions.
-        not_ (Optional['KExpression_v1']): Logical NOT expression.
-        eq_ (Optional[List[KOperand]]): Equality comparison operands.
-        equals (Optional[List[KOperand]]): Alternative equality comparison operands.
-        eq (Optional[List[KOperand]]): Another alternative equality comparison operands.
-        neq_ (Optional[List[KOperand]]): Inequality comparison operands.
-        not_equals (Optional[List[KOperand]]): Alternative inequality comparison operands.
-        neq (Optional[List[KOperand]]): Another alternative inequality comparison operands.
-        gt_ (Optional[List[KOperand]]): Greater than comparison operands.
-        greater_than (Optional[List[KOperand]]): Alternative greater than comparison operands.
+        and_ (Optional[List['KExpression_v1']]):
+            Logical AND expressions.
+        or_ (Optional[List['KExpression_v1']]):
+            Logical OR expressions.
+        not_ (Optional['KExpression_v1']):
+            Logical NOT expression.
+        eq_ (Optional[List[KOperand]]):
+            Equality comparison operands.
+        equals (Optional[List[KOperand]]):
+            Alternative equality comparison operands.
+        eq (Optional[List[KOperand]]):
+            Another alternative equality comparison operands.
+        neq_ (Optional[List[KOperand]]):
+            Inequality comparison operands.
+        not_equals (Optional[List[KOperand]]):
+            Alternative inequality comparison operands.
+        neq (Optional[List[KOperand]]):
+            Another alternative inequality comparison operands.
+        gt_ (Optional[List[KOperand]]):
+            Greater than comparison operands.
+        greater_than (Optional[List[KOperand]]):
+            Alternative greater than comparison operands.
         gt (Optional[List[KOperand]]): Another alternative greater than comparison operands.
-        gte_ (Optional[List[KOperand]]): Greater than or equal to comparison operands.
-        greater_than_or_equals (Optional[List[KOperand]]): Alternative greater than or equal to comparison operands.
-        gte (Optional[List[KOperand]]): Another alternative greater than or equal to comparison operands.
-        lt_ (Optional[List[KOperand]]): Less than comparison operands.
-        less_than (Optional[List[KOperand]]): Alternative less than comparison operands.
-        lt (Optional[List[KOperand]]): Another alternative less than comparison operands.
-        lte_ (Optional[List[KOperand]]): Less than or equal to comparison operands.
-        less_than_or_equals (Optional[List[KOperand]]): Alternative less than or equal to comparison operands.
-        lte (Optional[List[KOperand]]): Another alternative less than or equal to comparison operands.
+        gte_ (Optional[List[KOperand]]):
+            Greater than or equal to comparison operands.
+        greater_than_or_equals (Optional[List[KOperand]]):
+            Alternative greater than or equal to comparison operands.
+        gte (Optional[List[KOperand]]):
+            Another alternative greater than or equal to comparison operands.
+        lt_ (Optional[List[KOperand]]):
+            Less than comparison operands.
+        less_than (Optional[List[KOperand]]):
+            Alternative less than comparison operands.
+        lt (Optional[List[KOperand]]):
+            Another alternative less than comparison operands.
+        lte_ (Optional[List[KOperand]]):
+            Less than or equal to comparison operands.
+        less_than_or_equals (Optional[List[KOperand]]):
+            Alternative less than or equal to comparison operands.
+        lte (Optional[List[KOperand]]):
+            Another alternative less than or equal to comparison operands.
     """
     and_ : Optional[List['KExpression_v1']] = Field(None,alias='and')
     or_ : Optional[List['KExpression_v1']] = Field(None,alias='or')
@@ -93,7 +115,7 @@ class KExpression_v1(BaseModel):
     equals: Optional[List[KOperand]] = None
     eq: Optional[List[KOperand]] = None
 
-    neq_: Optional[List[KOperand]] = Field(None,alias='!=')    
+    neq_: Optional[List[KOperand]] = Field(None,alias='!=')
     not_equals: Optional[List[KOperand]] = None
     neq: Optional[List[KOperand]] = None
 
@@ -154,7 +176,8 @@ class KConditions_v1(BaseModel):
     KConditions_v1 represents a collection of conditions.
 
     Attributes:
-        conditions (List[Union[KConditionExpression, KConditionDefault]]): A list of condition expressions and default conditions.
+        conditions (List[Union[KConditionExpression, KConditionDefault]]):
+            A list of condition expressions and default conditions.
     """
     conditions:List[Union[KConditionExpression,KConditionDefault]]
 

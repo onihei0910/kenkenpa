@@ -5,13 +5,13 @@ from kenkenpa.builder import StateGraphBuilder
 
 def node_factory_a(factory_parameter,flow_parameter):
     def node_a(state):
-        return 
+        return
     return node_a
 
 def node_factory_b(factory_parameter,flow_parameter):
 
     def node_b(state):
-        return 
+        return
     return node_b
 
 class NodeClassA():
@@ -315,7 +315,7 @@ def test_state_state_graph_graph_types():
                     "end_key":"test_node_a"
                 },
             },
-            {# 静的条件付きエッジ
+            {# configurable_conditional_edge
                 "graph_type":"configurable_conditional_edge",
                 "flow_parameter":{
                     "start_key":"test_node_a",
@@ -360,6 +360,189 @@ def test_state_state_graph_graph_types():
                 "graph_type":"configurable_conditional_entry_point",
                 "flow_parameter":{
                     "path_map":["subgraph_a","subgraph_b"],
+                    "conditions":[
+                        {
+                            "expression": {
+                                "eq": [{"type": "state_value", "name": "test_field_b"}, "testvalue"],
+                            },
+                            "result": "subgraph_a"
+                        },
+                        {"default": "subgraph_b"} 
+                    ]
+                },
+            },
+            { # node C
+                "graph_type":"node",
+                "flow_parameter": {
+                    "name":"test_node_c",
+                    "factory":"NodeClassA_key", 
+                },
+                "factory_parameter" : {"node_secret":"I'm C"},
+            },
+            { # normal_edge [subgraph_a,subgraph_b] -> test_node_c
+                "graph_type":"edge",
+                "flow_parameter": {
+                    "start_key":["subgraph_a","subgraph_b"],
+                    "end_key":"test_node_c"
+                },
+            },
+            { # normal_edge c -> END
+                "graph_type":"edge",
+                "flow_parameter": {
+                    "start_key":"test_node_c",
+                    "end_key":"END"
+                },
+            },
+        ]
+    }
+    test_builder = StateGraphBuilder(
+        graph_settings = parent_graph_settings,
+        config_schema = ConfigSchema,
+    )
+
+    test_builder.add_node_factory("node_factory_a_key", node_factory_a)
+    test_builder.add_node_factory("node_factory_b_key", node_factory_b)
+    test_builder.add_node_factory("NodeClassA_key", NodeClassA)
+    test_builder.add_node_factory("NodeClassB_key", NodeClassB)
+
+    test_builder.add_evaluete_function("evaluate_fanc_a_key", evaluate_fanc_a)
+    test_builder.add_evaluete_function("evaluate_fanc_b_key", evaluate_fanc_b)
+
+    test_builder.add_reducer("reducer_a_key", reducer_a)
+    test_builder.add_reducer("reducer_b_key", reducer_b)
+
+    test_builder.add_type("Type_A_key", Type_A)
+    test_builder.add_type("Type_B_key", Type_B)
+
+    stategraph = test_builder.gen_stategraph()
+
+    graph = stategraph.compile() 
+    graph.get_graph().print_ascii()
+
+def test_state_state_graph_graph_types_extract_literals():
+
+    sub_graph_a_settings = {
+        "graph_type":"stategraph",
+        "flow_parameter":{
+            "name":"subgraph_a",
+            "state" : [ 
+                {
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
+                },
+            ],
+        },
+        "flows": [
+            { # node A
+                "graph_type":"node",
+                "flow_parameter": {
+                    "name":"test_node_a",
+                    "factory":"NodeClassA_key", 
+                },
+                "factory_parameter" : {"node_secret":"I'm A"},
+            },
+            { # normal_edge START-> a
+                "graph_type":"edge",
+                "flow_parameter":{
+                    "start_key":"START",
+                    "end_key":"test_node_a"
+                },
+            },
+            { # normal_edge d -> END
+                "graph_type":"edge",
+                "flow_parameter": {
+                    "start_key":"test_node_a",
+                    "end_key":"END"
+                },
+            },
+        ]
+    }
+
+    sub_graph_b_settings = {
+        "graph_type":"stategraph",
+        "flow_parameter":{
+            "name":"subgraph_b",
+            "state" : [ 
+                {
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
+                },
+                {
+                    "field_name": "test_field_b",
+                    "type": "Type_B_key",
+                    "reducer":"reducer_a_key"
+                },
+            ],
+        },
+        "flows": [
+            { # node A
+                "graph_type":"node",
+                "flow_parameter": {
+                    "name":"test_node_a",
+                    "factory":"NodeClassA_key", 
+                },
+                "factory_parameter" : {"node_secret":"I'm A"},
+            },
+            { # node B
+                "graph_type":"node",
+                "flow_parameter": {
+                    "name":"test_node_b",
+                    "factory":"NodeClassB_key", 
+                },
+                "factory_parameter" : {"node_secret":"I'm B"},
+            },
+            { # normal_edge START-> a
+                "graph_type":"edge",
+                "flow_parameter":{
+                    "start_key":"START",
+                    "end_key":"test_node_a"
+                },
+            },
+            {# configurable_conditional_edge
+                "graph_type":"configurable_conditional_edge",
+                "flow_parameter":{
+                    "start_key":"test_node_a",
+                    "conditions":[
+                        {
+                            "expression": {
+                                "eq": [{"type": "state_value", "name": "test_field_b"}, "testvalue"],
+                            },
+                            "result": "test_node_b"
+                        },
+                        {"default": "END"} 
+                    ]
+                },
+            },
+            { # normal_edge d -> END
+                "graph_type":"edge",
+                "flow_parameter": {
+                    "start_key":"test_node_b",
+                    "end_key":"test_node_a"
+                },
+            },
+        ]
+    }
+
+    parent_graph_settings = {
+        "graph_type":"stategraph",
+        "flow_parameter":{
+            "name":"parent_graph",
+            "state" : [ 
+                {
+                    "field_name": "test_field",
+                    "type": "Type_A_key",
+                    "reducer":"reducer_a_key"
+                },
+            ],
+        },
+        "flows": [
+            sub_graph_a_settings,
+            sub_graph_b_settings,
+            {# conditional entry point
+                "graph_type":"configurable_conditional_entry_point",
+                "flow_parameter":{
                     "conditions":[
                         {
                             "expression": {

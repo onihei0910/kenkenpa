@@ -19,7 +19,7 @@ def gen_return_node_value(factory_parameter,flow_parameter):
         def __call__(self, state ) -> Any:
             print(f"Adding {self._value} to {state['aggregate']}")
             return {"aggregate": [self._value]}
-    
+
     object = ReturnNodeValue(factory_parameter['node_secret'])
     return object
 
@@ -27,7 +27,7 @@ graph_settings = {
     "graph_type":"stategraph",
     "flow_parameter":{
         "name":"Parallel-node",
-        "state" : [ 
+        "state" : [
             {
                 "field_name": "aggregate",
                 "type": "list",
@@ -50,7 +50,7 @@ graph_settings = {
                         },
                         "result": ["c","d"]
                     },
-                    {"default": ["b","c"]} 
+                    {"default": ["b","c"]}
                 ]
             },
         },
@@ -58,7 +58,7 @@ graph_settings = {
             "graph_type":"node",
             "flow_parameter": {
                 "name":"b",
-                "factory":"gen_return_node_value", 
+                "factory":"gen_return_node_value",
             },
             "factory_parameter" : {"node_secret":"I'm B"},
         },
@@ -66,7 +66,7 @@ graph_settings = {
             "graph_type":"node",
             "flow_parameter": {
                 "name":"c",
-                "factory":"gen_return_node_value", 
+                "factory":"gen_return_node_value",
             },
             "factory_parameter" : {"node_secret":"I'm C"},
         },
@@ -74,7 +74,7 @@ graph_settings = {
             "graph_type":"node",
             "flow_parameter": {
                 "name":"d",
-                "factory":"gen_return_node_value", 
+                "factory":"gen_return_node_value",
             },
             "factory_parameter" : {"node_secret":"I'm D"},
         },
@@ -82,7 +82,7 @@ graph_settings = {
             "graph_type":"node",
             "flow_parameter": {
                 "name":"e",
-                "factory":"gen_return_node_value", 
+                "factory":"gen_return_node_value",
             },
             "factory_parameter" : {"node_secret":"I'm E"},
         },
@@ -117,7 +117,7 @@ def test_conditional_branching():
     # The gen_stategraph method generates a compilable StateGraph.
     stategraph = stategraph_builder.gen_stategraph()
 
-    graph = stategraph.compile() 
+    graph = stategraph.compile()
 
     print(f"\ngraph")
     graph.get_graph().print_ascii()
