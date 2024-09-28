@@ -81,7 +81,7 @@ workflows:
       - build-and-test
       #- pause_workflow:
       #    requires:
-      #      - production-build-and-test
+      #      - build-and-test
       #    type: approval
       #    filters:
       #      branches:
