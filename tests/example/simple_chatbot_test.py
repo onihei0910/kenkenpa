@@ -3,7 +3,8 @@ This test explains how to use kenkenpa using the simple chatbot example from Lan
 Some parts of the test code reuse the code listed at the following URL.
 https://langchain-ai.github.io/langgraph/tutorials/introduction/
 """
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_core.messages import AIMessage
 
 from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
@@ -11,14 +12,16 @@ from langgraph.checkpoint.memory import MemorySaver
 from kenkenpa.builder import StateGraphBuilder
 
 # LLM settings
-llm = ChatOpenAI(
-    model="gpt-4o-mini"
-)
+#llm = ChatOpenAI(
+#    model="gpt-4o-mini"
+#)
 
 # We will define the chatbot function that will serve as the node.
 # This follows the QuickStart guide.
 def chatbot(state,config):
-    return {"messages":[llm.invoke(state["messages"])]}
+    #return {"messages":[llm.invoke(state["messages"])]}
+    # dummy
+    return {"messages":[AIMessage(content='This is dummy message')]}
 
 # Apart from the chatbot,
 # it is necessary to define a factory function that returns the defined chatbot.

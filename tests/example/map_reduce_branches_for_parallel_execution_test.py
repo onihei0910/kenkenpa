@@ -8,7 +8,7 @@ from typing import Annotated, TypedDict
 
 from pydantic import BaseModel, Field
 
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
 from langgraph.types import Send
 
 from kenkenpa.builder import StateGraphBuilder
@@ -28,7 +28,7 @@ class Joke(BaseModel):
 class BestJoke(BaseModel):
     id: int = Field(description="Index of the best joke. starting with 0",ge=0)
 
-model = ChatOpenAI(model="gpt-4o-mini")
+#model = ChatOpenAI(model="gpt-4o-mini")
 
 class OverallState(TypedDict):
     topic: str
@@ -41,12 +41,16 @@ class JokeState(TypedDict):
 
 def generate_topics(state: OverallState):
     prompt = subjects_prompt.format(topic=state["topic"])
-    response = model.with_structured_output(Subjects).invoke(prompt)
+    #response = model.with_structured_output(Subjects).invoke(prompt)
+    response_data = {'subjects':['dogs', 'cats', 'elephants', 'giraffes', 'dolphins']}
+    response = Subjects(**response_data)
     return {"subjects": response.subjects}
 
 def generate_joke(state: JokeState):
     prompt = joke_prompt.format(subject=state["subject"])
-    response = model.with_structured_output(Joke).invoke(prompt)
+    #response = model.with_structured_output(Joke).invoke(prompt)
+    response_data = {'joke': "Why do elephants never use computers? Because they're afraid of the mouse!"}
+    response = Joke(**response_data)
     return {"jokes": [response.joke]}
 
 
@@ -57,7 +61,9 @@ def continue_to_jokes(state:OverallState, config, **kwargs):
 def best_joke(state: OverallState):
     jokes = "\n\n".join(state["jokes"])
     prompt = best_joke_prompt.format(topic=state["topic"], jokes=jokes)
-    response = model.with_structured_output(BestJoke).invoke(prompt)
+    #response = model.with_structured_output(BestJoke).invoke(prompt)
+    response_data = {'id':0}
+    response = BestJoke(**response_data)
     return {"best_selected_joke": state["jokes"][response.id]}
 
 def gen_generate_topics(factory_parameter,flow_parameter):

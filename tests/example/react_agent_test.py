@@ -3,9 +3,9 @@ This test explains how to use kenkenpa with the example of LangGraph's React-Age
 Part of the test code is borrowed from the code at the following URL.
 https://langchain-ai.github.io/langgraph/
 """
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage,AIMessage
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
 
 from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
@@ -54,16 +54,17 @@ def gen_agent(factory_parameter,flow_parameter):
         tool_functions.append(tools[function])
 
     # LLM
-    model = ChatOpenAI(
-        model="gpt-4o-mini"
-    )
-
-    model = model.bind_tools(tool_functions)
+    #model = ChatOpenAI(
+    #    model="gpt-4o-mini"
+    #)
+    #model = model.bind_tools(tool_functions)
 
     # Define the function that calls the model
     def call_model(state):
         messages = state['messages']
-        response = model.invoke(messages)
+        #response = model.invoke(messages)
+        # dummy
+        response = AIMessage(content='This is dummy message')
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
 

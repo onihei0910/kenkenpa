@@ -4,10 +4,10 @@ We will define the react-agent, explained in react_agent_test.py, as a subgraph.
 Some parts of the test code reuse the code listed at the following URL.
 https://langchain-ai.github.io/langgraph/
 """
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage,AIMessage
 from langchain_core.tools import tool
 
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
 from langgraph.graph import  add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
@@ -46,16 +46,18 @@ def gen_agent(factory_parameter,flow_parameter):
     for function in functions:
         tool_functions.append(tools[function])
 
-    model = ChatOpenAI(
-        model="gpt-4o-mini"
-    )
+    #model = ChatOpenAI(
+    #    model="gpt-4o-mini"
+    #)
 
-    model = model.bind_tools(tool_functions)
+    #model = model.bind_tools(tool_functions)
 
     # Define the function that calls the model
     def call_model(state):
         messages = state['messages']
-        response = model.invoke(messages)
+        #response = model.invoke(messages)
+        # dummy
+        response = AIMessage(content='This is dummy message')
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
 

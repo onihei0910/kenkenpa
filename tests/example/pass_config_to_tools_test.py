@@ -8,13 +8,13 @@ from typing import List
 
 from langchain_core.tools import tool
 from langchain_core.runnables.config import RunnableConfig
-from langchain_core.messages import HumanMessage,ToolMessage
+from langchain_core.messages import HumanMessage,ToolMessage,AIMessage
 
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import  MessagesState,add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
 
 from kenkenpa.builder import StateGraphBuilder
 
@@ -58,13 +58,15 @@ def tools_node_factory(factory_parameter,flow_parameter):
 class AgentOpenAI():
     def __init__(self,factory_parameter,flow_parameter):
         tools = [update_favorite_pets, delete_favorite_pets, list_favorite_pets]
-        self.model_with_tools = ChatOpenAI(
-            model="gpt-4o-mini"
-        ).bind_tools(tools)
+        #self.model_with_tools = ChatOpenAI(
+        #    model="gpt-4o-mini"
+        #).bind_tools(tools)
 
     def __call__(self,state: MessagesState):
         messages = state["messages"]
-        response = self.model_with_tools.invoke(messages)
+        #response = self.model_with_tools.invoke(messages)
+        # dummy
+        response = AIMessage(content='This is dummy message')
         return {"messages": [response]}
 
 class Maintenance():
