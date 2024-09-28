@@ -81,32 +81,49 @@ jobs:
       - run:
           name: deploy
           command: poetry publish -r testpypi
+  deploy:
+    resource_class: small
+    docker:
+      - image: cimg/python:3.12.4
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: poetry PyPi TOKEN
+          command: poetry config pypi-token.pypi $PYPI_TOKEN
+      - run:
+          name: build
+          command: poetry build
+      - run:
+          name: deploy
+          command: poetry publish
 workflows:
   build:
     jobs:
       - build-and-test
-      - deploy-test:
+      - pause_workflow:
           requires:
             - build-and-test
+          type: approval
           filters:
             branches:
               only:
                 - main
-      #- pause_workflow:
-      #    requires:
-      #      - build-and-test
-      #    type: approval
-      #    filters:
-      #      branches:
-      #        only:
-      #          - main
-      #- deploy:
-      #    requires:
-      #      - pause_workflow
-      #    filters:
-      #      branches:
-      #        only:
-      #          - main
+      - deploy-test:
+          requires:
+            - pause_workflow
+          filters:
+            branches:
+              only:
+                - main
+      - deploy:
+          requires:
+            - deploy-test
+          filters:
+            branches:
+              only:
+                - main
   multi-version-test:
     jobs:
       - test-3-10:
