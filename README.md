@@ -6,6 +6,12 @@ Generate a StateGraph of LangGraph that can be compiled from structured data.
 
 This document is a translation of a text originally written in [Japanese](README.ja.md).
 
+## Installation
+
+``` sh
+pip install kenkenpa
+```
+
 ## Usage Example
 
 I will explain how to use kenkenpa with the example of React-Agent.  
