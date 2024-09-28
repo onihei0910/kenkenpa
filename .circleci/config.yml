@@ -12,6 +12,9 @@ _test-body: &test-body
           name: build
           command: poetry build
       - run:
+          name: Run pylint
+          command: poetry run pylint kenkenpa/*
+      - run:
           name: Run tests
           command: poetry run pytest --cov=kenkenpa --cov-report=xml
       - run:
@@ -33,7 +36,7 @@ jobs:
     <<: *test-body
     docker:
       - image: cimg/python:3.12
-  production-build-and-test:
+  build-and-test:
     resource_class: small
     docker:
       - image: cimg/python:3.12.4
@@ -44,6 +47,9 @@ jobs:
       - run:
           name: build
           command: poetry build
+      - run:
+          name: Run pylint
+          command: poetry run pylint kenkenpa/*
       - run:
           name: Run tests
           command: poetry run pytest --cov=kenkenpa --cov-report=xml
@@ -72,7 +78,7 @@ jobs:
 workflows:
   build:
     jobs:
-      - production-build-and-test
+      - build-and-test
       #- pause_workflow:
       #    requires:
       #      - production-build-and-test
