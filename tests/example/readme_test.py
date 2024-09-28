@@ -45,7 +45,8 @@ def test_readmeja_example():
     # agentノードのファクトリー関数を定義します。
 
     # ``` python
-    from langchain_openai import ChatOpenAI
+    #from langchain_openai import ChatOpenAI
+    from langchain_core.messages import AIMessage
 
     def gen_agent(factory_parameter,flow_parameter):
         functions = factory_parameter['functions']
@@ -55,16 +56,18 @@ def test_readmeja_example():
             tool_functions.append(tools[function])
 
         # LLMの設定
-        model = ChatOpenAI(
-            model="gpt-4o-mini"
-        )
+        #model = ChatOpenAI(
+        #    model="gpt-4o-mini"
+        #)
 
-        model = model.bind_tools(tool_functions)
+        #model = model.bind_tools(tool_functions)
 
         # Define the function that calls the model
         def call_model(state):
             messages = state['messages']
-            response = model.invoke(messages)
+            #response = model.invoke(messages)
+            # dummy
+            response = AIMessage(content='This is dummy message')
             # We return a list, because this will get added to the existing list
             return {"messages": [response]}
 
