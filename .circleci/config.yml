@@ -61,24 +61,37 @@ jobs:
       - run:
           name: Run potery audit
           command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
-  #deploy:
-  #  resource_class: small
-  #  docker:
-  #    - image: cimg/python:3.12.4
-  #  steps:
-  #    - checkout
-  #    - python/install-packages:
-  #        pkg-manager: poetry
-  #    - run:
-  #        name: build
-  #        command: poetry build
-  #    - run:
-  #        name: deploy
-  #        command: poetry publish
+  deploy-test:
+    resource_class: small
+    docker:
+      - image: cimg/python:3.12.4
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+        name: poetry TestPyPi 
+        command: poetry config repositories.testpypi https://test.pypi.org/legacy/
+      - run:
+        name: poetry TestPyPi TOKEN
+        command: poetry config pypi-token.testpypi $TEST_PYPI_API_TOKEN
+      - run:
+          name: build
+          command: poetry build
+      - run:
+          name: deploy
+          command: poetry publish -r testpypi
 workflows:
   build:
     jobs:
       - build-and-test
+      - deploy-test:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - main
       #- pause_workflow:
       #    requires:
       #      - build-and-test
