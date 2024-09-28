@@ -70,11 +70,11 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - run:
-        name: poetry TestPyPi 
-        command: poetry config repositories.testpypi https://test.pypi.org/legacy/
+          name: poetry TestPyPi 
+          command: poetry config repositories.testpypi https://test.pypi.org/legacy/
       - run:
-        name: poetry TestPyPi TOKEN
-        command: poetry config pypi-token.testpypi $TEST_PYPI_API_TOKEN
+          name: poetry TestPyPi TOKEN
+          command: poetry config pypi-token.testpypi $TEST_PYPI_API_TOKEN
       - run:
           name: build
           command: poetry build
