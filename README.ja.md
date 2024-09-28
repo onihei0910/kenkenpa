@@ -2,6 +2,12 @@
 
 構造化データからコンパイル可能なLangGraphのStateGraphを生成します。
 
+## インストール
+
+``` sh
+pip install kenkenpa
+```
+
 ## 使用例
 
 React-Agentを例にkenkenpaの使用方法を説明します。  
