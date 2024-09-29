@@ -192,7 +192,7 @@ stategraph_builder.add_node_factory("agent_node_factory",gen_agent)
 stategraph_builder.add_node_factory("tool_node_factory",gen_tool_node)
 
 # *4. Register the evaluation functions as well.
-stategraph_builder.add_evaluete_function("is_tool_message_function", s_tool_message,)
+stategraph_builder.add_evaluete_function("is_tool_message_function", is_tool_message,)
 
 # You can obtain a compilable StateGraph with the gen_stategraph() method.
 stategraph = stategraph_builder.gen_stategraph()
