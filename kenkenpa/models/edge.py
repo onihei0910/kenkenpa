@@ -6,9 +6,9 @@ certain constraints are met.
 from typing import List, Union
 from pydantic import BaseModel, ConfigDict,field_validator
 
-class KEdgeParam_v1(BaseModel):
+class KEdgeParamV1(BaseModel):
     """
-    KEdgeParam_v1 represents the parameters for a graph edge, including start and end keys.
+    KEdgeParamV1 represents the parameters for a graph edge, including start and end keys.
 
     Attributes:
         start_key (Union[List[str], str]): The starting key(s) for the edge.
@@ -39,11 +39,11 @@ class KEdgeParam_v1(BaseModel):
             raise ValueError('You can only list either the start_key or the end_key.')
         return v
 
-KEdgeParam = Union[KEdgeParam_v1]
+KEdgeParam = Union[KEdgeParamV1]
 
-class KEdge_v1(BaseModel):
+class KEdgeV1(BaseModel):
     """
-    KEdge_v1 represents an edge in a graph, including the type of graph and flow parameters.
+    KEdgeV1 represents an edge in a graph, including the type of graph and flow parameters.
 
     Attributes:
         graph_type (str): The type of the graph.
@@ -54,4 +54,4 @@ class KEdge_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KEdge = Union[KEdge_v1]
+KEdge = Union[KEdgeV1]

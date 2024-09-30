@@ -1,9 +1,9 @@
 import pytest
 
-from kenkenpa.models.node import KNodeParam_v1
+from kenkenpa.models.node import KNodeParamV1
 from kenkenpa.models.node import KNodeParam
 
-from kenkenpa.models.node import KNode_v1
+from kenkenpa.models.node import KNodeV1
 from kenkenpa.models.node import KNode
 
 def test_KNodeFlowParam():
@@ -11,7 +11,7 @@ def test_KNodeFlowParam():
         "name":"tools",
         "factory":"tool_node_factory",
     }
-    KNodeParam_v1(**frow_parameter)
+    KNodeParamV1(**frow_parameter)
     KNodeParam(**frow_parameter)
 
 def test_KNode():
@@ -28,7 +28,7 @@ def test_KNode():
         },
     }
 
-    KNode_v1(**flow)
+    KNodeV1(**flow)
     KNode(**flow)
 
     flow = {
@@ -39,6 +39,6 @@ def test_KNode():
         },
     }
 
-    KNode_v1(**flow)
+    KNodeV1(**flow)
     KNode(**flow)
 

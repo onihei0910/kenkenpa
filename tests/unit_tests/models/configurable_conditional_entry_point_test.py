@@ -1,8 +1,8 @@
 import pytest
-from kenkenpa.models.configurable_conditional_entry_point import KConditionalEntryPointFlowParam_v1
+from kenkenpa.models.configurable_conditional_entry_point import KConditionalEntryPointFlowParamV1
 from kenkenpa.models.configurable_conditional_entry_point import KConditionalEntryPointFlowParam
 
-from kenkenpa.models.configurable_conditional_entry_point import KConfigurableConditionalEntryPoint_v1
+from kenkenpa.models.configurable_conditional_entry_point import KConfigurableConditionalEntryPointV1
 from kenkenpa.models.configurable_conditional_entry_point import KConfigurableConditionalEntryPoint
 
 def test_KConditionalEdgeFlowParam():
@@ -22,7 +22,7 @@ def test_KConditionalEdgeFlowParam():
             ]
         }
 
-    KConditionalEntryPointFlowParam_v1(**flow_parameter)
+    KConditionalEntryPointFlowParamV1(**flow_parameter)
     KConditionalEntryPointFlowParam(**flow_parameter)
 
     flow_parameter = {
@@ -40,7 +40,7 @@ def test_KConditionalEdgeFlowParam():
             ]
         }
 
-    KConditionalEntryPointFlowParam_v1(**flow_parameter)
+    KConditionalEntryPointFlowParamV1(**flow_parameter)
     KConditionalEntryPointFlowParam(**flow_parameter)
 
 def test_KConfigurableConditionalEdge():
@@ -62,5 +62,5 @@ def test_KConfigurableConditionalEdge():
             },
         }
 
-    KConfigurableConditionalEntryPoint_v1(**flow)
+    KConfigurableConditionalEntryPointV1(**flow)
     KConfigurableConditionalEntryPoint(**flow)

@@ -7,9 +7,9 @@ config values, scalar values, logical expressions, and conditions.
 from typing import List, Union, Dict, Any, Optional
 from pydantic import BaseModel, Field, ConfigDict
 
-class KOperandFunction_v1(BaseModel):
+class KOperandFunctionV1(BaseModel):
     """
-    KOperandFunction_v1 represents a function operand with its type, name, and optional arguments.
+    KOperandFunctionV1 represents a function operand with its type, name, and optional arguments.
 
     Attributes:
         type (str): The type of the function.
@@ -22,11 +22,11 @@ class KOperandFunction_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KOperandFunction = Union[KOperandFunction_v1]
+KOperandFunction = Union[KOperandFunctionV1]
 
-class KOperandStateValue_v1(BaseModel):
+class KOperandStateValueV1(BaseModel):
     """
-    KOperandStateValue_v1 represents a state value operand with its type and name.
+    KOperandStateValueV1 represents a state value operand with its type and name.
 
     Attributes:
         type (str): The type of the state value.
@@ -37,11 +37,11 @@ class KOperandStateValue_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KOperandStateValue = Union[KOperandStateValue_v1]
+KOperandStateValue = Union[KOperandStateValueV1]
 
-class KOperandConfigValue_v1(BaseModel):
+class KOperandConfigValueV1(BaseModel):
     """
-    KOperandConfigValue_v1 represents a configuration value operand with its type and name.
+    KOperandConfigValueV1 represents a configuration value operand with its type and name.
 
     Attributes:
         type (str): The type of the configuration value.
@@ -52,24 +52,24 @@ class KOperandConfigValue_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KOperandConfigValue = Union[KOperandConfigValue_v1]
+KOperandConfigValue = Union[KOperandConfigValueV1]
 
-KOperandScalar_v1 = Union[int,float,complex,bool,str,bytes,None]
-KOperandScalar = Union[KOperandScalar_v1]
+KOperandScalarV1 = Union[int,float,complex,bool,str,bytes,None]
+KOperandScalar = Union[KOperandScalarV1]
 
-KOperand_v1 = Union[KOperandScalar,KOperandFunction,KOperandStateValue,KOperandConfigValue]
-KOperand = Union[KOperand_v1]
+KOperandV1 = Union[KOperandScalar,KOperandFunction,KOperandStateValue,KOperandConfigValue]
+KOperand = Union[KOperandV1]
 
-class KExpression_v1(BaseModel):
+class KExpressionV1(BaseModel):
     """
-    KExpression_v1 represents a logical expression with various comparison operators.
+    KExpressionV1 represents a logical expression with various comparison operators.
 
     Attributes:
-        and_ (Optional[List['KExpression_v1']]):
+        and_ (Optional[List['KExpressionV1']]):
             Logical AND expressions.
-        or_ (Optional[List['KExpression_v1']]):
+        or_ (Optional[List['KExpressionV1']]):
             Logical OR expressions.
-        not_ (Optional['KExpression_v1']):
+        not_ (Optional['KExpressionV1']):
             Logical NOT expression.
         eq_ (Optional[List[KOperand]]):
             Equality comparison operands.
@@ -107,9 +107,9 @@ class KExpression_v1(BaseModel):
         lte (Optional[List[KOperand]]):
             Another alternative less than or equal to comparison operands.
     """
-    and_ : Optional[List['KExpression_v1']] = Field(None,alias='and')
-    or_ : Optional[List['KExpression_v1']] = Field(None,alias='or')
-    not_ : Optional['KExpression_v1'] = Field(None,alias='not')
+    and_ : Optional[List['KExpressionV1']] = Field(None,alias='and')
+    or_ : Optional[List['KExpressionV1']] = Field(None,alias='or')
+    not_ : Optional['KExpressionV1'] = Field(None,alias='not')
 
     eq_: Optional[List[KOperand]] = Field(None,alias='==')
     equals: Optional[List[KOperand]] = None
@@ -137,14 +137,14 @@ class KExpression_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KExpression = Union[KExpression_v1]
+KExpression = Union[KExpressionV1]
 
 KConcitionResult = Union[str,KOperandFunction,KOperandStateValue,KOperandConfigValue]
 KConcitionResultList = List[KConcitionResult]
 
-class KConditionExpression_v1(BaseModel):
+class KConditionExpressionV1(BaseModel):
     """
-    KConditionExpression_v1 represents a condition expression with an expression and a result.
+    KConditionExpressionV1 represents a condition expression with an expression and a result.
 
     Attributes:
         expression (Union[KExpression]): The logical expression.
@@ -155,11 +155,11 @@ class KConditionExpression_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KConditionExpression = Union[KConditionExpression_v1]
+KConditionExpression = Union[KConditionExpressionV1]
 
-class KConditionDefault_v1(BaseModel):
+class KConditionDefaultV1(BaseModel):
     """
-    KConditionDefault_v1 represents a default condition with a default value.
+    KConditionDefaultV1 represents a default condition with a default value.
 
     Attributes:
         default (Union[KConcitionResult,KConcitionResultList]): The default value.
@@ -168,12 +168,12 @@ class KConditionDefault_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KConditionDefault = Union[KConditionDefault_v1]
+KConditionDefault = Union[KConditionDefaultV1]
 
 
-class KConditions_v1(BaseModel):
+class KConditionsV1(BaseModel):
     """
-    KConditions_v1 represents a collection of conditions.
+    KConditionsV1 represents a collection of conditions.
 
     Attributes:
         conditions (List[Union[KConditionExpression, KConditionDefault]]):
@@ -183,4 +183,4 @@ class KConditions_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KConditions = Union[KConditions_v1]
+KConditions = Union[KConditionsV1]

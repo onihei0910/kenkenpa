@@ -1,12 +1,12 @@
 import pytest
 
-from kenkenpa.models.stategraph import KState_v1
+from kenkenpa.models.stategraph import KStateV1
 from kenkenpa.models.stategraph import KState
 
-from kenkenpa.models.stategraph import KStateGraphParam_v1
+from kenkenpa.models.stategraph import KStateGraphParamV1
 from kenkenpa.models.stategraph import KStateGraphParam
 
-from kenkenpa.models.stategraph import KStateGraph_v1
+from kenkenpa.models.stategraph import KStateGraphV1
 from kenkenpa.models.stategraph import KStateGraph
 
 def test_KState():
@@ -16,7 +16,7 @@ def test_KState():
             "reducer":"add"
         }
 
-    KState_v1(**state)
+    KStateV1(**state)
     KState(**state)
 
     state = {
@@ -24,7 +24,7 @@ def test_KState():
             "type": "str",
         }
 
-    KState_v1(**state)
+    KStateV1(**state)
     KState(**state)
 
 def test_KStateGraphParam():
@@ -43,14 +43,14 @@ def test_KStateGraphParam():
         ],
     }
 
-    KStateGraphParam_v1(**flow_parameter)
+    KStateGraphParamV1(**flow_parameter)
     KStateGraphParam(**flow_parameter)
 
     flow_parameter = {
         "name":"Parallel-node"
     }
 
-    KStateGraphParam_v1(**flow_parameter)
+    KStateGraphParamV1(**flow_parameter)
     KStateGraphParam(**flow_parameter)
 
 def test_KStateGraph():
@@ -153,5 +153,5 @@ def test_KStateGraph():
         ]
     }
 
-    KStateGraph_v1(**graph_settings)
+    KStateGraphV1(**graph_settings)
     KStateGraph(**graph_settings)

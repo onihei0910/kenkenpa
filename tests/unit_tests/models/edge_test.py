@@ -1,9 +1,9 @@
 import pytest
 
-from kenkenpa.models.edge import KEdgeParam_v1
+from kenkenpa.models.edge import KEdgeParamV1
 from kenkenpa.models.edge import KEdgeParam
 
-from kenkenpa.models.edge import KEdge_v1
+from kenkenpa.models.edge import KEdgeV1
 from kenkenpa.models.edge import KEdge
 
 def test_KEdgeParam():
@@ -12,7 +12,7 @@ def test_KEdgeParam():
         "end_key":"agent"
     }
 
-    KEdgeParam_v1(**flow_parameter)
+    KEdgeParamV1(**flow_parameter)
     KEdgeParam(**flow_parameter)
 
     flow_parameter = {
@@ -20,7 +20,7 @@ def test_KEdgeParam():
         "end_key":["C","D"]
     }
 
-    exc_info = pytest.raises(ValueError, KEdgeParam_v1, **flow_parameter)
+    exc_info = pytest.raises(ValueError, KEdgeParamV1, **flow_parameter)
     assert "You can only list either the start_key or the end_key." in str(exc_info.value)
 
     exc_info = pytest.raises(ValueError, KEdgeParam, **flow_parameter)
@@ -35,5 +35,5 @@ def test_KEdge():
         },
     }
 
-    KEdge_v1(**flow)
+    KEdgeV1(**flow)
     KEdge(**flow)

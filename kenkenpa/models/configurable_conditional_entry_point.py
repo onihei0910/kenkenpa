@@ -5,14 +5,14 @@ It includes models for conditional entry point flow parameters and
 configurable conditional entry points, ensuring that certain constraints are met.
 
 Classes:
-    KConditionalEntryPointFlowParam_v1:
+    KConditionalEntryPointFlowParamV1:
         Represents the flow parameters for a conditional entry point.
-    KConfigurableConditionalEntryPoint_v1:
+    KConfigurableConditionalEntryPointV1:
         Represents a configurable conditional entry point in a graph.
 
 Type Aliases:
-    KConditionalEntryPointFlowParam: Alias for KConditionalEntryPointFlowParam_v1.
-    KConfigurableConditionalEntryPoint: Alias for KConfigurableConditionalEntryPoint_v1.
+    KConditionalEntryPointFlowParam: Alias for KConditionalEntryPointFlowParamV1.
+    KConfigurableConditionalEntryPoint: Alias for KConfigurableConditionalEntryPointV1.
 """
 from typing import List, Union, Optional
 from pydantic import BaseModel, ConfigDict
@@ -21,9 +21,9 @@ from kenkenpa.models.conditions import KConditionExpression
 from kenkenpa.models.conditions import KConditionDefault
 
 
-class KConditionalEntryPointFlowParam_v1(BaseModel):
+class KConditionalEntryPointFlowParamV1(BaseModel):
     """
-    KConditionalEntryPointFlowParam_v1 represents
+    KConditionalEntryPointFlowParamV1 represents
     the flow parameters for a conditional entry point.
 
     Attributes:
@@ -36,11 +36,11 @@ class KConditionalEntryPointFlowParam_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KConditionalEntryPointFlowParam = Union[KConditionalEntryPointFlowParam_v1]
+KConditionalEntryPointFlowParam = Union[KConditionalEntryPointFlowParamV1]
 
-class KConfigurableConditionalEntryPoint_v1(BaseModel):
+class KConfigurableConditionalEntryPointV1(BaseModel):
     """
-    KConfigurableConditionalEntryPoint_v1 represents
+    KConfigurableConditionalEntryPointV1 represents
     a configurable conditional entry point in a graph.
 
     Attributes:
@@ -53,4 +53,4 @@ class KConfigurableConditionalEntryPoint_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KConfigurableConditionalEntryPoint = Union[KConfigurableConditionalEntryPoint_v1]
+KConfigurableConditionalEntryPoint = Union[KConfigurableConditionalEntryPointV1]
