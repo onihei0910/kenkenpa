@@ -359,7 +359,7 @@ stategraph_builder = StateGraphBuilder(
 - type: str
 - This is a string representing the key for the reducer.
 
-To use a reducer, you need to register it with the StateGraphBuilder.[コード全文](tests/example/conditional_branching_test.py)
+To use a reducer, you need to register it with the StateGraphBuilder.[Full code](tests/example/conditional_branching_test.py)
 
 ``` python
 import operator
