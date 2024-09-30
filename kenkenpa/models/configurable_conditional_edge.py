@@ -5,12 +5,12 @@ It includes models for conditional edge flow parameters and
 configurable conditional edges, ensuring that certain constraints are met.
 
 Classes:
-    KConditionalEdgeFlowParam_v1: Represents the flow parameters for a conditional edge.
-    KConfigurableConditionalEdge_v1: Represents a configurable conditional edge in a graph.
+    KConditionalEdgeFlowParamV1: Represents the flow parameters for a conditional edge.
+    KConfigurableConditionalEdgeV1: Represents a configurable conditional edge in a graph.
 
 Type Aliases:
-    KConditionalEdgeFlowParam: Alias for KConditionalEdgeFlowParam_v1.
-    KConfigurableConditionalEdge: Alias for KConfigurableConditionalEdge_v1.
+    KConditionalEdgeFlowParam: Alias for KConditionalEdgeFlowParamV1.
+    KConfigurableConditionalEdge: Alias for KConfigurableConditionalEdgeV1.
 """
 from typing import List, Union, Optional
 from pydantic import BaseModel, ConfigDict
@@ -18,9 +18,9 @@ from pydantic import BaseModel, ConfigDict
 from kenkenpa.models.conditions import KConditionExpression
 from kenkenpa.models.conditions import KConditionDefault
 
-class KConditionalEdgeFlowParam_v1(BaseModel):
+class KConditionalEdgeFlowParamV1(BaseModel):
     """
-    KConditionalEdgeFlowParam_v1 represents the flow parameters for a conditional edge.
+    KConditionalEdgeFlowParamV1 represents the flow parameters for a conditional edge.
 
     Attributes:
         start_key (str): The starting key for the edge.
@@ -34,11 +34,11 @@ class KConditionalEdgeFlowParam_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KConditionalEdgeFlowParam = Union[KConditionalEdgeFlowParam_v1]
+KConditionalEdgeFlowParam = Union[KConditionalEdgeFlowParamV1]
 
-class KConfigurableConditionalEdge_v1(BaseModel):
+class KConfigurableConditionalEdgeV1(BaseModel):
     """
-    KConfigurableConditionalEdge_v1 represents a configurable conditional edge in a graph.
+    KConfigurableConditionalEdgeV1 represents a configurable conditional edge in a graph.
 
     Attributes:
         graph_type (str): The type of the graph.
@@ -49,4 +49,4 @@ class KConfigurableConditionalEdge_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KConfigurableConditionalEdge = Union[KConfigurableConditionalEdge_v1]
+KConfigurableConditionalEdge = Union[KConfigurableConditionalEdgeV1]

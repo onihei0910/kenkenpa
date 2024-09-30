@@ -3,12 +3,12 @@ This module defines data models for graph nodes using Pydantic for validation.
 It includes models for node parameters and nodes themselves, ensuring that
 certain constraints are met.
 """
-from pydantic import BaseModel, ConfigDict
 from typing import Optional, Union, Dict
+from pydantic import BaseModel, ConfigDict
 
-class KNodeParam_v1(BaseModel):
+class KNodeParamV1(BaseModel):
     """
-    KNodeParam_v1 represents the parameters for a graph node.
+    KNodeParamV1 represents the parameters for a graph node.
 
     Attributes:
         name (str): The name of the node.
@@ -19,11 +19,11 @@ class KNodeParam_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KNodeParam = Union[KNodeParam_v1]
+KNodeParam = Union[KNodeParamV1]
 
-class KNode_v1(BaseModel):
+class KNodeV1(BaseModel):
     """
-    KNode_v1 represents a node in a graph, including the type of graph and flow parameters.
+    KNodeV1 represents a node in a graph, including the type of graph and flow parameters.
 
     Attributes:
         graph_type (str): The type of the graph.
@@ -36,4 +36,4 @@ class KNode_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KNode = Union[KNode_v1]
+KNode = Union[KNodeV1]

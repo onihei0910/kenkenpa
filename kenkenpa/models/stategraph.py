@@ -12,9 +12,9 @@ from kenkenpa.models.configurable_conditional_edge import KConfigurableCondition
 from kenkenpa.models.configurable_conditional_entry_point import KConfigurableConditionalEntryPoint
 
 
-class KState_v1(BaseModel):
+class KStateV1(BaseModel):
     """
-    KState_v1 represents the state with a field name, type, and an optional reducer.
+    KStateV1 represents the state with a field name, type, and an optional reducer.
 
     Attributes:
         field_name (str): The name of the field.
@@ -27,11 +27,11 @@ class KState_v1(BaseModel):
 
     model_config = ConfigDict(extra='forbid')
 
-KState = Union[KState_v1]
+KState = Union[KStateV1]
 
-class KStateGraphParam_v1(BaseModel):
+class KStateGraphParamV1(BaseModel):
     """
-    KStateGraphParam_v1 represents the parameters for a state graph.
+    KStateGraphParamV1 represents the parameters for a state graph.
 
     Attributes:
         name (str): The name of the state graph.
@@ -40,11 +40,11 @@ class KStateGraphParam_v1(BaseModel):
     name: str
     state: Optional[Union[List[KState]]] = None
 
-KStateGraphParam = Union[KStateGraphParam_v1]
+KStateGraphParam = Union[KStateGraphParamV1]
 
-class KStateGraph_v1(BaseModel):
+class KStateGraphV1(BaseModel):
     """
-    KStateGraph_v1 represents a state graph with a type, flow parameters, and flows.
+    KStateGraphV1 represents a state graph with a type, flow parameters, and flows.
 
     Attributes:
         graph_type (str): The type of the graph.
@@ -63,4 +63,4 @@ class KStateGraph_v1(BaseModel):
         'KStateGraph'
     ]]
 
-KStateGraph = Union[KStateGraph_v1]
+KStateGraph = Union[KStateGraphV1]

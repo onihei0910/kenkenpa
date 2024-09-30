@@ -1,8 +1,8 @@
 import pytest
-from kenkenpa.models.configurable_conditional_edge import KConditionalEdgeFlowParam_v1
+from kenkenpa.models.configurable_conditional_edge import KConditionalEdgeFlowParamV1
 from kenkenpa.models.configurable_conditional_edge import KConditionalEdgeFlowParam
 
-from kenkenpa.models.configurable_conditional_edge import KConfigurableConditionalEdge_v1
+from kenkenpa.models.configurable_conditional_edge import KConfigurableConditionalEdgeV1
 from kenkenpa.models.configurable_conditional_edge import KConfigurableConditionalEdge
 
 def test_KConditionalEdgeFlowParam():
@@ -22,7 +22,7 @@ def test_KConditionalEdgeFlowParam():
             ]
         }
 
-    KConditionalEdgeFlowParam_v1(**flow_parameter)
+    KConditionalEdgeFlowParamV1(**flow_parameter)
     KConditionalEdgeFlowParam(**flow_parameter)
 
     flow_parameter = {
@@ -42,7 +42,7 @@ def test_KConditionalEdgeFlowParam():
             ]
         }
 
-    KConditionalEdgeFlowParam_v1(**flow_parameter)
+    KConditionalEdgeFlowParamV1(**flow_parameter)
     KConditionalEdgeFlowParam(**flow_parameter)
 
 def test_ConfigurableConditionalEdge():
@@ -65,5 +65,5 @@ def test_ConfigurableConditionalEdge():
             },
         }
 
-    KConfigurableConditionalEdge_v1(**flow)
+    KConfigurableConditionalEdgeV1(**flow)
     KConfigurableConditionalEdge(**flow)
