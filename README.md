@@ -2,6 +2,11 @@
 
 Generate a StateGraph of LangGraph that can be compiled from structured data.
 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/kenkenpa)
+![Version](https://img.shields.io/pypi/v/kenkenpa)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/onihei0910/kenkenpa/graph/badge.svg?token=Jk43Q4OFpU)](https://codecov.io/gh/onihei0910/kenkenpa)
+
 ## Note
 
 This document is a translation of a text originally written in [Japanese](README.ja.md).
@@ -17,7 +22,7 @@ pip install kenkenpa
 I will explain how to use kenkenpa with the example of React-Agent.  
 [https://langchain-ai.github.io/langgraph/](https://langchain-ai.github.io/langgraph/)
 
-In addition to React-Agent, several implementation patterns of LangGraph are described as tests.
+In addition to React-Agent, several implementation patterns of LangGraph are described as [test](https://github.com/onihei0910/kenkenpa/tree/main/tests/example).
 
 Define the Tool node as usual.
 

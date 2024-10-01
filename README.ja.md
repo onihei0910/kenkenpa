@@ -2,6 +2,11 @@
 
 構造化データからコンパイル可能なLangGraphのStateGraphを生成します。
 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/kenkenpa)
+![Version](https://img.shields.io/pypi/v/kenkenpa)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/onihei0910/kenkenpa/graph/badge.svg?token=Jk43Q4OFpU)](https://codecov.io/gh/onihei0910/kenkenpa)
+
 ## インストール
 
 ``` sh
@@ -13,7 +18,7 @@ pip install kenkenpa
 React-Agentを例にkenkenpaの使用方法を説明します。  
 [https://langchain-ai.github.io/langgraph/](https://langchain-ai.github.io/langgraph/)
 
-React-Agentのほか、LangGraphの実装パターンのいくつかをtestとして記述してあります。
+React-Agentのほか、LangGraphの実装パターンのいくつかを[test](https://github.com/onihei0910/kenkenpa/tree/main/tests/example)として記述してあります。
 
 Toolノードは通常通り定義します。
 
