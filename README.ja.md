@@ -7,6 +7,14 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/onihei0910/kenkenpa/graph/badge.svg?token=Jk43Q4OFpU)](https://codecov.io/gh/onihei0910/kenkenpa)
 
+## このライブラリの目的
+このライブラリは、単一アプリケーション内で複数のAIエージェントを取り扱うために作成しました。
+用途の例:
+ - ルーム別に異なる目的を持ったAIエージェントを構築したい場合
+ - ノードを部品としてあらかじめ提供しておき、エンドユーザーにAIエージェントを構築するUIを提供する場合
+ - コードリポジトリ別に異なる開発フローに対応するプロジェクトアシスタントを開発したい場合
+ - 仕訳された文書別に異なる承認フローを適用したい場合
+
 ## インストール
 
 ``` sh
@@ -18,7 +26,9 @@ pip install kenkenpa
 React-Agentを例にkenkenpaの使用方法を説明します。  
 [https://langchain-ai.github.io/langgraph/](https://langchain-ai.github.io/langgraph/)
 
-React-Agentのほか、LangGraphの実装パターンのいくつかを[test](https://github.com/onihei0910/kenkenpa/tree/main/tests/example)として記述してあります。
+React-Agentのほか、LangGraphの実装パターンのいくつかを[kenkenpa_example](https://github.com/onihei0910/kenkenpa_example)に投稿しています。
+
+---
 
 Toolノードは通常通り定義します。
 

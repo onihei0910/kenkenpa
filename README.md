@@ -11,6 +11,14 @@ Generate a StateGraph of LangGraph that can be compiled from structured data.
 
 This document is a translation of a text originally written in [Japanese](README.ja.md).
 
+## Purpose of this Library
+This library was created to handle multiple AI agents within a single application.
+Examples of use:
+ - When you want to build AI agents with different purposes for each room
+ - When you want to provide a UI for end-users to build AI agents by pre-providing nodes as components
+ - When you want to develop a project assistant that supports different development flows for each code repository
+ - When you want to apply different approval flows for each categorized document
+
 ## Installation
 
 ``` sh
@@ -22,7 +30,9 @@ pip install kenkenpa
 I will explain how to use kenkenpa with the example of React-Agent.  
 [https://langchain-ai.github.io/langgraph/](https://langchain-ai.github.io/langgraph/)
 
-In addition to React-Agent, several implementation patterns of LangGraph are described as [test](https://github.com/onihei0910/kenkenpa/tree/main/tests/example).
+In addition to React-Agent, several implementation patterns of LangGraph are posted on [kenkenpa_example](https://github.com/onihei0910/kenkenpa_example).
+
+---
 
 Define the Tool node as usual.
 
