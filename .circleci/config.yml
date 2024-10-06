@@ -98,6 +98,9 @@ jobs:
       - run:
           name: deploy
           command: poetry publish
+      - run:
+          name: tag
+          command: export CURRENT_VERSION=v$(poetry version --short);git tag $CURRENT_VERSION;git push origin $CURRENT_VERSION
 workflows:
   build:
     jobs:

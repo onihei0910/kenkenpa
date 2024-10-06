@@ -36,6 +36,14 @@ kenkenpa.edges module
    :undoc-members:
    :show-inheritance:
 
+kenkenpa.param module
+---------------------
+
+.. automodule:: kenkenpa.param
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 kenkenpa.state module
 ---------------------
 
