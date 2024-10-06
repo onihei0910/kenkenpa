@@ -12,12 +12,15 @@ Generate a StateGraph of LangGraph that can be compiled from structured data.
 This document is a translation of a text originally written in [Japanese](README.ja.md).
 
 ## Purpose of this Library
-This library was created to handle multiple AI agents within a single application.
+
+This library was created to handle multiple AI agents within a single application.  
+
 Examples of use:
- - When you want to build AI agents with different purposes for each room
- - When you want to provide a UI for end-users to build AI agents by pre-providing nodes as components
- - When you want to develop a project assistant that supports different development flows for each code repository
- - When you want to apply different approval flows for each categorized document
+
+- When you want to build AI agents with different purposes for each room
+- When you want to provide a UI for end-users to build AI agents by pre-providing nodes as components
+- When you want to develop a project assistant that supports different development flows for each code repository
+- When you want to apply different approval flows for each categorized document
 
 ## Installation
 
