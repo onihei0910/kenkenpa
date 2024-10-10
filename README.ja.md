@@ -2,6 +2,10 @@
 
 構造化データからコンパイル可能なLangGraphのStateGraphを生成します。
 
+ <div align="center">
+    <img src="https://github.com/onihei0910/assets/blob/main/icon/kenkenpa.png?raw=true" alt="属性">
+</div>
+
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/kenkenpa)
 ![Version](https://img.shields.io/pypi/v/kenkenpa)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
