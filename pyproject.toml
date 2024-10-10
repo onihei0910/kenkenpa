@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kenkenpa"
-version = "0.2.1"
+version = "0.2.2"
 description = "Generate a StateGraph of LangGraph that can be compiled from structured data."
 authors = ["ONIHEI0910 <onihei0910_dev@delve-siphon.net>"]
 repository = "https://github.com/onihei0910/kenkenpa"
