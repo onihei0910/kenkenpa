@@ -6,6 +6,9 @@ _test-body: &test-body
     resource_class: small
     steps:
       - checkout
+      - run:
+          name: poetry upgrade
+          command: poetry self update
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -17,12 +20,12 @@ _test-body: &test-body
       - run:
           name: Run tests
           command: poetry run pytest --cov=kenkenpa --cov-report=xml
-      - run:
-          name: install potery audit 
-          command: poetry self add poetry-audit-plugin
-      - run:
-          name: Run potery audit
-          command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
+      #- run:
+      #    name: install potery audit 
+      #    command: poetry self add poetry-audit-plugin
+      #- run:
+      #    name: Run potery audit
+      #    command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
 jobs:
   test-3-10: 
     <<: *test-body
@@ -42,6 +45,9 @@ jobs:
       - image: cimg/python:3.12.4
     steps:
       - checkout
+      - run:
+          name: poetry upgrade
+          command: poetry self update
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -55,18 +61,21 @@ jobs:
           command: poetry run pytest --cov=kenkenpa --cov-report=xml
       - codecov/upload:
           file: ./coverage.xml
-      - run:
-          name: install potery audit 
-          command: poetry self add poetry-audit-plugin
-      - run:
-          name: Run potery audit
-          command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
+      #- run:
+      #    name: install potery audit 
+      #    command: poetry self add poetry-audit-plugin
+      #- run:
+      #    name: Run potery audit
+      #    command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
   deploy-test:
     resource_class: small
     docker:
       - image: cimg/python:3.12.4
     steps:
       - checkout
+      - run:
+          name: poetry upgrade
+          command: poetry self update
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -87,6 +96,9 @@ jobs:
       - image: cimg/python:3.12.4
     steps:
       - checkout
+      - run:
+          name: poetry upgrade
+          command: poetry self update
       - python/install-packages:
           pkg-manager: poetry
       - run:

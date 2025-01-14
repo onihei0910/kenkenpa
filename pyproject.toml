@@ -1,17 +1,20 @@
-[tool.poetry]
+[project]
 name = "kenkenpa"
-version = "0.2.3"
+version = "0.2.4"
 description = "Generate a StateGraph of LangGraph that can be compiled from structured data."
-authors = ["ONIHEI0910 <onihei0910_dev@delve-siphon.net>"]
+authors = [
+    {name = "ONIHEI0910", email = "onihei0910_dev@delve-siphon.net"}
+]
+readme = "README.md"
+requires-python = "^3.10"
 repository = "https://github.com/onihei0910/kenkenpa"
 license = "MIT"
-readme = "README.md"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-langchain-core = "^0.3.0"
-langgraph = "^0.2.2"
-pydantic = "^2.9.2"
+dependencies = [
+    "pydantic (>=2.9.2,<3.0.0)",
+    "langchain-core (>=0.3.0,<0.4.0)",
+    "langgraph (>=0.2.2,<0.3.0)"
+]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
@@ -22,5 +25,5 @@ pylint = "^3.3.1"
 grandalf = "^0.8"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

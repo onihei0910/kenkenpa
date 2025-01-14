@@ -13,7 +13,7 @@ Generate a StateGraph of LangGraph that can be compiled from structured data.
 
 ## Note
 
-This document is a translation of a text originally written in [Japanese](README.ja.md).
+This document is a translation of a text originally written in [Japanese](https://github.com/onihei0910/kenkenpa/blob/main/README.ja.md).
 
 ## Purpose of this Library
 
@@ -24,12 +24,19 @@ Examples of use:
 - When you want to build AI agents with different purposes for each room
 - When you want to provide a UI for end-users to build AI agents by pre-providing nodes as components
 - When you want to develop a project assistant that supports different development flows for each code repository
-- When you want to apply different approval flows for each categorized document
+- When you want to apply different approval flows for each sorted document
 
 ## Installation
 
 ``` sh
 pip install kenkenpa
+```
+
+## Documentation
+You can generate the documentation with the following command:
+
+``` sh
+poetry run sphinx-build -b html source build
 ```
 
 ## Usage Example
