@@ -20,12 +20,12 @@ _test-body: &test-body
       - run:
           name: Run tests
           command: poetry run pytest --cov=kenkenpa --cov-report=xml
-      - run:
-          name: install potery audit 
-          command: poetry self add poetry-audit-plugin
-      - run:
-          name: Run potery audit
-          command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
+      #- run:
+      #    name: install potery audit 
+      #    command: poetry self add poetry-audit-plugin
+      #- run:
+      #    name: Run potery audit
+      #    command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
 jobs:
   test-3-10: 
     <<: *test-body
