@@ -6,7 +6,7 @@ authors = [
     {name = "ONIHEI0910", email = "onihei0910_dev@delve-siphon.net"}
 ]
 readme = "README.md"
-requires-python = "^3.10"
+requires-python = ">= 3.10,<4.0.0"
 repository = "https://github.com/onihei0910/kenkenpa"
 license = "MIT"
 
