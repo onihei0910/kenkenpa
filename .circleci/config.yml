@@ -8,7 +8,7 @@ _test-body: &test-body
       - checkout
       - run:
           name: poetry upgrade
-          command: poetry self update
+          command: poetry self update 2.0.1
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -20,12 +20,6 @@ _test-body: &test-body
       - run:
           name: Run tests
           command: poetry run pytest --cov=kenkenpa --cov-report=xml
-      #- run:
-      #    name: install potery audit 
-      #    command: poetry self add poetry-audit-plugin
-      #- run:
-      #    name: Run potery audit
-      #    command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
 jobs:
   test-3-10: 
     <<: *test-body
@@ -47,7 +41,7 @@ jobs:
       - checkout
       - run:
           name: poetry upgrade
-          command: poetry self update
+          command: poetry self update 2.0.1
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -61,12 +55,6 @@ jobs:
           command: poetry run pytest --cov=kenkenpa --cov-report=xml
       - codecov/upload:
           file: ./coverage.xml
-      #- run:
-      #    name: install potery audit 
-      #    command: poetry self add poetry-audit-plugin
-      #- run:
-      #    name: Run potery audit
-      #    command: poetry audit --ignore-code=CVE-2019-8341,CVE-2024-3095
   deploy-test:
     resource_class: small
     docker:
@@ -75,7 +63,7 @@ jobs:
       - checkout
       - run:
           name: poetry upgrade
-          command: poetry self update
+          command: poetry self update 2.0.1
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -98,7 +86,7 @@ jobs:
       - checkout
       - run:
           name: poetry upgrade
-          command: poetry self update
+          command: poetry self update 2.0.1
       - python/install-packages:
           pkg-manager: poetry
       - run:
