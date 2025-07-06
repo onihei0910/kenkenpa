@@ -1,6 +1,6 @@
 [project]
 name = "kenkenpa"
-version = "0.2.11"
+version = "0.2.12"
 description = "Generate a StateGraph of LangGraph that can be compiled from structured data."
 authors = [
     {name = "ONIHEI0910", email = "onihei0910_dev@delve-siphon.net"}
