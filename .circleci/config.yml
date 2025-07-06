@@ -33,6 +33,10 @@ jobs:
     <<: *test-body
     docker:
       - image: cimg/python:3.12
+  test-3-13: 
+    <<: *test-body
+    docker:
+      - image: cimg/python:3.13
   build-and-test:
     resource_class: small
     docker:
@@ -140,6 +144,11 @@ workflows:
               ignore:
                 - main
       - test-3-12:
+          filters:
+            branches:
+              ignore:
+                - main
+      - test-3-13:
           filters:
             branches:
               ignore:
