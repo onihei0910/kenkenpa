@@ -139,7 +139,7 @@ class StateGraphBuilder():
         state = stategraph_flow_parameter.get("state",[])
 
         self.custom_state = self.statebuilder.gen_state(state)
-        stategraph = StateGraph(self.custom_state,config_schema=self.config_schema)
+        stategraph = StateGraph(self.custom_state,context_schema=self.config_schema)
 
         for flow in stategraph_settings.get("flows",[]):
             graph_type = flow.get('graph_type')
